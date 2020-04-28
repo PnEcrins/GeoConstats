@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+
+{% block content %}
+<center>
+<h1>Add to map</h1>
+    <form action="" method="post" novalidate>
+            {{ form.hidden_tag() }}
+            <p>
+            {{ form.date.label }}<br>
+            {{ form.date(size=32) }}
+            {% for error in form.date.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </p>
+        <p>
+            {{ form.nbVictimes.label }}<br>
+            {{ form.nbVictimes(size=32) }}
+            {% for error in form.nbVictimes.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </p>
+        <p>
+            {{ form.moment.label }}<br>
+            {{ form.moment(size=32) }}
+            {% for error in form.moment.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </p>
+        <p>
+            {{ form.chien.label }}<br>
+            {{ form.chien(size=32) }}
+            {% for error in form.chien.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </p>
+        <p>
+            {{ form.berger.label }}<br>
+            {{ form.berger(size=32) }}
+            {% for error in form.berger.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </p>
+        <p>
+            {{ form.valide.label }}<br>
+            {{ form.valide(size=32) }}
+            {% for error in form.valide.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </p>		
+        <p><a herf="{{url_for('map')}}">{{ form.submit() }}</a></p>
+    </form>
+</center>
+{% endblock %}
