@@ -4,19 +4,20 @@ from wtforms import StringField, IntegerField, SubmitField
 from .env import DB
 from app.models import Constats
 from app.forms import LoginForm
-
+from shapely.geometry import asShape
+from geoalchemy2.shape import from_shape
 
 app = Flask(__name__)
 
 app.config['SECRET_KEY'] = 'you-will-never-guess'
-app.config['SQLALCHEMY_DATABASE_URI'] = "postgresql://myuser:mypassword@localhost:5432/geoConstat"
+app.config['SQLALCHEMY_DATABASE_URI'] = "postgresql://raph:Raphael18@localhost:5432/geoConstat"
 
 with app.app_context():
     from .models import Constats
     from app.forms import LoginForm
     from .env import DB
     DB.init_app(app)
-    DB.create_all()
+    #DB.create_all()
 
     Constats.query.all()
 
@@ -26,6 +27,10 @@ with app.app_context():
 def map():
     
     data = DB.session.query(Constats).all()
+    print(data[0].nbVictimes)
+    shape=asShape(data[0].geometry)
+    two_dimension_geom = remove_third_dimension(shape)
+    releve.geom_4326 = from_shape(two_dimension_geom, srid=4326)
     return render_template('map.html', title='Map', Constats=data)
 
 

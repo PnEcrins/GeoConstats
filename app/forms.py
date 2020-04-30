@@ -18,14 +18,17 @@ class LoginForm(FlaskForm):
         constats = Constats.query.filter_by(valide=valide.data).first()
         if constat is not None:
             raise ValidationError('Please use a different surname.')
-    """
-    def validate_email(self, email):
-        constats = Constats.query.filter_by(email=email.data).first()
+    
+    def validate_nbVictimes(self, nbVictimes):
+        constats = Constats.query.filter_by(nbVictimes=nbVictimes.data).first()
         if constats is not None:
             raise ValidationError('Please use a different email address.')
                 
-    def validate_name(self, name):
-        constats = Constats.query.filter_by(name=name.data).first()
+    def validate_date(self, moment):
+        constats = Constats.query.filter_by(moment=moment.data).first()
         if constats is not None:
             raise ValidationError('Please use a different name address.')
-    """
+    def validate_date(self, date):
+        constats = Constats.query.filter_by(date=date.data).first()
+        if constats is not None:
+            raise ValidationError('Please use a different name address.')    

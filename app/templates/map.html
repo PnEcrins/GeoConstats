@@ -13,7 +13,6 @@
     <script>
         // CONFIGURATION DE LA CARTE //
         var map = L.map('map').setView([44.8, 6.2], 10);
-        
         L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
             attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
         }).addTo(map);
@@ -24,7 +23,6 @@
             map.setZoom(10);
             map.setView([44.8, 6.2]);   
         }
-
         var marker;   
             map.on('click', function(event){
 
@@ -46,17 +44,20 @@
             });     
 
         var jsonData = [
-        {% for constats in users %}
+        {% for constats in Constats %}
             {
-            "LNG": "{{ user.X }}",
-            "LAT": "{{ user.Y }}",
-            "SURNAME": "{{ user.surname }}",
-            "NAME": "{{ user.name }}",
-            "EMAIL": "{{ user.email }}"
+			"id": "{{ constats.id }}",
+            "date": "{{ constats.date }}",
+            "nbVictimes": "{{ constats.nbVictimes }}",
+            "moment": "{{ constats.moment }}",
+            "chien": "{{ constats.chien }}",
+            "berger": "{{ constats.berger }}",
+			"valide": "{{ constats.valide }}",
+			"geometry": "{{ constats.geometry }}"
             },
         {% endfor %}
-
             ]
+			console.log(jsonData)
             var addMarkers = function(point) {
                 L.marker([point.LAT, point.LNG])
                 .addTo(map)
