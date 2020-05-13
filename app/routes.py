@@ -4,8 +4,8 @@ from wtforms import StringField, IntegerField, SubmitField
 from .env import DB
 from app.models import Constats
 from app.forms import LoginForm
-from shapely.geometry import asShape
-from geoalchemy2.shape import from_shape
+#from shapely.geometry import point,polygon,linestring,asShape
+#from geoalchemy2.shape import from_shape
 
 app = Flask(__name__)
 
@@ -16,6 +16,8 @@ with app.app_context():
     from .models import Constats
     from app.forms import LoginForm
     from .env import DB
+    from shapely.geometry import *
+    from geoalchemy2.shape import from_shape    
     DB.init_app(app)
     #DB.create_all()
 

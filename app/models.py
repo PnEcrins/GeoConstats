@@ -11,7 +11,7 @@ class Constats(DB.Model):
     berger = DB.Column(DB.Boolean)
     valide = DB.Column(DB.String(10))
     geometry = DB.Column(Geometry("GEOMETRY", 2154))
-    geom4326 = DB.Column(Geometry("GEOMETRY", 4326))
+    geom_4326 = DB.Column(Geometry("GEOMETRY", 4326))
     def __repr__(self):
         return '<Constats {}>'.format(self.date)
     

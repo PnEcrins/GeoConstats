@@ -3,7 +3,8 @@ from wtforms import StringField, BooleanField, IntegerField, DateField, SubmitFi
 from app.models import Constats
 from .env import DB
 from wtforms.validators import DataRequired
-
+from shapely.geometry import point,polygon,linestring,asShape
+from geoalchemy2.shape import from_shape
 
 class LoginForm(FlaskForm):
     date = DateField('date')
