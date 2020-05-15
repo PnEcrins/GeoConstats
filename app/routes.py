@@ -4,8 +4,10 @@ from wtforms import StringField, IntegerField, SubmitField
 from .env import DB
 from app.models import Constats
 from app.forms import LoginForm
-#from shapely.geometry import point,polygon,linestring,asShape
-#from geoalchemy2.shape import from_shape
+from sqlalchemy import func
+import json
+from shapely.geometry import mapping
+from geoalchemy2.shape import to_shape
 
 app = Flask(__name__)
 
@@ -16,8 +18,6 @@ with app.app_context():
     from .models import Constats
     from app.forms import LoginForm
     from .env import DB
-    from shapely.geometry import *
-    from geoalchemy2.shape import from_shape    
     DB.init_app(app)
     #DB.create_all()
 
@@ -26,13 +26,12 @@ with app.app_context():
 
 @app.route("/")
 @app.route("/map")
-def map():
-    
+def map(): 
     data = DB.session.query(Constats).all()
-    print(data[0].nbVictimes)
-    shape=asShape(data[0].geometry)
-    two_dimension_geom = remove_third_dimension(shape)
-    releve.geom_4326 = from_shape(two_dimension_geom, srid=4326)
+    print(data[0].geometry)
+    wkt=to_shape(data[0].geometry)
+    geojson=mapping(wkt)
+    print(geojson)
     return render_template('map.html', title='Map', Constats=data)
 
 

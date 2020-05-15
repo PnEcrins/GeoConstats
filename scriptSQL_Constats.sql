@@ -11,7 +11,7 @@
 )
 SELECT AddGeometryColumn('constats', 'geometry', 2154, 'POINT',2);
 SELECT AddGeometryColumn('constats', 'geom_4326', 4326, 'POINT',2);
-INSERT INTO constats(id,date,"nbVictimes",moment,chien,berger,valide,geometry) VALUES
-(1,'2020-04-26',7,'nuit',True,False,'attente',ST_geometryFromText('POINT(6.30830 44.81194)',4326));
+INSERT INTO constats(id,date,"nbVictimes",moment,chien,berger,valide,geom_4326) VALUES
+(2,'2020-04-20',9,'jour',False,False,'attente',ST_geometryFromText('POINT(6.30630 44.84194)',4326));
 
 #select ST_asText(geometry)from constats;
