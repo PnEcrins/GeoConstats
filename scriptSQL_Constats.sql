@@ -15,3 +15,4 @@ INSERT INTO constats(id,date,"nbVictimes",moment,chien,berger,valide,geom_4326) 
 (2,'2020-04-20',9,'jour',False,False,'attente',ST_geometryFromText('POINT(6.30630 44.84194)',4326));
 
 #select ST_asText(geometry)from constats;
+update constats set geom_4326=ST_transform(geometry,4326) from constats;

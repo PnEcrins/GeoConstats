@@ -28,11 +28,23 @@ with app.app_context():
 @app.route("/map")
 def map(): 
     data = DB.session.query(Constats).all()
-    print(data[0].geometry)
-    wkt=to_shape(data[0].geometry)
-    geojson=mapping(wkt)
-    print(geojson)
-    return render_template('map.html', title='Map', Constats=data)
+    print(data[0].geom_4326)
+    cnsts=[]
+    for i in data:
+        wkt=to_shape(i.geom_4326)
+        geojson=mapping(wkt)
+        dico={}
+        dico['geometry']=geojson
+        dico['properties']={}
+        dico['properties']['date']=i.date
+        dico['properties']['nbVictimes']=i.nbVictimes
+        dico['properties']['moment']=i.moment
+        dico['properties']['chien']=i.chien
+        dico['properties']['berger']=i.berger
+        dico['properties']['valide']=i.valide
+        cnsts.append(dico)
+    print(cnsts)
+    return render_template('map.html', title='Map', Constats=cnsts)
 
 
 @app.route('/add', methods=['GET', 'POST'])
