@@ -7,29 +7,32 @@ from shapely.geometry import point,polygon,linestring,asShape
 from geoalchemy2.shape import from_shape
 
 class LoginForm(FlaskForm):
-    date = DateField('date')
-    nbVictimes = IntegerField('nbVictimes')
-    moment = StringField('moment')
-    chien = BooleanField('chien')
-    berger = BooleanField('berger')
-    valide = StringField('valide')
+    date_attaque = DateField('date_attaque')
+    date_constat = DateField('date_constat')
+    nom_agent1 = StringField('nom_agent1')
+    nom_agent2 = StringField('nom_agent2')
+    proprietaire = StringField('proprietaire')
+    type_animaux = StringField('type_animaux')
+    nb_victimes_mort = IntegerField('nb_victimes_mort')
+    nb_victimes_blesse = IntegerField('nb_victimes_blesse')
+    situation = StringField('situation')
     submit = SubmitField('Add to database')
 
-    def validate_valide(self, valide):
-        constats = Constats.query.filter_by(valide=valide.data).first()
+    def validate_situation(self, situation):
+        constats = Constats.query.filter_by(situation=situation.data).first()
         if constat is not None:
-            raise ValidationError('Please use a different surname.')
+            raise ValidationError('Please use a different situation.')
     
-    def validate_nbVictimes(self, nbVictimes):
-        constats = Constats.query.filter_by(nbVictimes=nbVictimes.data).first()
+    def validate_nb_victimes_mort(self, nb_victimes_mort):
+        constats = Constats.query.filter_by(nb_victimes_mort=nb_victimes_mort.data).first()
         if constats is not None:
             raise ValidationError('Please use a different email address.')
                 
-    def validate_date(self, moment):
-        constats = Constats.query.filter_by(moment=moment.data).first()
+    def validate_dateAttaque(self, date_attaque):
+        constats = Constats.query.filter_by(date_attaque=date_attaque.data).first()
         if constats is not None:
             raise ValidationError('Please use a different name address.')
-    def validate_date(self, date):
-        constats = Constats.query.filter_by(date=date.data).first()
+    def validate_date(self, date_constat):
+        constats = Constats.query.filter_by(date_constat=date_constat.data).first()
         if constats is not None:
             raise ValidationError('Please use a different name address.')    

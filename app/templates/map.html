@@ -46,7 +46,7 @@
         var jsonData = [
         {% for constats in Constats %}
             {
-			"id": "{{ constats.id }}",
+			"dateAttaque": "{{ constats.properties.dateAttaque }}",
             "date": "{{ constats.date }}",
             "nbVictimes": "{{ constats.nbVictimes }}",
             "moment": "{{ constats.moment }}",
@@ -58,6 +58,7 @@
         {% endfor %}
             ]
 			console.log(jsonData)
+			
             var addMarkers = function(point) {
                 L.marker([point.LAT, point.LNG])
                 .addTo(map)

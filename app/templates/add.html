@@ -5,45 +5,67 @@
 <h1>Add to map</h1>
     <form action="" method="post" novalidate>
             {{ form.hidden_tag() }}
-            <p>
-            {{ form.date.label }}<br>
-            {{ form.date(size=32) }}
-            {% for error in form.date.errors %}
+        <p>
+            {{ form.dateAttaque.label }}<br>
+            {{ form.dateAttaque(size=32) }}
+            {% for error in form.dateAttaque.errors %}
             <span style="color: red;">[{{ error }}]</span>
             {% endfor %}
         </p>
         <p>
-            {{ form.nbVictimes.label }}<br>
-            {{ form.nbVictimes(size=32) }}
-            {% for error in form.nbVictimes.errors %}
+            {{ form.dateConstat.label }}<br>
+            {{ form.dateConstat(size=32) }}
+            {% for error in form.dateConstat.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </p>		
+	
+        <p>
+            {{ form.nomAgent1.label }}<br>
+            {{ form.nomAgent1(size=32) }}
+            {% for error in form.nomAgent1.errors %}
             <span style="color: red;">[{{ error }}]</span>
             {% endfor %}
         </p>
         <p>
-            {{ form.moment.label }}<br>
-            {{ form.moment(size=32) }}
-            {% for error in form.moment.errors %}
+            {{ form.nomAgent2.label }}<br>
+            {{ form.nomAgent2(size=32) }}
+            {% for error in form.nomAgent2.errors %}
             <span style="color: red;">[{{ error }}]</span>
             {% endfor %}
         </p>
         <p>
-            {{ form.chien.label }}<br>
-            {{ form.chien(size=32) }}
-            {% for error in form.chien.errors %}
+            {{ form.proprietaire.label }}<br>
+            {{ form.proprietaire(size=32) }}
+            {% for error in form.proprietaire.errors %}
             <span style="color: red;">[{{ error }}]</span>
             {% endfor %}
         </p>
         <p>
-            {{ form.berger.label }}<br>
-            {{ form.berger(size=32) }}
-            {% for error in form.berger.errors %}
+            {{ form.typeAnimaux.label }}<br>
+            {{ form.typeAnimaux(size=32) }}
+            {% for error in form.typeAnimaux.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </p>		
+        <p>
+            {{ form.nbVictimesMort.label }}<br>
+            {{ form.nbVictimesMort(size=32) }}
+            {% for error in form.nbVictimesMort.errors %}
             <span style="color: red;">[{{ error }}]</span>
             {% endfor %}
         </p>
         <p>
-            {{ form.valide.label }}<br>
-            {{ form.valide(size=32) }}
-            {% for error in form.valide.errors %}
+            {{ form.nbVictimesBlesse.label }}<br>
+            {{ form.nbVictimesBlesse(size=32) }}
+            {% for error in form.nbVictimesBlesse.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </p>			
+        <p>
+            {{ form.situation.label }}<br>
+            {{ form.situation(size=32) }}
+            {% for error in form.situation.errors %}
             <span style="color: red;">[{{ error }}]</span>
             {% endfor %}
         </p>		
