@@ -56,8 +56,8 @@ def add():
     if form.validate_on_submit():
         data = request.form
         constats = Constats(
-            date=data['date'],
-            nbVictimes=data['nbVictimes'],
+            date_attaque=data['date_attaque'],
+            nb_victimes_mort=data['nb_victimes_mort'],
             moment=data['moment'],
             chien=data['chien'],
             berger=data['berger'],

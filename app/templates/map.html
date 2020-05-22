@@ -18,7 +18,6 @@
         }).addTo(map);
             
         // ACTIONS SUR LA CARTE
-                        
         function changeZoom() {
             map.setZoom(10);
             map.setView([44.8, 6.2]);   
@@ -46,24 +45,26 @@
         var jsonData = [
         {% for constats in Constats %}
             {
-			"dateAttaque": "{{ constats.properties.dateAttaque }}",
-            "date": "{{ constats.date }}",
-            "nbVictimes": "{{ constats.nbVictimes }}",
-            "moment": "{{ constats.moment }}",
-            "chien": "{{ constats.chien }}",
-            "berger": "{{ constats.berger }}",
-			"valide": "{{ constats.valide }}",
-			"geometry": "{{ constats.geometry }}"
+			"date_attaque": "{{ constats.properties.date_attaque }}",
+            "date_constat": "{{ constats.properties.date_constat }}",
+            "nb_victimes_mort": "{{ constats.properties.nb_victimes_mort }}",
+			"nb_victimes_blesse": "{{ constats.properties.nb_victimes_blesse }}",
+            "nom_agent1": "{{ constats.properties.nom_agent1 }}",
+			"nom_agent2": "{{ constats.properties.nom_agent2 }}",
+            "proprietaire": "{{ constats.properties.proprietaire }}",
+            "typeAnimaux": "{{ constats.properties.type_animaux }}",
+			"situation": "{{ constats.properties.situation }}",
+			"geometry": "{{ constats.geometry.coordinates }}"
             },
         {% endfor %}
             ]
-			console.log(jsonData)
-			
-            var addMarkers = function(point) {
-                L.marker([point.LAT, point.LNG])
-                .addTo(map)
-                .bindPopup(point.SURNAME+" "+point.NAME+" : "+ point.EMAIL);
+			console.log(jsonData[0].geometry.split(",")[1].substring(1,jsonData[0].geometry.split(",")[1].length-1))
+			console.log(jsonData[0].geometry.split(",")[0].substring(1))
 
+			<!-- L.geoJSON(coucheConstat).addTo(map); -->
+            var addMarkers = function(point) {
+                L.marker([parseFloat(point.geometry.split(",")[1].substring(1,point.geometry.split(",")[1].length-1)),parseFloat(point.geometry.split(",")[0].substring(1))])
+                .addTo(map);
             };
             jsonData.forEach(addMarkers);
 
