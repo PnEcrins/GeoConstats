@@ -36,6 +36,7 @@ def map():
         dico={}
         dico['geometry']=geojson
         dico['properties']={}
+        dico['properties']['id']=i.id
         dico['properties']['date_attaque']=i.date_attaque
         dico['properties']['date_constat']=i.date_constat
         dico['properties']['nom_agent1']=i.nom_agent1
@@ -44,7 +45,7 @@ def map():
         dico['properties']['type_animaux']=i.type_animaux
         dico['properties']['nb_victimes_mort']=i.nb_victimes_mort
         dico['properties']['nb_victimes_blesse']=i.nb_victimes_blesse
-        dico['properties']['situation']=i.situation
+        dico['properties']['statut']=i.statut
         cnsts.append(dico)
     print(cnsts)
     return render_template('map.html', title='Map', Constats=cnsts)

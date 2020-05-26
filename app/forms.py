@@ -15,11 +15,11 @@ class LoginForm(FlaskForm):
     type_animaux = StringField('type_animaux')
     nb_victimes_mort = IntegerField('nb_victimes_mort')
     nb_victimes_blesse = IntegerField('nb_victimes_blesse')
-    situation = StringField('situation')
+    statut = StringField('statut')
     submit = SubmitField('Add to database')
 
-    def validate_situation(self, situation):
-        constats = Constats.query.filter_by(situation=situation.data).first()
+    def validate_statut(self, statut):
+        constats = Constats.query.filter_by(statut=statut.data).first()
         if constat is not None:
             raise ValidationError('Please use a different situation.')
     

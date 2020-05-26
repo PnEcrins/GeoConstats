@@ -42,30 +42,30 @@
             {% endfor %}
         </p>
         <p>
-            {{ form.typeAnimaux.label }}<br>
+            {{ form.type_animaux.label }}<br>
             {{ form.typeAnimaux(size=32) }}
             {% for error in form.typeAnimaux.errors %}
             <span style="color: red;">[{{ error }}]</span>
             {% endfor %}
         </p>		
         <p>
-            {{ form.nbVictimesMort.label }}<br>
+            {{ form.nb_victimes_mort.label }}<br>
             {{ form.nbVictimesMort(size=32) }}
             {% for error in form.nbVictimesMort.errors %}
             <span style="color: red;">[{{ error }}]</span>
             {% endfor %}
         </p>
         <p>
-            {{ form.nbVictimesBlesse.label }}<br>
+            {{ form.nb_victimes_blesse.label }}<br>
             {{ form.nbVictimesBlesse(size=32) }}
             {% for error in form.nbVictimesBlesse.errors %}
             <span style="color: red;">[{{ error }}]</span>
             {% endfor %}
         </p>			
         <p>
-            {{ form.situation.label }}<br>
-            {{ form.situation(size=32) }}
-            {% for error in form.situation.errors %}
+            {{ form.statut.label }}<br>
+            {{ form.statut(size=32) }}
+            {% for error in form.statut.errors %}
             <span style="color: red;">[{{ error }}]</span>
             {% endfor %}
         </p>		

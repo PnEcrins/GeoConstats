@@ -12,7 +12,7 @@ class Constats(DB.Model):
     type_animaux = DB.Column(DB.String)
     nb_victimes_mort = DB.Column(DB.Integer)
     nb_victimes_blesse = DB.Column(DB.Integer)
-    situation = DB.Column(DB.String(10))
+    statut = DB.Column(DB.String(10))
     geometry = DB.Column(Geometry("GEOMETRY", 2154))
     geom_4326=DB.Column(Geometry("GEOMETRY", 4326))
     def __repr__(self):
