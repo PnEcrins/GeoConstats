@@ -9,10 +9,10 @@ CREATE TABLE constats_loups.t_constats
   nom_agent1 character varying,
   nom_agent2 character varying,
   proprietaire character varying,
-  type_animaux character varying,
+  type_animaux character varying(20),
   nb_victimes_mort integer,
   nb_victimes_blesse integer,
-  statut character varying(7),
+  statut character varying(20),
   the_geom_point geometry(Point,2154),
   CONSTRAINT t_constats_pkey PRIMARY KEY (id_constat)
 );
