@@ -55,17 +55,18 @@
             "proprietaire": "{{ constats.properties.proprietaire }}",
             "typeAnimaux": "{{ constats.properties.type_animaux }}",
 			"statut": "{{ constats.properties.statut }}",
-			"geometry": "{{ constats.geometry.coordinates }}"
+			"geometry": "{{ constats.geometry}}"
             },
         {% endfor %}
             ]
-			console.log(jsonData[0].geometry.split(",")[1].substring(1,jsonData[0].geometry.split(",")[1].length-1))
-			console.log(jsonData[0].geometry.split(",")[0].substring(1))
+			console.log(jsonData[0])
+			console.log(jsonData[0].geometry.split(",")[2].substring(0,jsonData[0].geometry.split(",")[2].length-1).split("]")[0])
+			console.log(jsonData[0].geometry.split(",")[1].substring(1).split("[")[1])
 
 			<!-- L.geoJSON(coucheConstat).addTo(map); -->
             var addMarkers = function(point) {
-                L.marker([parseFloat(point.geometry.split(",")[1].substring(1,point.geometry.split(",")[1].length-1)),parseFloat(point.geometry.split(",")[0].substring(1))])
-                .bindPopup("Constat numéro: "+point.id)
+                L.marker([parseFloat(point.geometry.split(",")[2].substring(0,point.geometry.split(",")[2].length-1).split("]")[0]),parseFloat(point.geometry.split(",")[1].substring(1).split("[")[1])])
+                .bindPopup("Constat numéro: "+point.id_constat)
 				.addTo(map);
 			
             };

@@ -26,13 +26,18 @@ with app.app_context():
 
 @app.route("/")
 @app.route("/map")
-def map(): 
-    data = DB.session.query(Constats).all()
-    print(data[0].the_geom_point)
+def map():
+    data=DB.session.query(Constats).all()
+    dataGeom = DB.session.query(func.ST_AsGeoJson(func.ST_Transform(Constats.the_geom_point,4326))).all()
     cnsts=[]
+    #print(dataGeom[0])
+    #print(data)
+    cpt=0
     for i in data:
-        wkt=to_shape(i.the_geom_point)
-        geojson=mapping(wkt)
+        #print(wkt)
+        #print(dataGeom[cpt])
+        geojson=dataGeom[cpt]
+        cpt=cpt+1
         dico={}
         dico['geometry']=geojson
         dico['properties']={}
@@ -46,7 +51,7 @@ def map():
         dico['properties']['nb_victimes_mort']=i.nb_victimes_mort
         dico['properties']['nb_victimes_blesse']=i.nb_victimes_blesse
         dico['properties']['statut']=i.statut
-        cnsts.append(dico)
+        cnsts.append(dico)        
     print(cnsts)
     return render_template('map.html', title='Map', Constats=cnsts)
 

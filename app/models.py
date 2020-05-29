@@ -19,4 +19,4 @@ class Constats(DB.Model):
         return '<Constats {}>'.format(self.date)
     
     def __repr__(self):
-        return '<Constats {}>'.format(self.valide)
+        return '<Constats {}>'.format(self.statut)
