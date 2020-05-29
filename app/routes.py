@@ -28,15 +28,15 @@ with app.app_context():
 @app.route("/map")
 def map(): 
     data = DB.session.query(Constats).all()
-    print(data[0].geom_4326)
+    print(data[0].the_geom_point)
     cnsts=[]
     for i in data:
-        wkt=to_shape(i.geom_4326)
+        wkt=to_shape(i.the_geom_point)
         geojson=mapping(wkt)
         dico={}
         dico['geometry']=geojson
         dico['properties']={}
-        dico['properties']['id']=i.id
+        dico['properties']['id_constat']=i.id_constat
         dico['properties']['date_attaque']=i.date_attaque
         dico['properties']['date_constat']=i.date_constat
         dico['properties']['nom_agent1']=i.nom_agent1

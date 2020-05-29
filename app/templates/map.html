@@ -45,7 +45,7 @@
         var jsonData = [
         {% for constats in Constats %}
             {
-			"id":"{{constats.properties.id}}",
+			"id_constat":"{{constats.properties.id_constat}}",
 			"date_attaque": "{{ constats.properties.date_attaque }}",
             "date_constat": "{{ constats.properties.date_constat }}",
             "nb_victimes_mort": "{{ constats.properties.nb_victimes_mort }}",
