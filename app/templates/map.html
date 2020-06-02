@@ -3,7 +3,13 @@
 {% block content %}
     <div id="map" style="height: 92vh;"></div>
     <div class="john"> </div>
-	<div id="liste"></div>
+	<div id="liste">
+		<ul>
+			{% for constats in Constats %}
+				<li style="vertical-align:middle; ">{{constats.properties.id_constat}} <br>{{constats.properties.date_attaque}}</li>
+			{%endfor%}
+		</ul>
+	</div>
     <button id='red' onclick="changeZoom()">
             Vue sur le parc
     </button>
