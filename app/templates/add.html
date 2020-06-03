@@ -6,31 +6,31 @@
     <form action="" method="post" novalidate>
             {{ form.hidden_tag() }}
         <p>
-            {{ form.dateAttaque.label }}<br>
-            {{ form.dateAttaque(size=32) }}
-            {% for error in form.dateAttaque.errors %}
+            {{ form.date_attaque.label }}<br>
+            {{ form.date_attaque(size=32) }}
+            {% for error in form.date_attaque.errors %}
             <span style="color: red;">[{{ error }}]</span>
             {% endfor %}
         </p>
         <p>
-            {{ form.dateConstat.label }}<br>
-            {{ form.dateConstat(size=32) }}
-            {% for error in form.dateConstat.errors %}
+            {{ form.date_constat.label }}<br>
+            {{ form.date_constat(size=32) }}
+            {% for error in form.date_constat.errors %}
             <span style="color: red;">[{{ error }}]</span>
             {% endfor %}
         </p>		
 	
         <p>
-            {{ form.nomAgent1.label }}<br>
-            {{ form.nomAgent1(size=32) }}
-            {% for error in form.nomAgent1.errors %}
+            {{ form.nom_agent1.label }}<br>
+            {{ form.nom_agent1(size=32) }}
+            {% for error in form.nom_agent1.errors %}
             <span style="color: red;">[{{ error }}]</span>
             {% endfor %}
         </p>
         <p>
-            {{ form.nomAgent2.label }}<br>
-            {{ form.nomAgent2(size=32) }}
-            {% for error in form.nomAgent2.errors %}
+            {{ form.nom_agent2.label }}<br>
+            {{ form.nom_agent2(size=32) }}
+            {% for error in form.nom_agent2.errors %}
             <span style="color: red;">[{{ error }}]</span>
             {% endfor %}
         </p>

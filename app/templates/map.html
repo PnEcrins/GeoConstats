@@ -1,103 +1,90 @@
 {% extends "base.html" %}
-
 {% block content %}
     <div id="map" style="height: 92vh;"></div>
     <div class="john"> </div>
 	<div id="liste">
-		
-			{% for constats in Constats %}
-				<button data-toggle="collapse" data-target="#textConstat{{constats.properties.id_constat}}" style="margin:10px; display:list-item block;">{{constats.properties.id_constat}}</button>
-				<div style="vertical-align:middle;"id="textConstat{{constats.properties.id_constat}}" class="collapse">
-					numéro : {{constats.properties.id_constat}} <br>
-					date de l'attaque : {{constats.properties.date_attaque}} <br>
-					date du constat : {{constats.properties.date_constat}}<br>
-					nombre de victimes (mort) : {{ constats.properties.nb_victimes_mort }}<br>
-					nombre de victimes (blessé) : {{ constats.properties.nb_victimes_blesse }}<br>
-					nom du 1er agent recenseur : {{ constats.properties.nom_agent1 }}<br>
-					nom du 2ème agent recenseur : {{ constats.properties.nom_agent2 }}<br>
-					propriétaire : {{ constats.properties.proprietaire }}<br>
-					type d'animaux : {{ constats.properties.type_animaux }}<br>
-					statut : {{ constats.properties.statut }}
-				</div>
-			{%endfor%}
-		
+		{% for constats in Constats %}
+			<button data-toggle="collapse" data-target="#textConstat{{constats.properties.id_constat}}" style="margin:10px; display:list-item block;" onclick="affichePopup(textConstat{{constats.properties.id_constat}}.id)">{{constats.properties.id_constat}}</button>
+			<div style="vertical-align:middle;"id="textConstat{{constats.properties.id_constat}}" class="collapse">
+				Numéro : {{constats.properties.id_constat}} <br>
+				Date de l'attaque : {{constats.properties.date_attaque}} <br>
+				Date du constat : {{constats.properties.date_constat}}<br>
+				Nombre de victimes (mort) : {{ constats.properties.nb_victimes_mort }}<br>
+				Nombre de victimes (blessé) : {{ constats.properties.nb_victimes_blesse }}<br>
+				Nom du 1er agent recenseur : {{ constats.properties.nom_agent1 }}<br>
+				Nom du 2ème agent recenseur : {{ constats.properties.nom_agent2 }}<br>
+				Propriétaire : {{ constats.properties.proprietaire }}<br>
+				Type d'animaux : {{ constats.properties.type_animaux }}<br>
+				Statut : {{ constats.properties.statut }}
+			</div>
+		{%endfor%}
 	</div>
     <button onclick="changeZoom()">
-            Vue sur le parc
+        Vue sur le parc
     </button>
     <button id='addConstat' onclick="addConstat()">
-            Ajouter un constat
+        Ajouter un constat
     </button>	
     <script>
         // CONFIGURATION DE LA CARTE //
         var map = L.map('map').setView([44.8, 6.2], 10);
         L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
             attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
-        }).addTo(map);
-            
+        }).addTo(map); 
         // ACTIONS SUR LA CARTE
         function changeZoom() {
             map.setZoom(10);
             map.setView([44.8, 6.2]);   
         }
         var marker;   
-            map.on('click', function(event){
-
-                if (marker == undefined) {
-            
-                    marker = L.marker(event.latlng)
-                    marker.addTo(map);
-                    console.log(event.latlng)
-                    marker.bindPopup("X: "+event.latlng.lng.toString()+" Y: "+event.latlng.lat.toString()).openPopup();
-                            }
-            
-                else {
-                    map.removeLayer(marker)
-                    marker = L.marker(event.latlng)
-                    marker.addTo(map);
-                    marker.bindPopup("X: "+event.latlng.lng.toString()+" Y: "+event.latlng.lat.toString()).openPopup();
-                }
-                        
-            });     
-
+        map.on('click', function(event){
+            if (marker == undefined) {
+                marker = L.marker(event.latlng)
+                marker.addTo(map);
+                marker.bindPopup("X: "+event.latlng.lng.toString()+" Y: "+event.latlng.lat.toString()).openPopup();
+            }
+            else {
+                map.removeLayer(marker)
+                marker = L.marker(event.latlng)
+                marker.addTo(map);
+                marker.bindPopup("X: "+event.latlng.lng.toString()+" Y: "+event.latlng.lat.toString()).openPopup();
+            }
+        });     
         var jsonData = [
-        {% for constats in Constats %}
-            {
-			"id_constat":"{{constats.properties.id_constat}}",
-			"date_attaque": "{{ constats.properties.date_attaque }}",
-            "date_constat": "{{ constats.properties.date_constat }}",
-            "nb_victimes_mort": "{{ constats.properties.nb_victimes_mort }}",
-			"nb_victimes_blesse": "{{ constats.properties.nb_victimes_blesse }}",
-            "nom_agent1": "{{ constats.properties.nom_agent1 }}",
-			"nom_agent2": "{{ constats.properties.nom_agent2 }}",
-            "proprietaire": "{{ constats.properties.proprietaire }}",
-            "type_animaux": "{{ constats.properties.type_animaux }}",
-			"statut": "{{ constats.properties.statut }}",
-			"geometry": "{{ constats.geometry}}"
-            },
-        {% endfor %}
-            ]
-			console.log(jsonData[0])
-			console.log(jsonData[0].geometry.split(",")[2].substring(0,jsonData[0].geometry.split(",")[2].length-1).split("]")[0])
-			console.log(jsonData[0].geometry.split(",")[1].substring(1).split("[")[1])
-
-			<!-- L.geoJSON(coucheConstat).addTo(map); -->
-            var addMarkers = function(point) {
-                L.marker([parseFloat(point.geometry.split(",")[2].substring(0,point.geometry.split(",")[2].length-1).split("]")[0]),parseFloat(point.geometry.split(",")[1].substring(1).split("[")[1])])
-                .bindPopup("Constat numéro : "+point.id_constat+"<br>"+
-						   "date de l'attaque : "+point.date_attaque+"<br>"+
-						   "date du constat : "+point.date_constat+"<br>"+
-						   "nombre de victimes (mort) : "+point.nb_victimes_mort+"<br>"+
-						   "nombre de victimes (blessé) : "+point.nb_victimes_blesse+"<br>"+
-						   "nom du 1er agent recenseur : "+point.nom_agent1+"<br>"+
-						   "nom du 2eme agent recenseur : "+point.nom_agent2+"<br>"+
-						   "propriétaire : "+point.proprietaire+"<br>"+
-						   "type d'animaux : "+point.type_animaux+"<br>"+
-						   "statut : "+point.statut+"<br>")
-				.addTo(map);
-			
-            };
-            jsonData.forEach(addMarkers);
-    </script>
-
+			{% for constats in Constats %}
+				{
+				"id_constat":"{{constats.properties.id_constat}}",
+				"date_attaque": "{{ constats.properties.date_attaque }}",
+				"date_constat": "{{ constats.properties.date_constat }}",
+				"nb_victimes_mort": "{{ constats.properties.nb_victimes_mort }}",
+				"nb_victimes_blesse": "{{ constats.properties.nb_victimes_blesse }}",
+				"nom_agent1": "{{ constats.properties.nom_agent1 }}",
+				"nom_agent2": "{{ constats.properties.nom_agent2 }}",
+				"proprietaire": "{{ constats.properties.proprietaire }}",
+				"type_animaux": "{{ constats.properties.type_animaux }}",
+				"statut": "{{ constats.properties.statut }}",
+				"geometry": "{{ constats.geometry}}"
+				},
+			{% endfor %}
+        ]
+        var addMarkers = function(point) {
+            L.marker([parseFloat(point.geometry.split(",")[2].substring(0,point.geometry.split(",")[2].length-1).split("]")[0]),parseFloat(point.geometry.split(",")[1].substring(1).split("[")[1])])
+            .bindPopup("Constat numéro : "+point.id_constat+"<br>"+
+		  		"Date de l'attaque : "+point.date_attaque+"<br>"+
+				"Date du constat : "+point.date_constat+"<br>"+
+				"Nombre de victimes (mort) : "+point.nb_victimes_mort+"<br>"+
+				"Nombre de victimes (blessé) : "+point.nb_victimes_blesse+"<br>"+
+				"Nom du 1er agent recenseur : "+point.nom_agent1+"<br>"+
+				"Nom du 2eme agent recenseur : "+point.nom_agent2+"<br>"+
+				"Propriétaire : "+point.proprietaire+"<br>"+
+				"Type d'animaux : "+point.type_animaux+"<br>"+
+				"Statut : "+point.statut+"<br>"
+			)
+			.addTo(map);
+        };
+        jsonData.forEach(addMarkers);
+		affichePopup=function(constat){
+			console.log(constat)
+		}
+	</script>
 {% endblock %}
