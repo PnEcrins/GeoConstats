@@ -4,13 +4,25 @@
     <div id="map" style="height: 92vh;"></div>
     <div class="john"> </div>
 	<div id="liste">
-		<ul>
+		
 			{% for constats in Constats %}
-				<li style="vertical-align:middle; ">{{constats.properties.id_constat}} <br>{{constats.properties.date_attaque}}</li>
+				<button data-toggle="collapse" data-target="#textConstat{{constats.properties.id_constat}}" style="margin:10px; display:list-item block;">{{constats.properties.id_constat}}</button>
+				<div style="vertical-align:middle;"id="textConstat{{constats.properties.id_constat}}" class="collapse">
+					numéro : {{constats.properties.id_constat}} <br>
+					date de l'attaque : {{constats.properties.date_attaque}} <br>
+					date du constat : {{constats.properties.date_constat}}<br>
+					nombre de victimes (mort) : {{ constats.properties.nb_victimes_mort }}<br>
+					nombre de victimes (blessé) : {{ constats.properties.nb_victimes_blesse }}<br>
+					nom du 1er agent recenseur : {{ constats.properties.nom_agent1 }}<br>
+					nom du 2ème agent recenseur : {{ constats.properties.nom_agent2 }}<br>
+					propriétaire : {{ constats.properties.proprietaire }}<br>
+					type d'animaux : {{ constats.properties.type_animaux }}<br>
+					statut : {{ constats.properties.statut }}
+				</div>
 			{%endfor%}
-		</ul>
+		
 	</div>
-    <button id='red' onclick="changeZoom()">
+    <button onclick="changeZoom()">
             Vue sur le parc
     </button>
     <button id='addConstat' onclick="addConstat()">
@@ -59,7 +71,7 @@
             "nom_agent1": "{{ constats.properties.nom_agent1 }}",
 			"nom_agent2": "{{ constats.properties.nom_agent2 }}",
             "proprietaire": "{{ constats.properties.proprietaire }}",
-            "typeAnimaux": "{{ constats.properties.type_animaux }}",
+            "type_animaux": "{{ constats.properties.type_animaux }}",
 			"statut": "{{ constats.properties.statut }}",
 			"geometry": "{{ constats.geometry}}"
             },
@@ -72,7 +84,16 @@
 			<!-- L.geoJSON(coucheConstat).addTo(map); -->
             var addMarkers = function(point) {
                 L.marker([parseFloat(point.geometry.split(",")[2].substring(0,point.geometry.split(",")[2].length-1).split("]")[0]),parseFloat(point.geometry.split(",")[1].substring(1).split("[")[1])])
-                .bindPopup("Constat numéro: "+point.id_constat)
+                .bindPopup("Constat numéro : "+point.id_constat+"<br>"+
+						   "date de l'attaque : "+point.date_attaque+"<br>"+
+						   "date du constat : "+point.date_constat+"<br>"+
+						   "nombre de victimes (mort) : "+point.nb_victimes_mort+"<br>"+
+						   "nombre de victimes (blessé) : "+point.nb_victimes_blesse+"<br>"+
+						   "nom du 1er agent recenseur : "+point.nom_agent1+"<br>"+
+						   "nom du 2eme agent recenseur : "+point.nom_agent2+"<br>"+
+						   "propriétaire : "+point.proprietaire+"<br>"+
+						   "type d'animaux : "+point.type_animaux+"<br>"+
+						   "statut : "+point.statut+"<br>")
 				.addTo(map);
 			
             };
