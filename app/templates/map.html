@@ -22,9 +22,7 @@
     <button onclick="changeZoom()">
         Vue sur le parc
     </button>
-    <button id='addConstat' onclick="addConstat()">
-        Ajouter un constat
-    </button>	
+    <a href='/add'>Ajouter un constat</button>	
     <script>
         // CONFIGURATION DE LA CARTE //
         var map = L.map('map').setView([44.8, 6.2], 10);
@@ -53,34 +51,35 @@
         var jsonData = [
 			{% for constats in Constats %}
 				{
-				"id_constat":"{{constats.properties.id_constat}}",
-				"date_attaque": "{{ constats.properties.date_attaque }}",
-				"date_constat": "{{ constats.properties.date_constat }}",
-				"nb_victimes_mort": "{{ constats.properties.nb_victimes_mort }}",
-				"nb_victimes_blesse": "{{ constats.properties.nb_victimes_blesse }}",
-				"nom_agent1": "{{ constats.properties.nom_agent1 }}",
-				"nom_agent2": "{{ constats.properties.nom_agent2 }}",
-				"proprietaire": "{{ constats.properties.proprietaire }}",
-				"type_animaux": "{{ constats.properties.type_animaux }}",
-				"statut": "{{ constats.properties.statut }}",
-				"geometry": "{{ constats.geometry}}"
+				'id_constat':'{{constats.properties.id_constat}}',
+				'date_attaque': '{{ constats.properties.date_attaque }}',
+				'date_constat': '{{ constats.properties.date_constat }}',
+				'nb_victimes_mort': '{{ constats.properties.nb_victimes_mort }}',
+				'nb_victimes_blesse': '{{ constats.properties.nb_victimes_blesse }}',
+				'nom_agent1': '{{ constats.properties.nom_agent1 }}',
+				'nom_agent2': '{{ constats.properties.nom_agent2 }}',
+				'proprietaire': '{{ constats.properties.proprietaire }}',
+				'type_animaux': '{{ constats.properties.type_animaux }}',
+				'statut': '{{ constats.properties.statut }}',
+				'geometry': '{{ constats.geometry | tojson}}'
 				},
 			{% endfor %}
         ]
         var addMarkers = function(point) {
-            L.marker([parseFloat(point.geometry.split(",")[2].substring(0,point.geometry.split(",")[2].length-1).split("]")[0]),parseFloat(point.geometry.split(",")[1].substring(1).split("[")[1])])
-            .bindPopup("Constat numéro : "+point.id_constat+"<br>"+
-		  		"Date de l'attaque : "+point.date_attaque+"<br>"+
-				"Date du constat : "+point.date_constat+"<br>"+
-				"Nombre de victimes (mort) : "+point.nb_victimes_mort+"<br>"+
-				"Nombre de victimes (blessé) : "+point.nb_victimes_blesse+"<br>"+
-				"Nom du 1er agent recenseur : "+point.nom_agent1+"<br>"+
-				"Nom du 2eme agent recenseur : "+point.nom_agent2+"<br>"+
-				"Propriétaire : "+point.proprietaire+"<br>"+
-				"Type d'animaux : "+point.type_animaux+"<br>"+
-				"Statut : "+point.statut+"<br>"
-			)
-			.addTo(map);
+			console.log(JSON.parse(point.geometry))
+            L.marker([JSON.parse(point.geometry).coordinates[1],JSON.parse(point.geometry).coordinates[0]]) 
+				.bindPopup("Constat numéro : "+point.id_constat+"<br>"+ 
+					"Date de l'attaque : "+point.date_attaque+"<br>"+ 
+				    "Date du constat : "+point.date_constat+"<br>"+ 
+					"Nombre de victimes (mort) : "+point.nb_victimes_mort+"<br>"+ 
+					"Nombre de victimes (blessé) : "+point.nb_victimes_blesse+"<br>"+ 
+					"Nom du 1er agent recenseur : "+point.nom_agent1+"<br>"+ 
+					"Nom du 2eme agent recenseur : "+point.nom_agent2+"<br>"+ 
+					"Propriétaire : "+point.proprietaire+"<br>"+ 
+					"Type d'animaux : "+point.type_animaux+"<br>"+ 
+					"Statut : "+point.statut+"<br>" 
+					) 
+				.addTo(map); 
         };
         jsonData.forEach(addMarkers);
 		affichePopup=function(constat){

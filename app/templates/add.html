@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 
 {% block content %}
+<div id="map" style="height: 92vh;"></div>
 <center>
 <h1>Add to map</h1>
     <form action="" method="post" novalidate>
@@ -43,22 +44,22 @@
         </p>
         <p>
             {{ form.type_animaux.label }}<br>
-            {{ form.typeAnimaux(size=32) }}
-            {% for error in form.typeAnimaux.errors %}
+            {{ form.type_animaux(size=32) }}
+            {% for error in form.type_animaux.errors %}
             <span style="color: red;">[{{ error }}]</span>
             {% endfor %}
         </p>		
         <p>
             {{ form.nb_victimes_mort.label }}<br>
-            {{ form.nbVictimesMort(size=32) }}
-            {% for error in form.nbVictimesMort.errors %}
+            {{ form.nb_victimes_mort(size=32) }}
+            {% for error in form.nb_victimes_mort.errors %}
             <span style="color: red;">[{{ error }}]</span>
             {% endfor %}
         </p>
         <p>
             {{ form.nb_victimes_blesse.label }}<br>
-            {{ form.nbVictimesBlesse(size=32) }}
-            {% for error in form.nbVictimesBlesse.errors %}
+            {{ form.nb_victimes_blesse(size=32) }}
+            {% for error in form.nb_victimes_blesse.errors %}
             <span style="color: red;">[{{ error }}]</span>
             {% endfor %}
         </p>			
@@ -72,4 +73,26 @@
         <p><a herf="{{url_for('map')}}">{{ form.submit() }}</a></p>
     </form>
 </center>
+<script>
+    var map = L.map('map').setView([44.8, 6.2], 10);
+    L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+    }).addTo(map);	
+	var marker;
+	var addConstat=function(e){
+		if(marker==undefined){
+            marker = L.marker(e.latlng)
+            marker.addTo(map);
+            marker.bindPopup("Vous placez un constat ici").openPopup();			
+		}
+		else{
+            map.removeLayer(marker)
+            marker = L.marker(e.latlng)
+            marker.addTo(map);
+            marker.bindPopup("Vous placez un constat ici").openPopup();		
+		}
+		
+	}
+	map.on("click",addConstat);
+</script>
 {% endblock %}
