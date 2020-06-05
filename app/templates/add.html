@@ -70,7 +70,7 @@
             <span style="color: red;">[{{ error }}]</span>
             {% endfor %}
         </p>		
-        <p><a herf="{{url_for('map')}}">{{ form.submit() }}</a></p>
+        <p><a href="{{url_for('map')}}">{{ form.submit() }}</a></p>
     </form>
 </center>
 <script>
@@ -80,18 +80,13 @@
     }).addTo(map);	
 	var marker;
 	var addConstat=function(e){
-		if(marker==undefined){
-            marker = L.marker(e.latlng)
-            marker.addTo(map);
-            marker.bindPopup("Vous placez un constat ici").openPopup();			
+		if(marker!=undefined){
+            map.removeLayer(marker)	
 		}
-		else{
-            map.removeLayer(marker)
-            marker = L.marker(e.latlng)
-            marker.addTo(map);
-            marker.bindPopup("Vous placez un constat ici").openPopup();		
-		}
-		
+        marker = L.marker(e.latlng)
+        marker.addTo(map);
+        marker.bindPopup("Vous placez un constat ici").openPopup();		
+		console.log(e)
 	}
 	map.on("click",addConstat);
 </script>
