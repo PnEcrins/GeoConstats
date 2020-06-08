@@ -18,6 +18,16 @@
 	width:70%;
 	height:90%;
 	text-align: center;
+	float:right;
+}
+#liste{
+	width:25%;
+	height:90%;
+	float:left;
+}
+
+.selectConstat{
+	vertical-align:top;
 }
 
 pre {

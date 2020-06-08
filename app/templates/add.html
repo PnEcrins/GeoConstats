@@ -2,77 +2,77 @@
 
 {% block content %}
 <div id="map" style="height: 92vh;"></div>
-<center>
-<h1>Add to map</h1>
+<div class="leftMap">
+<h1>Ajouter un constat</h1>
     <form action="" method="post" novalidate>
             {{ form.hidden_tag() }}
         <p>
-            {{ form.date_attaque.label }}<br>
-            {{ form.date_attaque(size=32) }}
+            {{ form.date_attaque.label }} :
+            {{ form.date_attaque(size=24) }}
             {% for error in form.date_attaque.errors %}
             <span style="color: red;">[{{ error }}]</span>
             {% endfor %}
         </p>
         <p>
-            {{ form.date_constat.label }}<br>
-            {{ form.date_constat(size=32) }}
+            {{ form.date_constat.label }} :
+            {{ form.date_constat(size=24) }}
             {% for error in form.date_constat.errors %}
             <span style="color: red;">[{{ error }}]</span>
             {% endfor %}
         </p>		
 	
         <p>
-            {{ form.nom_agent1.label }}<br>
-            {{ form.nom_agent1(size=32) }}
+            {{ form.nom_agent1.label }} :
+            {{ form.nom_agent1(size=24) }}
             {% for error in form.nom_agent1.errors %}
             <span style="color: red;">[{{ error }}]</span>
             {% endfor %}
         </p>
         <p>
-            {{ form.nom_agent2.label }}<br>
-            {{ form.nom_agent2(size=32) }}
+            {{ form.nom_agent2.label }} :
+            {{ form.nom_agent2(size=24) }}
             {% for error in form.nom_agent2.errors %}
             <span style="color: red;">[{{ error }}]</span>
             {% endfor %}
         </p>
         <p>
-            {{ form.proprietaire.label }}<br>
-            {{ form.proprietaire(size=32) }}
+            {{ form.proprietaire.label }} :
+            {{ form.proprietaire(size=24) }}
             {% for error in form.proprietaire.errors %}
             <span style="color: red;">[{{ error }}]</span>
             {% endfor %}
         </p>
         <p>
-            {{ form.type_animaux.label }}<br>
-            {{ form.type_animaux(size=32) }}
+            {{ form.type_animaux.label }} :
+            {{ form.type_animaux(size=24) }}
             {% for error in form.type_animaux.errors %}
             <span style="color: red;">[{{ error }}]</span>
             {% endfor %}
         </p>		
         <p>
-            {{ form.nb_victimes_mort.label }}<br>
-            {{ form.nb_victimes_mort(size=32) }}
+            {{ form.nb_victimes_mort.label }} :
+            {{ form.nb_victimes_mort(size=24) }}
             {% for error in form.nb_victimes_mort.errors %}
             <span style="color: red;">[{{ error }}]</span>
             {% endfor %}
         </p>
         <p>
-            {{ form.nb_victimes_blesse.label }}<br>
-            {{ form.nb_victimes_blesse(size=32) }}
+            {{ form.nb_victimes_blesse.label }} :
+            {{ form.nb_victimes_blesse(size=24) }}
             {% for error in form.nb_victimes_blesse.errors %}
             <span style="color: red;">[{{ error }}]</span>
             {% endfor %}
         </p>			
         <p>
-            {{ form.statut.label }}<br>
-            {{ form.statut(size=32) }}
+            {{ form.statut.label }} :
+            {{ form.statut(size=24) }}
             {% for error in form.statut.errors %}
             <span style="color: red;">[{{ error }}]</span>
             {% endfor %}
         </p>		
         <p><a href="{{url_for('map')}}">{{ form.submit() }}</a></p>
     </form>
-</center>
+</div>
 <script>
     var map = L.map('map').setView([44.8, 6.2], 10);
     L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
