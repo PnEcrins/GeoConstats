@@ -2,43 +2,26 @@
 	text-align:center;
 
 }
-
-.code{
-	background: lightgrey;
-
-}
-
-.soluce{
-	background-color:grey;
-	text-align: center;
-	
-}
-
 #map{
 	width:70%;
 	height:90%;
-	text-align: center;
 	float:right;
+	margin-right:1%;
 }
-#liste{
+.leftMap{
 	width:25%;
 	height:90%;
 	float:left;
 }
-
 .selectConstat{
 	vertical-align:top;
 }
-
-pre {
-	background-color: lightgrey;
-	padding: 20px;
-	margin: solid 1px;
-}
-.button{
+button{
 	button-align:right;
-
 }
-.etape{
-	text-decoration-line:  underline;
+#liste button{
+	width:100%;
+}
+.collapse-show{
+	margin:1%;
 }

@@ -1,4 +1,4 @@
-from flask import Flask, render_template, flash, redirect, url_for, request
+from flask import Flask, render_template, flash, redirect, url_for, request, jsonify
 from flask_wtf import FlaskForm
 from wtforms import StringField, IntegerField, SubmitField
 from .env import DB
@@ -49,26 +49,27 @@ def map():
     print(cnsts)
     return render_template('map.html', title='Map', Constats=cnsts)
 
+@app.route('/form',methods=['GET', 'POST'])
+def form():
+    form = LoginForm()
+    return render_template('add.html', title="Add_to_database", form=form )
 
 @app.route('/add', methods=['GET', 'POST'])
 def add():
-    form = LoginForm()
-    if form.validate_on_submit():
-        data = request.form
-        constats = Constats(
-            date_attaque=data['date_attaque'],
-            date_constat=data['date_constat'],
-            nom_agent1=data['nom_agent1'],
-            nom_agent2=data['nom_agent2'],
-            proprietaire=data['proprietaire'],
-            type_animaux=data['type_animaux'],
-            nb_victimes_mort=data['nb_victimes_mort'],
-            nb_victimes_blesse=data['nb_victimes_blesse'],
-            statut=data['statut']
-            #geom : a convertir en wkb et en 2154
-        )
-        DB.session.add(constats)
-        DB.session.commit()
-        return render_template('map.html')
-    else:
-        return render_template('add.html', title="Add_to_database", form=form )
+    data=request.json
+    print(data)
+    constats = Constats(
+        date_attaque=data['date_attaque'],
+        date_constat=data['date_constat'],
+        nom_agent1=data['nom_agent1'],
+        nom_agent2=data['nom_agent2'],
+        proprietaire=data['proprietaire'],
+        type_animaux=data['type_animaux'],
+        nb_victimes_mort=data['nb_victimes_mort'],
+        nb_victimes_blesse=data['nb_victimes_blesse'],
+        statut=data['statut']
+        #geom : a convertir en wkb et en 2154
+    )
+    DB.session.add(constats)
+    DB.session.commit()
+    return render_template('map.html')
