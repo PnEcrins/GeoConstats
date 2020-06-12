@@ -89,6 +89,7 @@
         marker.bindPopup("Vous placez un constat ici").openPopup();		
 		console.log(e)
 		$( "form" ).on( "submit", function( event ) {
+			event.preventDefault();
 			var formValue = $( this ).serializeArray();
 			console.log(formValue)
 			var dict={};

@@ -6,8 +6,10 @@ from app.models import Constats
 from app.forms import LoginForm
 from sqlalchemy import func
 import json
-from shapely.geometry import mapping
-from geoalchemy2.shape import to_shape
+from shapely.geometry import Point, shape
+from shapely import wkb
+from shapely.ops import transform
+from geoalchemy2.shape import to_shape, from_shape
 
 app = Flask(__name__)
 
@@ -31,7 +33,6 @@ def map():
     cnsts=[]
     for d in dataGeom:
         geojson=geojson=json.loads(d[1])
-        print(geojson)
         dico={}
         dico['geometry']=geojson
         dico['properties']={}
@@ -57,7 +58,6 @@ def form():
 @app.route('/add', methods=['GET', 'POST'])
 def add():
     data=request.json
-    print(data)
     constats = Constats(
         date_attaque=data['date_attaque'],
         date_constat=data['date_constat'],
@@ -67,9 +67,12 @@ def add():
         type_animaux=data['type_animaux'],
         nb_victimes_mort=data['nb_victimes_mort'],
         nb_victimes_blesse=data['nb_victimes_blesse'],
-        statut=data['statut']
-        #geom : a convertir en wkb et en 2154
+        statut=data['statut'],
+        the_geom_point=from_shape(Point(data['geom']['lng'],data['geom']['lat']),srid=2154)
     )
+    print(constats)
+    
     DB.session.add(constats)
     DB.session.commit()
-    return render_template('map.html')
+    form = LoginForm()
+    return render_template('add.html', title="Add_to_database", form=form )

@@ -2,7 +2,7 @@
 {% block content %}
 	<div id="liste" class="leftMap">
 		{% for constats in Constats %}
-			<button data-toggle="collapse" data-target="#textConstat{{constats.properties.id_constat}}" style="margin:10px; display:list-item block;" onclick="affichePopup(textConstat{{constats.properties.id_constat}}.id)">{{constats.properties.id_constat}}</button>
+			<button data-toggle="collapse" data-target="#textConstat{{constats.properties.id_constat}}" style="margin:10px; display:list-item block;" onclick="affichePopup({{constats.properties.id_constat}})">{{constats.properties.id_constat}}</button>
 			<div style="vertical-align:middle;"id="textConstat{{constats.properties.id_constat}}" class="collapse">
 				Numéro : {{constats.properties.id_constat}} <br>
 				Date de l'attaque : {{constats.properties.date_attaque}} <br>
@@ -82,8 +82,17 @@
 				.addTo(map); 
         };
         jsonData.forEach(addMarkers);
+		var blackMarker;
 		affichePopup=function(constat){
-			console.log(constat)
+			for(j in jsonData){
+				if(jsonData[j]['id_constat']==constat){
+					if(blackMarker==undefined){
+						map.removeLayer(blackMarker);
+					}
+					
+					//TODO créer marker avec une couleur différente
+				}
+			}
 		}
 	</script>
 {% endblock %}
