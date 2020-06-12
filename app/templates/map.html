@@ -13,9 +13,11 @@
 				Nom du 2ème agent recenseur : {{ constats.properties.nom_agent2 }}<br>
 				Propriétaire : {{ constats.properties.proprietaire }}<br>
 				Type d'animaux : {{ constats.properties.type_animaux }}<br>
-				Statut : {{ constats.properties.statut }}
+				Statut : {{ constats.properties.statut }}<br>
+				<a href='/update/{{constats.properties.id_constat}}'>Modifier le constat</button>
 			</div>
 			<br>
+
 		{%endfor%}
 	</div>
 	<div id="map"></div>
@@ -94,5 +96,6 @@
 				}
 			}
 		}
+	
 	</script>
 {% endblock %}
