@@ -58,6 +58,9 @@ def form():
 @app.route('/add', methods=['GET', 'POST'])
 def add():
     data=request.json
+    #SELECT ST_SetSRID( ST_Point( -71.104, 42.315), 4326)
+    p2154=DB.session.query(func.ST_AsGeoJson(func.ST_Transform(func.ST_SetSRID(func.ST_Point(data['geom']['lng'],data['geom']['lat']),4326),2154)))
+    json2154=json.loads(p2154[0][0])
     constats = Constats(
         date_attaque=data['date_attaque'],
         date_constat=data['date_constat'],
@@ -68,7 +71,7 @@ def add():
         nb_victimes_mort=data['nb_victimes_mort'],
         nb_victimes_blesse=data['nb_victimes_blesse'],
         statut=data['statut'],
-        the_geom_point=from_shape(Point(data['geom']['lng'],data['geom']['lat']),srid=2154)
+        the_geom_point=from_shape(Point(json2154['coordinates'][0],json2154['coordinates'][1]),srid=2154)
     )
     print(constats)
     

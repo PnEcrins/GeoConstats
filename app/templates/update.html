@@ -110,6 +110,7 @@
 		if(marker!=undefined){
             map.removeLayer(marker)	
 		}
+		var marker;
         marker = L.marker(e.latlng)
         marker.addTo(map);
         marker.bindPopup("Constat numéro : "+constatFilter.id_constat+"<br>"+ 
@@ -129,6 +130,7 @@
 			var formValue = $( this ).serializeArray();
 			console.log(formValue)
 			var dict={};
+			dict["id_constat"]=constatFilter.id_constat;
 			dict["date_attaque"]=formValue[1].value;
 			dict["date_constat"]=formValue[2].value;
 			dict["nom_agent1"]=formValue[3].value;
