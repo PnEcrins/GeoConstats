@@ -70,7 +70,7 @@
             <span style="color: red;">[{{ error }}]</span>
             {% endfor %}
         </p>		
-        <p><button type="submit">Ajouter le constat</button></p>
+        <p><button type="submit" >Ajouter le constat</button></p>
     </form>
 </div>
 <script>
@@ -107,10 +107,11 @@
                 url: "http://localhost:5000/add",
                 data : dico=JSON.stringify(dict),
                 contentType : 'application/json',
-                type : 'POST'
+                type : 'POST',
+				datatype:'html'
             })
             .done(function( data ) {
-                console.log('done')
+                window.location.href="http://localhost:5000/map"
             });			
 		});
 	}

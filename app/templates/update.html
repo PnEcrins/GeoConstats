@@ -110,7 +110,6 @@
 		if(marker!=undefined){
             map.removeLayer(marker)	
 		}
-		var marker;
         marker = L.marker(e.latlng)
         marker.addTo(map);
         marker.bindPopup("Constat numéro : "+constatFilter.id_constat+"<br>"+ 
@@ -142,13 +141,14 @@
 			dict["statut"]=formValue[9].value;
 			dict["geom"]=e.latlng;
             $.ajax({
-                url: "http://localhost:5000/add",
+                url: "http://localhost:5000/updateDB",
                 data : dico=JSON.stringify(dict),
                 contentType : 'application/json',
-                type : 'POST'
+                type : 'POST',
+				datatype:'html'
             })
             .done(function( data ) {
-                console.log('done')
+                window.location.href="http://localhost:5000/map"
             });			
 		});
 	}
