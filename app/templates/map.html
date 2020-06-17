@@ -35,21 +35,7 @@
         function changeZoom() {
             map.setZoom(10);
             map.setView([44.8, 6.2]);   
-        }
-        var marker;   
-        map.on('click', function(event){
-            if (marker == undefined) {
-                marker = L.marker(event.latlng)
-                marker.addTo(map);
-                marker.bindPopup("X: "+event.latlng.lng.toString()+" Y: "+event.latlng.lat.toString()).openPopup();
-            }
-            else {
-                map.removeLayer(marker)
-                marker = L.marker(event.latlng)
-                marker.addTo(map);
-                marker.bindPopup("X: "+event.latlng.lng.toString()+" Y: "+event.latlng.lat.toString()).openPopup();
-            }
-        });     
+        }     
         var jsonData = [
 			{% for constats in Constats %}
 				{

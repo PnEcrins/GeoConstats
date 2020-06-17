@@ -27,7 +27,10 @@ with app.app_context():
 @app.route("/")
 @app.route("/map")
 def map():
-    dataGeom = DB.session.query(Constats,func.ST_AsGeoJson(func.ST_Transform(Constats.the_geom_point,4326))).all()
+    """
+    Lance la "page d'acceuil" avec une carte + une liste avec toutes les données
+    """
+    dataGeom = DB.session.query(Constats,func.ST_AsGeoJson(func.ST_Transform(Constats.the_geom_point,4326))).order_by(Constats.id_constat).all()
     cnsts=[]
     for d in dataGeom:
         geojson=json.loads(d[1])
@@ -49,11 +52,17 @@ def map():
 
 @app.route('/form',methods=['GET', 'POST'])
 def form():
+    """
+    Lance la page de formulaire d'ajout de données
+    """
     form = LoginForm()
     return render_template('add.html', title="Add_to_database", form=form )
 
 @app.route('/add', methods=['GET', 'POST'])
 def add():
+    """
+    Réalise l'ajout de données dans la BD
+    """
     data=request.json
     p2154=DB.session.query(func.ST_AsGeoJson(func.ST_Transform(func.ST_SetSRID(func.ST_Point(data['geom']['lng'],data['geom']['lat']),4326),2154)))
     json2154=json.loads(p2154[0][0])
@@ -75,6 +84,9 @@ def add():
 
 @app.route('/update/<idc>', methods=['GET', 'POST'])
 def update(idc):
+    """
+    Lance la page de mise à jour d'une donnée
+    """
     dataGeom = DB.session.query(Constats,func.ST_AsGeoJson(func.ST_Transform(Constats.the_geom_point,4326))).filter(Constats.id_constat==idc).all()
     geojson=json.loads(dataGeom[0][1])
     dico={}
@@ -95,12 +107,13 @@ def update(idc):
 
 @app.route('/updateDB',methods=['GET', 'POST'])
 def updateDB():
+    """
+    Réalise les mises à jour dans la BD
+    """
     data=request.json
     p2154=DB.session.query(func.ST_AsGeoJson(func.ST_Transform(func.ST_SetSRID(func.ST_Point(data['geom']['lng'],data['geom']['lat']),4326),2154)))
     json2154=json.loads(p2154[0][0])    
-    #Remplacer add par update. Passer l'id_constat dans le python pour trouver la ligne à update
     cst=DB.session.query(Constats).filter(Constats.id_constat==data['id_constat']).one()
-    print(cst)
     cst.date_attaque=data['date_attaque']
     cst.date_constat=data['date_constat']
     cst.nom_agent1=data['nom_agent1']
