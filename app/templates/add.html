@@ -79,7 +79,32 @@
         attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
     }).addTo(map);	
 	var marker;
-	
+	var dict={};
+	$( "form" ).on( "submit", function( event ) {
+		event.preventDefault();
+		var formValue = $( this ).serializeArray();
+		console.log(formValue)	
+		dict["date_attaque"]=formValue[1].value;
+		dict["date_constat"]=formValue[2].value;
+		dict["nom_agent1"]=formValue[3].value;
+		dict["nom_agent2"]=formValue[4].value;
+		dict["proprietaire"]=formValue[5].value;
+		dict["type_animaux"]=formValue[6].value;
+		dict["nb_victimes_mort"]=formValue[7].value;
+		dict["nb_victimes_blesse"]=formValue[8].value;
+		dict["statut"]=formValue[9].value;
+		
+        $.ajax({
+            url: "http://localhost:5000/add",
+            data : dico=JSON.stringify(dict),
+            contentType : 'application/json',
+            type : 'POST',
+			datatype:'html'
+        })
+        .done(function( data ) {
+            window.location.href="http://localhost:5000/map"
+        });			
+	});	
 	var addConstat=function(e){
 		if(marker!=undefined){
             map.removeLayer(marker)	
@@ -88,32 +113,7 @@
         marker.addTo(map);
         marker.bindPopup("Vous placez un constat ici").openPopup();		
 		console.log(e)
-		$( "form" ).on( "submit", function( event ) {
-			event.preventDefault();
-			var formValue = $( this ).serializeArray();
-			console.log(formValue)
-			var dict={};
-			dict["date_attaque"]=formValue[1].value;
-			dict["date_constat"]=formValue[2].value;
-			dict["nom_agent1"]=formValue[3].value;
-			dict["nom_agent2"]=formValue[4].value;
-			dict["proprietaire"]=formValue[5].value;
-			dict["type_animaux"]=formValue[6].value;
-			dict["nb_victimes_mort"]=formValue[7].value;
-			dict["nb_victimes_blesse"]=formValue[8].value;
-			dict["statut"]=formValue[9].value;
-			dict["geom"]=e.latlng;
-            $.ajax({
-                url: "http://localhost:5000/add",
-                data : dico=JSON.stringify(dict),
-                contentType : 'application/json',
-                type : 'POST',
-				datatype:'html'
-            })
-            .done(function( data ) {
-                window.location.href="http://localhost:5000/map"
-            });			
-		});
+		dict["geom"]=e.latlng;
 	}
 	map.on("click",addConstat);
 </script>
