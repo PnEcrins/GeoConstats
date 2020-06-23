@@ -13,16 +13,6 @@ from geoalchemy2.shape import to_shape, from_shape
 
 app = Flask(__name__)
 
-app.config['SECRET_KEY'] = 'you-will-never-guess'
-app.config['SQLALCHEMY_DATABASE_URI'] = "postgresql://raph:Raphael18@localhost:5432/geoConstat"
-
-with app.app_context():
-    from .models import Constats
-    from app.forms import LoginForm
-    from .env import DB
-    DB.init_app(app)
-    Constats.query.all()
-
 
 @app.route("/")
 @app.route("/map")
