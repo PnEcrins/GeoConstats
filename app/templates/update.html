@@ -1,9 +1,9 @@
 {% extends "base.html" %}
 
 {% block content %}
+<center><h1>Constat {{Constats.properties.id_constat}}</h1></center>
 <div id="map" style="height: 92vh;"></div>
 <div class="leftMap">
-<h1>Ajouter un constat</h1>
     <form action="" method="post" novalidate>
             {{ form.hidden_tag() }}
         <p>
@@ -43,7 +43,7 @@
             {% endfor %}
         </p>
         <p>
-            Type d'animaux} :
+            Type d'animaux :
             {{ form.type_animaux(size=18,value=Constats.properties.type_animaux) }}
             {% for error in form.type_animaux.errors %}
             <span style="color: red;">[{{ error }}]</span>
@@ -70,7 +70,7 @@
             <span style="color: red;">[{{ error }}]</span>
             {% endfor %}
         </p>		
-        <p><button type="submit">Modifier le constat</button></p>
+        <p><button type="submit" class="btn btn-primary">Modifier le constat</button></p>
     </form>
 </div>
 <script>

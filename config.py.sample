@@ -1,4 +1,3 @@
 SECRET_KEY ='you-will-never-guess'
-
-SQLALCHEMY_DATABASE_URI = 'postgresql://user:password@localhost:5432/geoConstat'
+SQLALCHEMY_DATABASE_URI = 'postgresql://user:password@localhost:5432/database'
 SQLALCHEMY_TRACK_MODIFICATIONS = False

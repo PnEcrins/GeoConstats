@@ -29,20 +29,12 @@
             {% endif %}
     </head>
     <body>
-        <div>
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
           Microblog: 
-          <a href="{{url_for('map')}}">Map</a>
-          <a href="{{ url_for('form') }}">Add to map</a>
-        </div>
-        {% with messages = get_flashed_messages() %}
-        {% if messages %}
-        <ul>
-            {% for message in messages %}
-            <li>{{ message }}</li>
-            {% endfor %}
-        </ul>
-        {% endif %}
-        {% endwith %}
+          <a class="navbar-brand" href="{{url_for('map')}}">Visualiser les constats</a>
+          <a class="navbar-brand" href="{{ url_for('form') }}">Ajouter un constat</a>
+		  <a class="navbar-brand" href="http://www.ecrins-parcnational.fr/">Site du Parc</a>
+        </nav>
         {% block content %}{% endblock %}
     </body>
 </html>

@@ -1,76 +1,76 @@
 {% extends "base.html" %}
 
 {% block content %}
+<center><h1>Ajouter un constat</h1></center>
 <div id="map" style="height: 92vh;"></div>
 <div class="leftMap">
-<h1>Ajouter un constat</h1>
     <form action="" method="post" novalidate>
             {{ form.hidden_tag() }}
-        <p>
+        <div class="form-group">
             Date de l'attaque :
             {{ form.date_attaque(size=18,value="aaaa/mm/jj") }}
             {% for error in form.date_attaque.errors %}
             <span style="color: red;">[{{ error }}]</span>
             {% endfor %}
-        </p>
-        <p>
+        </div>
+        <div class="form-group">
             Date du constat :
             {{ form.date_constat(size=18,value="aaaa/mm/jj") }}
             {% for error in form.date_constat.errors %}
             <span style="color: red;">[{{ error }}]</span>
             {% endfor %}
-        </p>		
+        </div>		
 	
-        <p>
+        <div class="form-group">
             Nom du premier agent :
             {{ form.nom_agent1(size=18,value="prenom nom") }}
             {% for error in form.nom_agent1.errors %}
             <span style="color: red;">[{{ error }}]</span>
             {% endfor %}
-        </p>
-        <p>
+        </div>
+        <div class="form-group">
             Nom du deuxième agent :
             {{ form.nom_agent2(size=18,value="prenom nom") }}
             {% for error in form.nom_agent2.errors %}
             <span style="color: red;">[{{ error }}]</span>
             {% endfor %}
-        </p>
-        <p>
+        </div>
+        <div class="form-group">
             Propriétaire :
             {{ form.proprietaire(size=18,value="prenom nom") }}
             {% for error in form.proprietaire.errors %}
             <span style="color: red;">[{{ error }}]</span>
             {% endfor %}
-        </p>
-        <p>
-            Type d'animaux} :
+        </div>
+        <div class="form-group">
+            Type d'animaux :
             {{ form.type_animaux(size=18) }}
             {% for error in form.type_animaux.errors %}
             <span style="color: red;">[{{ error }}]</span>
             {% endfor %}
-        </p>		
-        <p>
+        </div>		
+        <div class="form-group">
             Nombre de morts :
             {{ form.nb_victimes_mort(size=18) }}
             {% for error in form.nb_victimes_mort.errors %}
             <span style="color: red;">[{{ error }}]</span>
             {% endfor %}
-        </p>
-        <p>
+        </div>
+        <div class="form-group">
             Nombre de blessés :
             {{ form.nb_victimes_blesse(size=18) }}
             {% for error in form.nb_victimes_blesse.errors %}
             <span style="color: red;">[{{ error }}]</span>
             {% endfor %}
-        </p>			
-        <p>
+        </div>			
+        <div class="form-group">
             Statut du constat :
             {{ form.statut(size=18) }}
             {% for error in form.statut.errors %}
             <span style="color: red;">[{{ error }}]</span>
             {% endfor %}
-        </p>		
-        <p><button type="submit" >Ajouter le constat</button></p>
+        </div>		
+        <div><button type="submit" class="btn btn-primary" >Ajouter le constat</button></div>
     </form>
 </div>
 <script>
