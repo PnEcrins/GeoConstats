@@ -4,7 +4,7 @@
 	<div id="liste" class="leftMap">
 		{% for constats in Constats %}
 			<button class="btn btn-light" data-toggle="collapse" data-target="#textConstat{{constats.properties.id_constat}}" style="margin:10px; display:list-item block;" onclick="affichePopup({{constats.properties.id_constat}})">{{constats.properties.id_constat}}</button>
-			<div style="vertical-align:middle;"id="textConstat{{constats.properties.id_constat}}" class="collapse">
+			<center><div style="vertical-align:middle;"id="textConstat{{constats.properties.id_constat}}" class="collapse">
 				Numéro : {{constats.properties.id_constat}} <br>
 				Date de l'attaque : {{constats.properties.date_attaque}} <br>
 				Date du constat : {{constats.properties.date_constat}}<br>
@@ -17,7 +17,7 @@
 				Statut : {{ constats.properties.statut }}<br>
 				<a href='/update/{{constats.properties.id_constat}}'>Modifier le constat</a><br>
 				<a href='/delete/{{constats.properties.id_constat}}'>Supprimer le constat</a><br>				
-			</div>
+			</div></center>
 			<br>
 
 		{%endfor%}

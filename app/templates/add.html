@@ -70,7 +70,7 @@
             <span style="color: red;">[{{ error }}]</span>
             {% endfor %}
         </div>		
-        <div><button type="submit" class="btn btn-primary" >Ajouter le constat</button></div>
+        <div><button id="subform" type="submit" class="btn btn-primary" disabled>Ajouter le constat</button></div>
     </form>
 </div>
 <script>
@@ -114,6 +114,7 @@
         marker.bindPopup("Vous placez un constat ici").openPopup();		
 		console.log(e)
 		dict["geom"]=e.latlng;
+		document.getElementById("subform").disabled=false;
 	}
 	map.on("click",addConstat);
 </script>
