@@ -8,8 +8,8 @@
 				Numéro : {{constats.properties.id_constat}} <br>
 				Date de l'attaque : {{constats.properties.date_attaque}} <br>
 				Date du constat : {{constats.properties.date_constat}}<br>
-				Nombre de victimes (mort) : {{ constats.properties.nb_victimes_mort }}<br>
-				Nombre de victimes (blessé) : {{ constats.properties.nb_victimes_blesse }}<br>
+				Nombre de victimes (morts) : {{ constats.properties.nb_victimes_mort }}<br>
+				Nombre de victimes (blessés) : {{ constats.properties.nb_victimes_blesse }}<br>
 				Nom du 1er agent recenseur : {{ constats.properties.nom_agent1 }}<br>
 				Nom du 2ème agent recenseur : {{ constats.properties.nom_agent2 }}<br>
 				Propriétaire : {{ constats.properties.proprietaire }}<br>
@@ -55,9 +55,19 @@
 				},
 			{% endfor %}
         ]
+		var markersCluster = new L.MarkerClusterGroup({
+		    iconCreateFunction: function(cluster) {
+				return L.divIcon({ 
+					html: cluster.getChildCount(), 
+					className: 'mycluster', 
+					iconSize: null 
+				});
+			}
+		});
+		map.addLayer(markersCluster);
         var addMarkers = function(point) {
 			console.log(JSON.parse(point.geometry))
-            L.marker([JSON.parse(point.geometry).coordinates[1],JSON.parse(point.geometry).coordinates[0]]) 
+            var markerC=L.marker([JSON.parse(point.geometry).coordinates[1],JSON.parse(point.geometry).coordinates[0]]) 
 				.bindPopup("Constat numéro : "+point.id_constat+"<br>"+ 
 					"Date de l'attaque : "+point.date_attaque+"<br>"+ 
 				    "Date du constat : "+point.date_constat+"<br>"+ 
@@ -68,8 +78,9 @@
 					"Propriétaire : "+point.proprietaire+"<br>"+ 
 					"Type d'animaux : "+point.type_animaux+"<br>"+ 
 					"Statut : "+point.statut+"<br>" 
-					) 
-				.addTo(map); 
+					) ;
+					
+				markersCluster.addLayer(markerC); 
         };
         jsonData.forEach(addMarkers);
 		var blackMarker;
