@@ -10,10 +10,10 @@ class Constats(DB.Model):
     nom_agent1 = DB.Column(DB.String)
     nom_agent2 = DB.Column(DB.String)
     proprietaire = DB.Column(DB.String)
-    type_animaux = DB.Column(DB.String)
+    type_animaux = DB.Column(DB.Integer)
     nb_victimes_mort = DB.Column(DB.Integer)
     nb_victimes_blesse = DB.Column(DB.Integer)
-    statut = DB.Column(DB.String(10))
+    statut = DB.Column(DB.Integer)
     the_geom_point= DB.Column(Geometry("GEOMETRY", 2154))
 class Declaratif(DB.Model):
     __tablename__="t_constats_declaratifs"
@@ -27,4 +27,14 @@ class Declaratif(DB.Model):
     nb_victimes_mort_d = DB.Column(DB.Integer)
     nb_victimes_blesse_d = DB.Column(DB.Integer)
     statut_d = DB.Column(DB.String(10))    
-    
+
+class bib_statut(DB.Model):   
+    __tablename__="bib_statut"
+    __table_args__={"schema":"constats_loups"}
+    id=DB.Column(DB.Integer, primary_key=True)
+    nom=DB.Column(DB.String)
+class bib_type_animaux(DB.Model):   
+    __tablename__="bib_type_animaux"
+    __table_args__={"schema":"constats_loups"}
+    id=DB.Column(DB.Integer, primary_key=True)
+    nom=DB.Column(DB.String)    

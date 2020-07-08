@@ -7,14 +7,14 @@
     <form action="" method="post" novalidate>
             {{ form.hidden_tag() }}
         <div class="form-group">
-            Date de l'attaque :
+            Date de l'attaque<br>
             {{ form.date_attaque_d(size=18,value="aaaa/mm/jj") }}
             {% for error in form.date_attaque_d.errors %}
             <span style="color: red;">[{{ error }}]</span>
             {% endfor %}
         </div>
         <div class="form-group">
-            Date du constat :
+            Date du constat<br>
             {{ form.date_constat_d(size=18,value="aaaa/mm/jj") }}
             {% for error in form.date_constat_d.errors %}
             <span style="color: red;">[{{ error }}]</span>
@@ -22,43 +22,43 @@
         </div>		
 	
         <div class="form-group">
-            Lieu dit du constat:
+            Lieu dit du constat<br>
             {{ form.lieu_dit(size=18) }}
             {% for error in form.lieu_dit.errors %}
             <span style="color: red;">[{{ error }}]</span>
             {% endfor %}
         </div>
         <div class="form-group">
-            Propriétaire :
+            Propriétaire<br>
             {{ form.proprietaire_d(size=18,value="prenom nom") }}
             {% for error in form.proprietaire_d.errors %}
             <span style="color: red;">[{{ error }}]</span>
             {% endfor %}
         </div>
         <div class="form-group">
-            Type d'animaux :
-            {{ form.type_animaux_d(size=18) }}
+            Type d'animaux<br>
+            {{ form.type_animaux_d(size=3) }}
             {% for error in form.type_animaux_d.errors %}
             <span style="color: red;">[{{ error }}]</span>
             {% endfor %}
         </div>		
         <div class="form-group">
-            Nombre de morts :
+            Nombre de morts<br>
             {{ form.nb_victimes_mort_d(size=18) }}
             {% for error in form.nb_victimes_mort_d.errors %}
             <span style="color: red;">[{{ error }}]</span>
             {% endfor %}
         </div>
         <div class="form-group">
-            Nombre de blessés :
+            Nombre de blessés<br>
             {{ form.nb_victimes_blesse_d(size=18) }}
             {% for error in form.nb_victimes_blesse_d.errors %}
             <span style="color: red;">[{{ error }}]</span>
             {% endfor %}
         </div>			
         <div class="form-group">
-            Statut du constat :
-            {{ form.statut_d(size=18) }}
+            Statut du constat<br>
+            {{ form.statut_d(size=3) }}
             {% for error in form.statut_d.errors %}
             <span style="color: red;">[{{ error }}]</span>
             {% endfor %}

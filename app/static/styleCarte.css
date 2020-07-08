@@ -36,3 +36,6 @@ button{
     margin-top: -20px;
     margin-left: -20px;
 }
+nav a{
+	border: solid 1px black;
+}

@@ -58,7 +58,7 @@
 				Type d'animaux :
 			</div>
 			<div class="mr-1 col-4">			
-				{{ form.type_animaux_d(size=18,value=Declaratif.type_animaux_d) }}
+				{{ form.type_animaux_d(size=3,value=Declaratif.type_animaux_d) }}
 				{% for error in form.type_animaux_d.errors %}
 				<span style="color: red;">[{{ error }}]</span>
 				{% endfor %}
@@ -94,7 +94,7 @@
 				Statut du constat :
 			</div>
 			<div class="mr-1 col-4">			
-				{{ form.statut_d(size=18, value=Declaratif.statut_d) }}
+				{{ form.statut_d(size=3, value=Declaratif.statut_d) }}
 				{% for error in form.statut_d.errors %}
 				<span style="color: red;">[{{ error }}]</span>
 				{% endfor %}

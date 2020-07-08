@@ -2,7 +2,7 @@ from flask import Flask, render_template, flash, redirect, url_for, request, jso
 from flask_wtf import FlaskForm
 from wtforms import StringField, IntegerField, SubmitField
 from .env import DB
-from app.models import Constats,Declaratif
+from app.models import Constats,Declaratif,bib_statut, bib_type_animaux
 from app.forms import LoginForm, DeclaForm
 from sqlalchemy import func
 import json
@@ -46,6 +46,14 @@ def form():
     Lance la page de formulaire d'ajout de données
     """
     form = LoginForm()
+    form.statut.choices=[]
+    dataStatut=DB.session.query(bib_statut)
+    for ds in dataStatut:
+        form.statut.choices+=[(ds.id,ds.nom)]
+    form.type_animaux.choices=[]
+    dataAnimaux=DB.session.query(bib_type_animaux)
+    for da in dataAnimaux:
+        form.type_animaux.choices+=[(da.id,da.nom)]    
     return render_template('add.html', title="Add_to_database", form=form )
 
 @app.route('/add', methods=['GET', 'POST'])
@@ -93,6 +101,17 @@ def update(idc):
     dico['properties']['nb_victimes_blesse']=dataGeom[0][0].nb_victimes_blesse
     dico['properties']['statut']=dataGeom[0][0].statut
     form = LoginForm()
+    form.statut.choices=[]
+    dataStatut=DB.session.query(bib_statut)
+    for ds in dataStatut:
+        form.statut.choices+=[(ds.id,ds.nom)]
+    form.type_animaux.choices=[]
+    dataAnimaux=DB.session.query(bib_type_animaux)
+    for da in dataAnimaux:
+        form.type_animaux.choices+=[(da.id,da.nom)] 
+    form.type_animaux.default=dataGeom[0][0].type_animaux
+    form.statut.default=dataGeom[0][0].statut
+    form.process()        
     return render_template('update.html', title='Map',form=form,Constats=dico)
 
 @app.route('/updateDB',methods=['GET', 'POST'])
@@ -153,6 +172,14 @@ def deleteDecla(idc):
 @app.route ('/formDecla',methods=['GET', 'POST'])
 def formDecla():
     form = DeclaForm()
+    form.statut_d.choices=[]
+    dataStatut=DB.session.query(bib_statut)
+    for ds in dataStatut:
+        form.statut_d.choices+=[(ds.id,ds.nom)]
+    form.type_animaux_d.choices=[]
+    dataAnimaux=DB.session.query(bib_type_animaux)
+    for da in dataAnimaux:
+        form.type_animaux_d.choices+=[(da.id,da.nom)]  
     return render_template('addDecla.html', title="Add_to_database", form=form )
 
 @app.route('/addDecla', methods=['GET', 'POST'])
@@ -186,6 +213,17 @@ def updateDecla(idc):
      dico['nb_victimes_blesse_d']=dataGeom[0].nb_victimes_blesse_d
      dico['statut_d']=dataGeom[0].statut_d     
      form = DeclaForm()
+     form.statut_d.choices=[]
+     dataStatut=DB.session.query(bib_statut)
+     for ds in dataStatut:
+        form.statut_d.choices+=[(ds.id,ds.nom)]
+     form.type_animaux_d.choices=[]
+     dataAnimaux=DB.session.query(bib_type_animaux)
+     for da in dataAnimaux:
+        form.type_animaux_d.choices+=[(da.id,da.nom)]
+     form.type_animaux_d.default=dataGeom[0].type_animaux_d
+     form.statut_d.default=dataGeom[0].statut_d
+     form.process()
      return render_template('updateDecla.html', title='Map',form=form,Declaratif=dico)
 
 @app.route('/updateDBDecla',methods=['GET', 'POST'])
