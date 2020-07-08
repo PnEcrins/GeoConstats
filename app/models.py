@@ -15,8 +15,16 @@ class Constats(DB.Model):
     nb_victimes_blesse = DB.Column(DB.Integer)
     statut = DB.Column(DB.String(10))
     the_geom_point= DB.Column(Geometry("GEOMETRY", 2154))
-    def __repr__(self):
-        return '<Constats {}>'.format(self.date)
+class Declaratif(DB.Model):
+    __tablename__="t_constats_declaratifs"
+    __table_args__={"schema":"constats_loups"}
+    id_constat_d=DB.Column(DB.Integer, primary_key=True)
+    date_attaque_d = DB.Column(DB.Date)
+    date_constat_d = DB.Column(DB.Date)
+    lieu_dit=DB.Column(DB.String)
+    proprietaire_d = DB.Column(DB.String)
+    type_animaux_d = DB.Column(DB.String)
+    nb_victimes_mort_d = DB.Column(DB.Integer)
+    nb_victimes_blesse_d = DB.Column(DB.Integer)
+    statut_d = DB.Column(DB.String(10))    
     
-    def __repr__(self):
-        return '<Constats {}>'.format(self.statut)

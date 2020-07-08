@@ -1,0 +1,146 @@
+{% extends "base.html" %}
+
+{% block content %}
+<center><h1>Constat {{Declaratif.id_constat}}</h1></center>
+<div class="leftMap">
+    <form action="" method="post" novalidate>
+            {{ form.hidden_tag() }}
+		<div class="row">	
+			<div class="col-7">
+				Date de l'attaque :
+			</div>
+			<div class="mr-1 col-4">
+				{{ form.date_attaque_d(size=18,value=Declaratif.date_attaque_d) }}
+				{% for error in form.date_attaque_d.errors %}
+				<span style="color: red;">[{{ error }}]</span>
+				{% endfor %}
+			</div>
+		</div>
+		<br>
+		<div class="row">		
+			<div class="col-7">
+				Date du constat :
+			</div>
+			<div class="mr-1 col-4">
+				{{ form.date_constat_d(size=18,value=Declaratif.date_constat_d) }}
+				{% for error in form.date_constat_d.errors %}
+				<span style="color: red;">[{{ error }}]</span>
+				{% endfor %}
+			</div>		
+		</div>
+		<br>
+		<div class="row">	
+			<div class="col-7">
+				Lieu dit du constat :
+			</div>
+			<div class="mr-1 col-4">			
+				{{ form.lieu_dit(size=18,value=Declaratif.lieu_dit) }}
+				{% for error in form.lieu_dit.errors %}
+				<span style="color: red;">[{{ error }}]</span>
+				{% endfor %}
+			</div>
+		</div>
+		<br>
+		<div class="row">		
+			<div class="col-7">
+				Propriétaire :
+			</div>
+			<div class="mr-1 col-4">			
+				{{ form.proprietaire_d(size=18,value=Declaratif.proprietaire_d) }}
+				{% for error in form.proprietaire_d.errors %}
+				<span style="color: red;">[{{ error }}]</span>
+				{% endfor %}
+			</div>
+		</div>
+		<br>
+		<div class="row">		
+			<div class="col-7">
+				Type d'animaux :
+			</div>
+			<div class="mr-1 col-4">			
+				{{ form.type_animaux_d(size=18,value=Declaratif.type_animaux_d) }}
+				{% for error in form.type_animaux_d.errors %}
+				<span style="color: red;">[{{ error }}]</span>
+				{% endfor %}
+			</div>	
+		</div>
+		<br>
+		<div class="row">		
+			<div class="col-7">
+				Nombre de morts :
+			</div>
+			<div class="mr-1 col-4">			
+				{{ form.nb_victimes_mort_d(size=18,value=Declaratif.nb_victimes_mort_d) }}
+				{% for error in form.nb_victimes_mort_d.errors %}
+				<span style="color: red;">[{{ error }}]</span>
+				{% endfor %}
+			</div>
+		</div>
+		<br>
+		<div class="row">		
+			<div class="col-7">
+				Nombre de blessés :
+			</div>
+			<div class="mr-1 col-4">			
+				{{ form.nb_victimes_blesse_d(size=18, value=Declaratif.nb_victimes_blesse_d) }}
+				{% for error in form.nb_victimes_blesse_d.errors %}
+				<span style="color: red;">[{{ error }}]</span>
+				{% endfor %}
+			</div>
+		</div>
+		<br>
+		<div class="row">		
+			<div class="col-7">
+				Statut du constat :
+			</div>
+			<div class="mr-1 col-4">			
+				{{ form.statut_d(size=18, value=Declaratif.statut_d) }}
+				{% for error in form.statut_d.errors %}
+				<span style="color: red;">[{{ error }}]</span>
+				{% endfor %}
+			</div>
+		</div>
+		<br>		
+        <center><button type="submit" class="btn btn-primary">Modifier le constat</button></center>
+    </form>
+</div>
+<script>
+	
+	var constatFilter={
+		'id_constat_d':'{{Declaratif.id_constat_d}}',
+		'date_attaque_d': '{{ Declaratif.date_attaque_d }}',
+		'date_constat_d': '{{ Declaratif.date_constat_d }}',
+		'nb_victimes_mort_d': '{{ Declaratif.nb_victimes_mort_d }}',
+		'nb_victimes_blesse_d': '{{ Declaratif.nb_victimes_blesse_d }}',
+		'lieu_dit': '{{ Declaratif.lieu_dit}}',
+		'proprietaire_d': '{{ Declaratif.proprietaire_d }}',
+		'type_animaux_d': '{{ Declaratif.type_animaux_d }}',
+		'statut_d': '{{ Declaratif.statut_d }}'
+	}
+	var dict={};
+	$( "form" ).on( "submit", function( event ) {
+		event.preventDefault();
+		var formValue = $( this ).serializeArray();
+		dict["id_constat_d"]=constatFilter.id_constat_d;
+		dict["date_attaque_d"]=formValue[1].value;
+		dict["date_constat_d"]=formValue[2].value;
+		dict["lieu_dit"]=formValue[3].value;
+		dict["proprietaire_d"]=formValue[4].value;
+		dict["type_animaux_d"]=formValue[5].value;
+		dict["nb_victimes_mort_d"]=formValue[6].value;
+		dict["nb_victimes_blesse_d"]=formValue[7].value;
+		dict["statut_d"]=formValue[8].value;
+		console.log(dict)
+        $.ajax({
+			url: "http://localhost:5000/updateDBDecla",
+            data : dico=JSON.stringify(dict),
+            contentType : 'application/json',
+            type : 'POST',
+			datatype:'html'
+        })
+        .done(function( data ) {
+            window.location.href="http://localhost:5000/decla"
+        });			
+	});	
+</script>
+{% endblock %}

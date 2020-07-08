@@ -2,8 +2,8 @@ from flask import Flask, render_template, flash, redirect, url_for, request, jso
 from flask_wtf import FlaskForm
 from wtforms import StringField, IntegerField, SubmitField
 from .env import DB
-from app.models import Constats
-from app.forms import LoginForm
+from app.models import Constats,Declaratif
+from app.forms import LoginForm, DeclaForm
 from sqlalchemy import func
 import json
 from shapely.geometry import Point, shape
@@ -125,3 +125,80 @@ def delete(idc):
     dataGeom = DB.session.query(Constats).filter(Constats.id_constat==idc).delete()
     DB.session.commit()
     return redirect(url_for('map'))
+
+@app.route('/decla')
+def decla():
+    dataGeom = DB.session.query(Declaratif)
+    decla=[]
+    for d in dataGeom:
+        dico={}
+        dico['id_constat_d']=d.id_constat_d
+        dico['date_attaque_d']=d.date_attaque_d
+        dico['date_constat_d']=d.date_constat_d
+        dico['lieu_dit']=d.lieu_dit
+        dico['proprietaire_d']=d.proprietaire_d
+        dico['type_animaux_d']=d.type_animaux_d
+        dico['nb_victimes_mort_d']=d.nb_victimes_mort_d
+        dico['nb_victimes_blesse_d']=d.nb_victimes_blesse_d
+        dico['statut_d']=d.statut_d
+        decla.append(dico)
+        print(dico)
+    return render_template('decla.html', title='Declaratif', Declaratifs=decla)
+@app.route('/deleteDecla/<idc>',methods=['GET', 'POST'])
+def deleteDecla(idc):
+    dataGeom = DB.session.query(Declaratif).filter(Declaratif.id_constat_d==idc).delete()
+    DB.session.commit()
+    return redirect(url_for('decla'))
+
+@app.route ('/formDecla',methods=['GET', 'POST'])
+def formDecla():
+    form = DeclaForm()
+    return render_template('addDecla.html', title="Add_to_database", form=form )
+
+@app.route('/addDecla', methods=['GET', 'POST'])
+def addDecla():
+    data=request.json
+    decla=Declaratif(
+        date_attaque_d=data['date_attaque_d'],
+        date_constat_d=data['date_constat_d'],
+        lieu_dit=data['lieu_dit'],
+        proprietaire_d=data['proprietaire_d'],
+        type_animaux_d=data['type_animaux_d'],
+        nb_victimes_mort_d=data['nb_victimes_mort_d'],
+        nb_victimes_blesse_d=data['nb_victimes_blesse_d'],
+        statut_d=data['statut_d']            
+    )
+    DB.session.add(decla)
+    DB.session.commit()
+    return redirect(url_for('decla'))
+
+@app.route('/updateDecla/<idc>', methods=['GET', 'POST'])
+def updateDecla(idc):
+     dataGeom = DB.session.query(Declaratif).filter(Declaratif.id_constat_d==idc).all()
+     dico={}
+     dico['id_constat_d']=dataGeom[0].id_constat_d
+     dico['date_attaque_d']=dataGeom[0].date_attaque_d
+     dico['date_constat_d']=dataGeom[0].date_constat_d
+     dico['lieu_dit']=dataGeom[0].lieu_dit
+     dico['proprietaire_d']=dataGeom[0].proprietaire_d
+     dico['type_animaux_d']=dataGeom[0].type_animaux_d
+     dico['nb_victimes_mort_d']=dataGeom[0].nb_victimes_mort_d
+     dico['nb_victimes_blesse_d']=dataGeom[0].nb_victimes_blesse_d
+     dico['statut_d']=dataGeom[0].statut_d     
+     form = DeclaForm()
+     return render_template('updateDecla.html', title='Map',form=form,Declaratif=dico)
+
+@app.route('/updateDBDecla',methods=['GET', 'POST'])
+def updateDBDecla():
+    data=request.json
+    cst=DB.session.query(Declaratif).filter(Declaratif.id_constat_d==data['id_constat_d']).one()
+    cst.date_attaque_d=data['date_attaque_d']
+    cst.date_constat_d=data['date_constat_d']
+    cst.lieu_dit=data['lieu_dit']
+    cst.proprietaire_d=data['proprietaire_d']
+    cst.type_animaux_d=data['type_animaux_d']
+    cst.nb_victimes_mort_d=data['nb_victimes_mort_d']
+    cst.nb_victimes_blesse_d=data['nb_victimes_blesse_d']
+    cst.statut_d=data['statut_d']
+    DB.session.commit()       
+    return redirect(url_for('decla'))    

@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block content %}
+	<center><h1>Constats dans le Parc national des Ecrins</h1></center>
+	<div id="liste" class="leftMap">
+		{% for decla in Declaratifs %}
+			<button class="btn btn-light" data-toggle="collapse" data-target="#textDecla{{decla.id_constat_d}}" style="margin:10px; display:list-item block;">{{decla.id_constat_d}}</button>
+			<center><div style="vertical-align:middle;"id="textDecla{{decla.id_constat_d}}" class="collapse">
+				Numéro : {{decla.id_constat_d}} <br>
+				Date de l'attaque : {{decla.date_attaque_d}} <br>
+				Date du constat : {{decla.date_constat_d}}<br>
+				Nombre de victimes (morts) : {{ decla.nb_victimes_mort_d }}<br>
+				Nombre de victimes (blessés) : {{ decla.nb_victimes_blesse_d }}<br>
+				Lieu dit : {{decla.lieu_dit}}<br>
+				Propriétaire : {{ decla.proprietaire_d }}<br>
+				Type d'animaux : {{ decla.type_animaux_d }}<br>
+				Statut : {{ decla.statut_d }}<br>
+				<a href='/updateDecla/{{decla.id_constat_d}}'>Modifier le constat</a><br>
+				<a href='/deleteDecla/{{decla.id_constat_d}}'>Supprimer le constat</a><br>
+			</div></center>
+			<br>
+
+		{%endfor%}
+	</div>
+    <script> 
+        var jsonData = [
+			{% for constats in Constats %}
+				{
+				'id_constat':'{{Declaratifs.id_constat_d}}',
+				'date_attaque': '{{ Declaratifs.date_attaque_d }}',
+				'date_constat': '{{ Declaratifs.date_constat_d }}',
+				'nb_victimes_mort': '{{ Declaratifs.nb_victimes_mort_d }}',
+				'nb_victimes_blesse': '{{ Declaratifs.nb_victimes_blesse_d }}',
+				'lieu_dit':'{{Declaratifs.lieu_dit}}',
+				'proprietaire': '{{ Declaratifs.proprietaire_d }}',
+				'type_animaux': '{{ Declaratifs.type_animaux_d }}',
+				'statut': '{{ Declaratifs.statut_d }}',
+				},
+			{% endfor %}
+        ]
+
+	
+	</script>
+{% endblock %}

@@ -31,7 +31,9 @@
         <nav class="navbar navbar-expand-lg navbar-light bg-light">
           <!-- mettre logo PNE  -->
           <a class="navbar-brand" href="{{url_for('map')}}">Visualiser les constats</a>
+		  <a class="navbar-brand" href="{{url_for('decla')}}">Visualiser les constats déclaratifs</a>
           <a class="navbar-brand" href="{{ url_for('form') }}">Ajouter un constat</a>
+		  <a class="navbar-brand" href="{{ url_for('formDecla') }}">Ajouter un constat déclaratif</a>
 		  <a class="navbar-brand" href="http://www.ecrins-parcnational.fr/">Site du Parc</a>
         </nav>
         {% block content %}{% endblock %}

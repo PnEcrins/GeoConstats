@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+
+{% block content %}
+<center><h1>Ajouter un constat</h1></center>
+<div id="map" style="height: 92vh;"></div>
+<div class="leftMap">
+    <form action="" method="post" novalidate>
+            {{ form.hidden_tag() }}
+        <div class="form-group">
+            Date de l'attaque :
+            {{ form.date_attaque_d(size=18,value="aaaa/mm/jj") }}
+            {% for error in form.date_attaque_d.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </div>
+        <div class="form-group">
+            Date du constat :
+            {{ form.date_constat_d(size=18,value="aaaa/mm/jj") }}
+            {% for error in form.date_constat_d.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </div>		
+	
+        <div class="form-group">
+            Lieu dit du constat:
+            {{ form.lieu_dit(size=18) }}
+            {% for error in form.lieu_dit.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </div>
+        <div class="form-group">
+            Propriétaire :
+            {{ form.proprietaire_d(size=18,value="prenom nom") }}
+            {% for error in form.proprietaire_d.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </div>
+        <div class="form-group">
+            Type d'animaux :
+            {{ form.type_animaux_d(size=18) }}
+            {% for error in form.type_animaux_d.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </div>		
+        <div class="form-group">
+            Nombre de morts :
+            {{ form.nb_victimes_mort_d(size=18) }}
+            {% for error in form.nb_victimes_mort_d.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </div>
+        <div class="form-group">
+            Nombre de blessés :
+            {{ form.nb_victimes_blesse_d(size=18) }}
+            {% for error in form.nb_victimes_blesse_d.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </div>			
+        <div class="form-group">
+            Statut du constat :
+            {{ form.statut_d(size=18) }}
+            {% for error in form.statut_d.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </div>		
+        <div><button id="subform" type="submit" class="btn btn-primary">Ajouter le constat</button></div>
+    </form>
+</div>
+<script>
+	var dict={};
+	$( "form" ).on( "submit", function( event ) {
+		event.preventDefault();
+		var formValue = $( this ).serializeArray();
+		console.log(formValue)	
+		dict["date_attaque_d"]=formValue[1].value;
+		dict["date_constat_d"]=formValue[2].value;
+		dict["lieu_dit"]=formValue[3].value;
+		dict["proprietaire_d"]=formValue[4].value;
+		dict["type_animaux_d"]=formValue[5].value;
+		dict["nb_victimes_mort_d"]=formValue[6].value;
+		dict["nb_victimes_blesse_d"]=formValue[7].value;
+		dict["statut_d"]=formValue[8].value;
+		
+        $.ajax({
+            url: "http://localhost:5000/addDecla",
+            data : dico=JSON.stringify(dict),
+            contentType : 'application/json',
+            type : 'POST',
+			datatype:'html'
+        })
+        .done(function( data ) {
+            window.location.href="http://localhost:5000/decla"
+        });			
+	});	
+</script>
+{% endblock %}
