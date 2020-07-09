@@ -3,7 +3,7 @@
 	<center><h1>Constats dans le Parc national des Ecrins</h1></center>
 	<div id="liste" class="leftMap">
 		{% for decla in Declaratifs %}
-			<button class="btn btn-light" data-toggle="collapse" data-target="#textDecla{{decla.id_constat_d}}" style="margin:10px; display:list-item block;">{{decla.id_constat_d}}</button>
+			<button class="btn btn-light" data-toggle="collapse" data-target="#textDecla{{decla.id_constat_d}}" style="margin:10px; display:list-item block;">{{decla.date_constat_d}} {{decla.type_animaux_d}}</button>
 			<center><div style="vertical-align:middle;"id="textDecla{{decla.id_constat_d}}" class="collapse">
 				Numéro : {{decla.id_constat_d}} <br>
 				Date de l'attaque : {{decla.date_attaque_d}} <br>

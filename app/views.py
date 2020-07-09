@@ -20,6 +20,8 @@ def map():
     """
     Lance la "page d'acceuil" avec une carte + une liste avec toutes les données
     """
+    dataStatut=DB.session.query(bib_statut)
+    dataAnimaux=DB.session.query(bib_type_animaux)
     dataGeom = DB.session.query(Constats,func.ST_AsGeoJson(func.ST_Transform(Constats.the_geom_point,4326))).order_by(Constats.id_constat).all()
     cnsts=[]
     for d in dataGeom:
@@ -33,10 +35,14 @@ def map():
         dico['properties']['nom_agent1']=d[0].nom_agent1
         dico['properties']['nom_agent2']=d[0].nom_agent2
         dico['properties']['proprietaire']=d[0].proprietaire
-        dico['properties']['type_animaux']=d[0].type_animaux
+        for da in dataAnimaux:
+            if da.id==d[0].type_animaux:
+                dico['properties']['type_animaux']=da.nom
         dico['properties']['nb_victimes_mort']=d[0].nb_victimes_mort
         dico['properties']['nb_victimes_blesse']=d[0].nb_victimes_blesse
-        dico['properties']['statut']=d[0].statut
+        for ds in dataStatut:
+            if ds.id==d[0].statut:
+                dico['properties']['statut']=ds.nom
         cnsts.append(dico)        
     return render_template('map.html', title='Map', Constats=cnsts)
 
@@ -147,6 +153,8 @@ def delete(idc):
 
 @app.route('/decla')
 def decla():
+    dataStatut=DB.session.query(bib_statut)
+    dataAnimaux=DB.session.query(bib_type_animaux)
     dataGeom = DB.session.query(Declaratif)
     decla=[]
     for d in dataGeom:
@@ -156,12 +164,15 @@ def decla():
         dico['date_constat_d']=d.date_constat_d
         dico['lieu_dit']=d.lieu_dit
         dico['proprietaire_d']=d.proprietaire_d
-        dico['type_animaux_d']=d.type_animaux_d
+        for da in dataAnimaux:
+            if da.id==d.type_animaux_d:
+                dico['type_animaux_d']=da.nom
         dico['nb_victimes_mort_d']=d.nb_victimes_mort_d
         dico['nb_victimes_blesse_d']=d.nb_victimes_blesse_d
-        dico['statut_d']=d.statut_d
+        for ds in dataStatut:
+            if ds.id==d.statut_d:        
+                dico['statut_d']=ds.nom
         decla.append(dico)
-        print(dico)
     return render_template('decla.html', title='Declaratif', Declaratifs=decla)
 @app.route('/deleteDecla/<idc>',methods=['GET', 'POST'])
 def deleteDecla(idc):
