@@ -30,14 +30,14 @@
         </div>
         <div class="form-group">
             Propriétaire<br>
-            {{ form.proprietaire_d(size=18,value="prenom nom") }}
+            {{ form.proprietaire_d(size=18,placeholder='Prénom Nom') }}
             {% for error in form.proprietaire_d.errors %}
             <span style="color: red;">[{{ error }}]</span>
             {% endfor %}
         </div>
         <div class="form-group">
             Type d'animaux<br>
-            {{ form.type_animaux_d(size=3) }}
+            {{ form.type_animaux_d(size=4) }}
             {% for error in form.type_animaux_d.errors %}
             <span style="color: red;">[{{ error }}]</span>
             {% endfor %}
@@ -63,10 +63,15 @@
             <span style="color: red;">[{{ error }}]</span>
             {% endfor %}
         </div>		
-        <div><button id="subform" type="submit" class="btn btn-primary">Ajouter le constat</button></div>
+        <div><button id="subform" type="submit" class="btn btn-primary" disabled>Ajouter le constat</button></div>
     </form>
 </div>
 <script>
+    var map = L.map('map').setView([44.8, 6.2], 10);
+    L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+    }).addTo(map);	
+	var marker;
 	var dict={};
 	$( "form" ).on( "submit", function( event ) {
 		event.preventDefault();
@@ -91,6 +96,18 @@
         .done(function( data ) {
             window.location.href="http://localhost:5000/decla"
         });			
-	});	
+	});
+	var addConstat=function(e){
+		if(marker!=undefined){
+            map.removeLayer(marker)	
+		}
+        marker = L.marker(e.latlng)
+        marker.addTo(map);
+        marker.bindPopup("Vous placez un constat ici").openPopup();		
+		console.log(e)
+		dict["geom"]=e.latlng;
+		document.getElementById("subform").disabled=false;
+	}
+	map.on("click",addConstat);	
 </script>
 {% endblock %}

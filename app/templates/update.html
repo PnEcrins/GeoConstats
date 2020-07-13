@@ -48,7 +48,7 @@
 		<br>
 		<div class="form-group">
 				Type d'animaux <br>	
-				{{ form.type_animaux(size=3,value=Constats.properties.type_animaux) }}
+				{{ form.type_animaux(size=4,value=Constats.properties.type_animaux) }}
 				{% for error in form.type_animaux.errors %}
 				<span style="color: red;">[{{ error }}]</span>
 				{% endfor %}
@@ -99,7 +99,7 @@
 		'type_animaux': '{{ Constats.properties.type_animaux }}',
 		'statut': '{{ Constats.properties.statut }}',
 		'geometry': '{{ Constats.geometry | tojson}}'
-	}
+	};
 	console.log(constatFilter)
 	var marker=L.marker([JSON.parse(constatFilter.geometry).coordinates[1],JSON.parse(constatFilter.geometry).coordinates[0]]) 
 		.bindPopup("Constat numéro : "+constatFilter.id_constat+"<br>"+ 

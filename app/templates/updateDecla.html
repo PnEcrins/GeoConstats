@@ -2,6 +2,7 @@
 
 {% block content %}
 <center><h1>Constat {{Declaratif.id_constat}}</h1></center>
+<div id="map" style="height: 92vh;"></div>
 <div class="leftMap">
     <form action="" method="post" novalidate>
             {{ form.hidden_tag() }}
@@ -10,7 +11,7 @@
 				Date de l'attaque :
 			</div>
 			<div class="mr-1 col-4">
-				{{ form.date_attaque_d(size=18,value=Declaratif.date_attaque_d) }}
+				{{ form.date_attaque_d(size=18,value=Declaratif.properties.date_attaque_d) }}
 				{% for error in form.date_attaque_d.errors %}
 				<span style="color: red;">[{{ error }}]</span>
 				{% endfor %}
@@ -22,7 +23,7 @@
 				Date du constat :
 			</div>
 			<div class="mr-1 col-4">
-				{{ form.date_constat_d(size=18,value=Declaratif.date_constat_d) }}
+				{{ form.date_constat_d(size=18,value=Declaratif.properties.date_constat_d) }}
 				{% for error in form.date_constat_d.errors %}
 				<span style="color: red;">[{{ error }}]</span>
 				{% endfor %}
@@ -34,7 +35,7 @@
 				Lieu dit du constat :
 			</div>
 			<div class="mr-1 col-4">			
-				{{ form.lieu_dit(size=18,value=Declaratif.lieu_dit) }}
+				{{ form.lieu_dit(size=18,value=Declaratif.properties.lieu_dit) }}
 				{% for error in form.lieu_dit.errors %}
 				<span style="color: red;">[{{ error }}]</span>
 				{% endfor %}
@@ -46,7 +47,7 @@
 				Propriétaire :
 			</div>
 			<div class="mr-1 col-4">			
-				{{ form.proprietaire_d(size=18,value=Declaratif.proprietaire_d) }}
+				{{ form.proprietaire_d(size=18,value=Declaratif.properties.proprietaire_d) }}
 				{% for error in form.proprietaire_d.errors %}
 				<span style="color: red;">[{{ error }}]</span>
 				{% endfor %}
@@ -58,7 +59,7 @@
 				Type d'animaux :
 			</div>
 			<div class="mr-1 col-4">			
-				{{ form.type_animaux_d(size=3,value=Declaratif.type_animaux_d) }}
+				{{ form.type_animaux_d(size=4,value=Declaratif.properties.type_animaux_d) }}
 				{% for error in form.type_animaux_d.errors %}
 				<span style="color: red;">[{{ error }}]</span>
 				{% endfor %}
@@ -70,7 +71,7 @@
 				Nombre de morts :
 			</div>
 			<div class="mr-1 col-4">			
-				{{ form.nb_victimes_mort_d(size=18,value=Declaratif.nb_victimes_mort_d) }}
+				{{ form.nb_victimes_mort_d(size=18,value=Declaratif.properties.nb_victimes_mort_d) }}
 				{% for error in form.nb_victimes_mort_d.errors %}
 				<span style="color: red;">[{{ error }}]</span>
 				{% endfor %}
@@ -82,7 +83,7 @@
 				Nombre de blessés :
 			</div>
 			<div class="mr-1 col-4">			
-				{{ form.nb_victimes_blesse_d(size=18, value=Declaratif.nb_victimes_blesse_d) }}
+				{{ form.nb_victimes_blesse_d(size=18, value=Declaratif.properties.nb_victimes_blesse_d) }}
 				{% for error in form.nb_victimes_blesse_d.errors %}
 				<span style="color: red;">[{{ error }}]</span>
 				{% endfor %}
@@ -94,7 +95,7 @@
 				Statut du constat :
 			</div>
 			<div class="mr-1 col-4">			
-				{{ form.statut_d(size=3, value=Declaratif.statut_d) }}
+				{{ form.statut_d(size=3, value=Declaratif.properties.statut_d) }}
 				{% for error in form.statut_d.errors %}
 				<span style="color: red;">[{{ error }}]</span>
 				{% endfor %}
@@ -105,22 +106,42 @@
     </form>
 </div>
 <script>
-	
+    var map = L.map('map').setView([44.8, 6.2], 10);
+    L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+    }).addTo(map);		
 	var constatFilter={
-		'id_constat_d':'{{Declaratif.id_constat_d}}',
-		'date_attaque_d': '{{ Declaratif.date_attaque_d }}',
-		'date_constat_d': '{{ Declaratif.date_constat_d }}',
-		'nb_victimes_mort_d': '{{ Declaratif.nb_victimes_mort_d }}',
-		'nb_victimes_blesse_d': '{{ Declaratif.nb_victimes_blesse_d }}',
-		'lieu_dit': '{{ Declaratif.lieu_dit}}',
-		'proprietaire_d': '{{ Declaratif.proprietaire_d }}',
-		'type_animaux_d': '{{ Declaratif.type_animaux_d }}',
-		'statut_d': '{{ Declaratif.statut_d }}'
+		'id_constat_d':'{{Declaratif.properties.id_constat_d}}',
+		'date_attaque_d': '{{ Declaratif.properties.date_attaque_d }}',
+		'date_constat_d': '{{ Declaratif.properties.date_constat_d }}',
+		'nb_victimes_mort_d': '{{ Declaratif.properties.nb_victimes_mort_d }}',
+		'nb_victimes_blesse_d': '{{ Declaratif.properties.nb_victimes_blesse_d }}',
+		'lieu_dit': '{{ Declaratif.properties.lieu_dit}}',
+		'proprietaire_d': '{{ Declaratif.properties.proprietaire_d }}',
+		'type_animaux_d': '{{ Declaratif.properties.type_animaux_d }}',
+		'statut_d': '{{ Declaratif.properties.statut_d }}',
+		'geometry':'{{Declaratif.geometry | tojson}}'
 	}
+	var marker=L.marker([JSON.parse(constatFilter.geometry).coordinates[1],JSON.parse(constatFilter.geometry).coordinates[0]]) 
+	.bindPopup("Constat numéro : "+constatFilter.id_constat+"<br>"+ 
+		"Date de l'attaque : "+constatFilter.date_attaque+"<br>"+ 
+		"Date du constat : "+constatFilter.date_constat+"<br>"+ 
+		"Nombre de victimes (mort) : "+constatFilter.nb_victimes_mort+"<br>"+ 
+		"Nombre de victimes (blessé) : "+constatFilter.nb_victimes_blesse+"<br>"+ 
+		"Nom du 1er agent recenseur : "+constatFilter.nom_agent1+"<br>"+ 
+		"Nom du 2eme agent recenseur : "+constatFilter.nom_agent2+"<br>"+ 
+		"Propriétaire : "+constatFilter.proprietaire+"<br>"+ 
+		"Type d'animaux : "+constatFilter.type_animaux+"<br>"+ 
+		"Statut : "+constatFilter.statut+"<br>" 
+	).addTo(map); 
 	var dict={};
+	dict["geom"]={};
+	dict["geom"]["lat"]=JSON.parse(constatFilter.geometry).coordinates[1];
+	dict["geom"]["lng"]=JSON.parse(constatFilter.geometry).coordinates[0];
 	$( "form" ).on( "submit", function( event ) {
 		event.preventDefault();
 		var formValue = $( this ).serializeArray();
+		console.log(formValue)
 		dict["id_constat_d"]=constatFilter.id_constat_d;
 		dict["date_attaque_d"]=formValue[1].value;
 		dict["date_constat_d"]=formValue[2].value;
@@ -142,5 +163,26 @@
             window.location.href="http://localhost:5000/decla"
         });			
 	});	
+	var addConstat=function(e){
+		if(marker!=undefined){
+            map.removeLayer(marker)	
+		}
+        marker = L.marker(e.latlng)
+        marker.addTo(map);
+		console.log(e)
+        marker.bindPopup("Constat numéro : "+constatFilter.id_constat+"<br>"+ 
+			"Date de l'attaque : "+constatFilter.date_attaque+"<br>"+ 
+			"Date du constat : "+constatFilter.date_constat+"<br>"+ 
+			"Nombre de victimes (mort) : "+constatFilter.nb_victimes_mort+"<br>"+ 
+			"Nombre de victimes (blessé) : "+constatFilter.nb_victimes_blesse+"<br>"+ 
+			"Nom du 1er agent recenseur : "+constatFilter.nom_agent1+"<br>"+ 
+			"Nom du 2eme agent recenseur : "+constatFilter.nom_agent2+"<br>"+ 
+			"Propriétaire : "+constatFilter.proprietaire+"<br>"+ 
+			"Type d'animaux : "+constatFilter.type_animaux+"<br>"+ 
+			"Statut : "+constatFilter.statut+"<br>" 
+		).openPopup();		
+		dict["geom"]=e.latlng;
+	}
+	map.on("click",addConstat);	
 </script>
 {% endblock %}

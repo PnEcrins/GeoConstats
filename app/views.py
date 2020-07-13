@@ -14,15 +14,30 @@ from geoalchemy2.shape import to_shape, from_shape
 app = Flask(__name__)
 
 
+
 @app.route("/")
 @app.route("/map")
 def map():
     """
     Lance la "page d'acceuil" avec une carte + une liste avec toutes les données
     """
+    filter_query = request.args.to_dict()
+    print(filter_query)
+
+
     dataStatut=DB.session.query(bib_statut)
     dataAnimaux=DB.session.query(bib_type_animaux)
-    dataGeom = DB.session.query(Constats,func.ST_AsGeoJson(func.ST_Transform(Constats.the_geom_point,4326))).order_by(Constats.id_constat).all()
+    query = DB.session.query(Constats,func.ST_AsGeoJson(func.ST_Transform(Constats.the_geom_point,4326)))
+    
+    if 'date' in filter_query:
+        query = query.filter(Constats.date_attaque == filter_query['date'])
+    
+    for key, value in filter_query.items():
+        constat_attr = getattr(Constats, key)
+        query = query.filter(constat_attr == key[value])
+
+        
+    dataGeom =  query.order_by(Constats.id_constat).all()  
     cnsts=[]
     for d in dataGeom:
         geojson=json.loads(d[1])
@@ -67,8 +82,10 @@ def add():
     """
     Réalise l'ajout de données dans la BD
     """
-    data=request.json
-    p2154=DB.session.query(func.ST_AsGeoJson(func.ST_Transform(func.ST_SetSRID(func.ST_Point(data['geom']['lng'],data['geom']['lat']),4326),2154)))
+    print('LAAAAAAAAAAAAA')
+    print(request.form)
+    data = request.form 
+    p2154=DB.session.query(func.ST_AsGeoJson(func.ST_Transform(func.ST_SetSRID(func.ST_Point(float(data['geomlng']),float(data['geomlat'])),4326),2154)))
     json2154=json.loads(p2154[0][0])
     constats = Constats(
         date_attaque=data['date_attaque'],
@@ -76,10 +93,10 @@ def add():
         nom_agent1=data['nom_agent1'],
         nom_agent2=data['nom_agent2'],
         proprietaire=data['proprietaire'],
-        type_animaux=data['type_animaux'],
+        type_animaux=data.get('type_animaux',None),
         nb_victimes_mort=data['nb_victimes_mort'],
         nb_victimes_blesse=data['nb_victimes_blesse'],
-        statut=data['statut'],
+        statut=data.get('statut',"En attente"),
         the_geom_point=from_shape(Point(json2154['coordinates'][0],json2154['coordinates'][1]),srid=2154)
     )    
     DB.session.add(constats)
@@ -145,7 +162,7 @@ def updateDB():
 @app.route('/delete/<idc>', methods=['GET', 'POST'])
 def delete(idc):
     """
-    Réalise la suppression d'un constat
+    Réalise la suppression d'un constat déclaratif
     """
     dataGeom = DB.session.query(Constats).filter(Constats.id_constat==idc).delete()
     DB.session.commit()
@@ -153,35 +170,49 @@ def delete(idc):
 
 @app.route('/decla')
 def decla():
+    """
+    Lance la page de consultation des constats déclaratifs avec une carte + une liste avec toutes les données
+    """    
     dataStatut=DB.session.query(bib_statut)
     dataAnimaux=DB.session.query(bib_type_animaux)
-    dataGeom = DB.session.query(Declaratif)
+    dataGeom = DB.session.query(Declaratif,func.ST_AsGeoJson(func.ST_Transform(Declaratif.geom,4326))).order_by(Declaratif.id_constat_d).all()
     decla=[]
     for d in dataGeom:
+        geojson=json.loads(d[1])
         dico={}
-        dico['id_constat_d']=d.id_constat_d
-        dico['date_attaque_d']=d.date_attaque_d
-        dico['date_constat_d']=d.date_constat_d
-        dico['lieu_dit']=d.lieu_dit
-        dico['proprietaire_d']=d.proprietaire_d
+        dico['geometry']=geojson
+        dico['properties']={}
+        dico['properties']['id_constat_d']=d[0].id_constat_d
+        dico['properties']['date_attaque_d']=d[0].date_attaque_d
+        dico['properties']['date_constat_d']=d[0].date_constat_d
+        dico['properties']['lieu_dit']=d[0].lieu_dit
+        dico['properties']['proprietaire_d']=d[0].proprietaire_d
         for da in dataAnimaux:
-            if da.id==d.type_animaux_d:
-                dico['type_animaux_d']=da.nom
-        dico['nb_victimes_mort_d']=d.nb_victimes_mort_d
-        dico['nb_victimes_blesse_d']=d.nb_victimes_blesse_d
+            if da.id==d[0].type_animaux_d:
+                dico['properties']['type_animaux_d']=da.nom
+        dico['properties']['nb_victimes_mort_d']=d[0].nb_victimes_mort_d
+        dico['properties']['nb_victimes_blesse_d']=d[0].nb_victimes_blesse_d
         for ds in dataStatut:
-            if ds.id==d.statut_d:        
-                dico['statut_d']=ds.nom
+            if ds.id==d[0].statut_d:        
+                dico['properties']['statut_d']=ds.nom
         decla.append(dico)
+        print(dico)
     return render_template('decla.html', title='Declaratif', Declaratifs=decla)
+
 @app.route('/deleteDecla/<idc>',methods=['GET', 'POST'])
 def deleteDecla(idc):
+    """
+    Réalise la suppression d'un constat déclaratif
+    """
     dataGeom = DB.session.query(Declaratif).filter(Declaratif.id_constat_d==idc).delete()
     DB.session.commit()
     return redirect(url_for('decla'))
 
 @app.route ('/formDecla',methods=['GET', 'POST'])
 def formDecla():
+    """
+    Lance la page de formulaire d'ajout de données
+    """
     form = DeclaForm()
     form.statut_d.choices=[]
     dataStatut=DB.session.query(bib_statut)
@@ -195,7 +226,12 @@ def formDecla():
 
 @app.route('/addDecla', methods=['GET', 'POST'])
 def addDecla():
+    """
+    Réalise l'ajout de données dans la BD
+    """
     data=request.json
+    p2154=DB.session.query(func.ST_AsGeoJson(func.ST_Transform(func.ST_SetSRID(func.ST_Point(data['geom']['lng'],data['geom']['lat']),4326),2154)))
+    json2154=json.loads(p2154[0][0])    
     decla=Declaratif(
         date_attaque_d=data['date_attaque_d'],
         date_constat_d=data['date_constat_d'],
@@ -204,7 +240,8 @@ def addDecla():
         type_animaux_d=data['type_animaux_d'],
         nb_victimes_mort_d=data['nb_victimes_mort_d'],
         nb_victimes_blesse_d=data['nb_victimes_blesse_d'],
-        statut_d=data['statut_d']            
+        statut_d=data['statut_d'],      
+        geom=from_shape(Point(json2154['coordinates'][0],json2154['coordinates'][1]),srid=2154)
     )
     DB.session.add(decla)
     DB.session.commit()
@@ -212,17 +249,23 @@ def addDecla():
 
 @app.route('/updateDecla/<idc>', methods=['GET', 'POST'])
 def updateDecla(idc):
-     dataGeom = DB.session.query(Declaratif).filter(Declaratif.id_constat_d==idc).all()
+     """
+     Lance la page de mise à jour d'une donnée
+     """
+     dataGeom = DB.session.query(Declaratif,func.ST_AsGeoJson(func.ST_Transform(Declaratif.geom,4326))).filter(Declaratif.id_constat_d==idc).all()
+     geojson=json.loads(dataGeom[0][1])
      dico={}
-     dico['id_constat_d']=dataGeom[0].id_constat_d
-     dico['date_attaque_d']=dataGeom[0].date_attaque_d
-     dico['date_constat_d']=dataGeom[0].date_constat_d
-     dico['lieu_dit']=dataGeom[0].lieu_dit
-     dico['proprietaire_d']=dataGeom[0].proprietaire_d
-     dico['type_animaux_d']=dataGeom[0].type_animaux_d
-     dico['nb_victimes_mort_d']=dataGeom[0].nb_victimes_mort_d
-     dico['nb_victimes_blesse_d']=dataGeom[0].nb_victimes_blesse_d
-     dico['statut_d']=dataGeom[0].statut_d     
+     dico['geometry']=geojson
+     dico['properties']={}
+     dico['properties']['id_constat_d']=dataGeom[0][0].id_constat_d
+     dico['properties']['date_attaque_d']=dataGeom[0][0].date_attaque_d
+     dico['properties']['date_constat_d']=dataGeom[0][0].date_constat_d
+     dico['properties']['lieu_dit']=dataGeom[0][0].lieu_dit
+     dico['properties']['proprietaire_d']=dataGeom[0][0].proprietaire_d
+     dico['properties']['type_animaux_d']=dataGeom[0][0].type_animaux_d
+     dico['properties']['nb_victimes_mort_d']=dataGeom[0][0].nb_victimes_mort_d
+     dico['properties']['nb_victimes_blesse_d']=dataGeom[0][0].nb_victimes_blesse_d
+     dico['properties']['statut_d']=dataGeom[0][0].statut_d     
      form = DeclaForm()
      form.statut_d.choices=[]
      dataStatut=DB.session.query(bib_statut)
@@ -232,14 +275,19 @@ def updateDecla(idc):
      dataAnimaux=DB.session.query(bib_type_animaux)
      for da in dataAnimaux:
         form.type_animaux_d.choices+=[(da.id,da.nom)]
-     form.type_animaux_d.default=dataGeom[0].type_animaux_d
-     form.statut_d.default=dataGeom[0].statut_d
+     form.type_animaux_d.default=dataGeom[0][0].type_animaux_d
+     form.statut_d.default=dataGeom[0][0].statut_d
      form.process()
      return render_template('updateDecla.html', title='Map',form=form,Declaratif=dico)
 
 @app.route('/updateDBDecla',methods=['GET', 'POST'])
 def updateDBDecla():
+    """
+    Réalise les mises à jour dans la BD
+    """
     data=request.json
+    p2154=DB.session.query(func.ST_AsGeoJson(func.ST_Transform(func.ST_SetSRID(func.ST_Point(data['geom']['lng'],data['geom']['lat']),4326),2154)))
+    json2154=json.loads(p2154[0][0])
     cst=DB.session.query(Declaratif).filter(Declaratif.id_constat_d==data['id_constat_d']).one()
     cst.date_attaque_d=data['date_attaque_d']
     cst.date_constat_d=data['date_constat_d']
@@ -249,5 +297,6 @@ def updateDBDecla():
     cst.nb_victimes_mort_d=data['nb_victimes_mort_d']
     cst.nb_victimes_blesse_d=data['nb_victimes_blesse_d']
     cst.statut_d=data['statut_d']
+    cst.geom=from_shape(Point(json2154['coordinates'][0],json2154['coordinates'][1]),srid=2154)
     DB.session.commit()       
     return redirect(url_for('decla'))    

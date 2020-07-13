@@ -26,7 +26,8 @@ class Declaratif(DB.Model):
     type_animaux_d = DB.Column(DB.String)
     nb_victimes_mort_d = DB.Column(DB.Integer)
     nb_victimes_blesse_d = DB.Column(DB.Integer)
-    statut_d = DB.Column(DB.String(10))    
+    statut_d = DB.Column(DB.String(10))
+    geom=DB.Column(Geometry("GEOMETRY",2154))    
 
 class bib_statut(DB.Model):   
     __tablename__="bib_statut"

@@ -3,41 +3,82 @@
 	<center><h1>Constats dans le Parc national des Ecrins</h1></center>
 	<div id="liste" class="leftMap">
 		{% for decla in Declaratifs %}
-			<button class="btn btn-light" data-toggle="collapse" data-target="#textDecla{{decla.id_constat_d}}" style="margin:10px; display:list-item block;">{{decla.date_constat_d}} {{decla.type_animaux_d}}</button>
-			<center><div style="vertical-align:middle;"id="textDecla{{decla.id_constat_d}}" class="collapse">
-				Numéro : {{decla.id_constat_d}} <br>
-				Date de l'attaque : {{decla.date_attaque_d}} <br>
-				Date du constat : {{decla.date_constat_d}}<br>
-				Nombre de victimes (morts) : {{ decla.nb_victimes_mort_d }}<br>
-				Nombre de victimes (blessés) : {{ decla.nb_victimes_blesse_d }}<br>
-				Lieu dit : {{decla.lieu_dit}}<br>
-				Propriétaire : {{ decla.proprietaire_d }}<br>
-				Type d'animaux : {{ decla.type_animaux_d }}<br>
-				Statut : {{ decla.statut_d }}<br>
-				<a href='/updateDecla/{{decla.id_constat_d}}'>Modifier le constat</a><br>
-				<a href='/deleteDecla/{{decla.id_constat_d}}'>Supprimer le constat</a><br>
+			<button class="btn btn-light" data-toggle="collapse" data-target="#textDecla{{decla.properties.id_constat_d}}" style="margin:10px; display:list-item block;">{{decla.properties.date_constat_d}} {{decla.properties.type_animaux_d}}</button>
+			<center><div style="vertical-align:middle;"id="textDecla{{decla.properties.id_constat_d}}" class="collapse">
+				Numéro : {{decla.properties.id_constat_d}} <br>
+				Date de l'attaque : {{decla.properties.date_attaque_d}} <br>
+				Date du constat : {{decla.properties.date_constat_d}}<br>
+				Nombre de victimes (morts) : {{ decla.properties.nb_victimes_mort_d }}<br>
+				Nombre de victimes (blessés) : {{ decla.properties.nb_victimes_blesse_d }}<br>
+				Lieu dit : {{decla.properties.lieu_dit}}<br>
+				Propriétaire : {{ decla.properties.proprietaire_d }}<br>
+				Type d'animaux : {{ decla.properties.type_animaux_d }}<br>
+				Statut : {{ decla.properties.statut_d }}<br>
+				<a href='/updateDecla/{{decla.properties.id_constat_d}}'>Modifier le constat</a><br>
+				<a href='/deleteDecla/{{decla.properties.id_constat_d}}'>Supprimer le constat</a><br>
 			</div></center>
 			<br>
 
 		{%endfor%}
 	</div>
+	<div id="map"></div>
+	<br>
+    <button onclick="changeZoom()">
+        Vue sur le parc
+    </button>
     <script> 
+        // CONFIGURATION DE LA CARTE //
+        var map = L.map('map').setView([44.8, 6.2], 10);
+        L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map); 
+        // ACTIONS SUR LA CARTE
+        function changeZoom() {
+            map.setZoom(10);
+            map.setView([44.8, 6.2]);   
+        } 	
         var jsonData = [
-			{% for constats in Constats %}
+			{% for decla in Declaratifs %}
 				{
-				'id_constat':'{{Declaratifs.id_constat_d}}',
-				'date_attaque': '{{ Declaratifs.date_attaque_d }}',
-				'date_constat': '{{ Declaratifs.date_constat_d }}',
-				'nb_victimes_mort': '{{ Declaratifs.nb_victimes_mort_d }}',
-				'nb_victimes_blesse': '{{ Declaratifs.nb_victimes_blesse_d }}',
-				'lieu_dit':'{{Declaratifs.lieu_dit}}',
-				'proprietaire': '{{ Declaratifs.proprietaire_d }}',
-				'type_animaux': '{{ Declaratifs.type_animaux_d }}',
-				'statut': '{{ Declaratifs.statut_d }}',
+				'id_constat_d':'{{decla.properties.id_constat_d}}',
+				'date_attaque_d': '{{ decla.properties.date_attaque_d }}',
+				'date_constat_d': '{{ decla.properties.date_constat_d }}',
+				'nb_victimes_mort_d': '{{ decla.properties.nb_victimes_mort_d }}',
+				'nb_victimes_blesse_d': '{{ decla.properties.nb_victimes_blesse_d }}',
+				'lieu_dit':'{{decla.properties.lieu_dit}}',
+				'proprietaire_d': '{{ decla.properties.proprietaire_d }}',
+				'type_animaux_d': '{{ decla.properties.type_animaux_d }}',
+				'statut_d': '{{ decla.properties.statut_d }}',
+				'geom':'{{decla.geometry | tojson}}',
 				},
 			{% endfor %}
         ]
-
+		var markersCluster = new L.MarkerClusterGroup({
+		    iconCreateFunction: function(cluster) {
+				return L.divIcon({ 
+					html: cluster.getChildCount(), 
+					className: 'mycluster', 
+					iconSize: null 
+				});
+			}
+		});
+		map.addLayer(markersCluster);
+        var addMarkers = function(point) {
+            var markerC=L.marker([JSON.parse(point.geom).coordinates[1],JSON.parse(point.geom).coordinates[0]]) 
+				.bindPopup("Constat numéro : "+point.id_constat_d+"<br>"+ 
+					"Date de l'attaque : "+point.date_attaque_d+"<br>"+ 
+				    "Date du constat : "+point.date_constat_d+"<br>"+ 
+					"Nombre de victimes (mort) : "+point.nb_victimes_mort_d+"<br>"+ 
+					"Nombre de victimes (blessé) : "+point.nb_victimes_blesse_d+"<br>"+ 
+					"Nom du 1er agent recenseur : "+point.lieu_dit+"<br>"+ 
+					"Propriétaire : "+point.proprietaire_d+"<br>"+ 
+					"Type d'animaux : "+point.type_animaux_d+"<br>"+ 
+					"Statut : "+point.statut_d+"<br>" 
+					) ;
+					
+				markersCluster.addLayer(markerC); 
+        };
+        jsonData.forEach(addMarkers);
 	
 	</script>
 {% endblock %}

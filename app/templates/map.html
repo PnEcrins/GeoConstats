@@ -2,8 +2,9 @@
 {% block content %}
 	<center><h1>Constats dans le Parc national des Ecrins</h1></center>
 	<div id="liste" class="leftMap">
+		<!-- TODO créer un form avec le filtre année et le filtre type animaux -->
 		{% for constats in Constats %}
-			<button class="btn btn-light" data-toggle="collapse" data-target="#textConstat{{constats.properties.id_constat}}" style="margin:10px; display:list-item block;" onclick="affichePopup({{constats.properties.id_constat}})">{{constats.properties.date_attaque}} {{ constats.properties.type_animaux }}</button>
+			<button class="btn btn-light" data-toggle="collapse" data-target="#textConstat{{constats.properties.id_constat}}" style="margin:10px; display:list-item block;" >{{constats.properties.date_attaque}} {{ constats.properties.type_animaux }}</button>
 			<center><div style="vertical-align:middle;"id="textConstat{{constats.properties.id_constat}}" class="collapse">
 				Numéro : {{constats.properties.id_constat}} <br>
 				Date de l'attaque : {{constats.properties.date_attaque}} <br>
@@ -66,7 +67,7 @@
 		});
 		map.addLayer(markersCluster);
         var addMarkers = function(point) {
-			console.log(JSON.parse(point.geometry))
+			console.log(point.geometry)
             var markerC=L.marker([JSON.parse(point.geometry).coordinates[1],JSON.parse(point.geometry).coordinates[0]]) 
 				.bindPopup("Constat numéro : "+point.id_constat+"<br>"+ 
 					"Date de l'attaque : "+point.date_attaque+"<br>"+ 
@@ -83,18 +84,6 @@
 				markersCluster.addLayer(markerC); 
         };
         jsonData.forEach(addMarkers);
-		var blackMarker;
-		affichePopup=function(constat){
-			for(j in jsonData){
-				if(jsonData[j]['id_constat']==constat){
-					if(blackMarker!=undefined){
-						map.removeLayer(blackMarker);
-					}
-					
-					//TODO créer marker avec une couleur différente
-				}
-			}
-		}
-	
+
 	</script>
 {% endblock %}
