@@ -2,7 +2,33 @@
 {% block content %}
 	<center><h1>Constats dans le Parc national des Ecrins</h1></center>
 	<div id="liste" class="leftMap">
-		<!-- TODO créer un form avec le filtre année et le filtre type animaux -->
+		<form action="{{url_for('map')}}" method="GET" novalidate>
+			<div class="form-group">
+				Type d'animaux <br>
+				{{ form.animaux(size=4) }}
+				{% for error in form.animaux.errors %}
+				<span style="color: red;">[{{ error }}]</span>
+				{% endfor %}
+			</div>		
+			<div class="form-group">
+				Année du constat <br>
+				{{ form.date(size=18) }}
+				{% for error in form.date.errors %}
+				<span style="color: red;">[{{ error }}]</span>
+				{% endfor %}
+			</div>
+			<div class="form-group">
+				Statut du constat <br>
+				{{ form.statut(size=4) }}
+				{% for error in form.statut.errors %}
+				<span style="color: red;">[{{ error }}]</span>
+				{% endfor %}
+			</div>
+			<div><button id="subform" type="submit" class="btn btn-primary">Filtrer</button></div>
+			<div><button id="download" onclick="window.location.href='{{url_for('download')}}'">Telecharger</button></div>
+			<button onclick="downloadFilter()">Telecharger avec filtres</button>
+		</form>
+		
 		{% for constats in Constats %}
 			<button class="btn btn-light" data-toggle="collapse" data-target="#textConstat{{constats.properties.id_constat}}" style="margin:10px; display:list-item block;" >{{constats.properties.date_attaque}} {{ constats.properties.type_animaux }}</button>
 			<center><div style="vertical-align:middle;"id="textConstat{{constats.properties.id_constat}}" class="collapse">
@@ -16,8 +42,8 @@
 				Propriétaire : {{ constats.properties.proprietaire }}<br>
 				Type d'animaux : {{ constats.properties.type_animaux }}<br>
 				Statut : {{ constats.properties.statut }}<br>
-				<a href='/update/{{constats.properties.id_constat}}'>Modifier le constat</a><br>
-				<a href='/delete/{{constats.properties.id_constat}}'>Supprimer le constat</a><br>				
+				<a href="{{url_for('update',idc=constats.properties.id_constat)}}">Modifier le constat</a><br>
+				<a href="{{url_for('delete',idc=constats.properties.id_constat)}}">Supprimer le constat</a><br>				
 			</div></center>
 			<br>
 
@@ -67,7 +93,6 @@
 		});
 		map.addLayer(markersCluster);
         var addMarkers = function(point) {
-			console.log(point.geometry)
             var markerC=L.marker([JSON.parse(point.geometry).coordinates[1],JSON.parse(point.geometry).coordinates[0]]) 
 				.bindPopup("Constat numéro : "+point.id_constat+"<br>"+ 
 					"Date de l'attaque : "+point.date_attaque+"<br>"+ 
@@ -84,6 +109,21 @@
 				markersCluster.addLayer(markerC); 
         };
         jsonData.forEach(addMarkers);
+
+		function downloadFilter(){
+
+			var queryString=window.location.search;
+			var urlParams=new URLSearchParams(queryString)
+			var entries=urlParams.entries()
+			for (const entry of entries){
+				eval(entry[0] + " = " + entry[1])
+			}
+			console.log(date)
+			window.location.href="{{url_for('download',annee=date)}}"
+		}
+
+
+		
 
 	</script>
 {% endblock %}

@@ -1,15 +1,18 @@
-from flask import Flask, render_template, flash, redirect, url_for, request, jsonify
+from flask import Flask, render_template, flash, redirect, url_for, request, jsonify, make_response
 from flask_wtf import FlaskForm
 from wtforms import StringField, IntegerField, SubmitField
 from .env import DB
 from app.models import Constats,Declaratif,bib_statut, bib_type_animaux
-from app.forms import LoginForm, DeclaForm
-from sqlalchemy import func
+from app.forms import LoginForm, DeclaForm, FilterForm
+from sqlalchemy import func, extract
 import json
 from shapely.geometry import Point, shape
 from shapely import wkb
 from shapely.ops import transform
 from geoalchemy2.shape import to_shape, from_shape
+import datetime
+import pyexcel as pe
+import io
 
 app = Flask(__name__)
 
@@ -30,14 +33,20 @@ def map():
     query = DB.session.query(Constats,func.ST_AsGeoJson(func.ST_Transform(Constats.the_geom_point,4326)))
     
     if 'date' in filter_query:
-        query = query.filter(Constats.date_attaque == filter_query['date'])
-    
-    for key, value in filter_query.items():
-        constat_attr = getattr(Constats, key)
-        query = query.filter(constat_attr == key[value])
-
-        
+        query = query.filter(extract('year',Constats.date_constat) == int(filter_query['date']))
+    if 'animaux' in filter_query:
+        query = query.filter(Constats.type_animaux == int(filter_query['animaux']))
+    if 'statut' in filter_query:
+        query = query.filter(Constats.statut == int(filter_query['statut']))                  
     dataGeom =  query.order_by(Constats.id_constat).all()  
+
+    form=FilterForm()
+    form.animaux.choices=[]
+    form.statut.choices=[]
+    for da in dataAnimaux:
+        form.animaux.choices+=[(da.id,da.nom)]       
+    for ds in dataStatut:
+        form.statut.choices+=[(ds.id,ds.nom)] 
     cnsts=[]
     for d in dataGeom:
         geojson=json.loads(d[1])
@@ -59,7 +68,7 @@ def map():
             if ds.id==d[0].statut:
                 dico['properties']['statut']=ds.nom
         cnsts.append(dico)        
-    return render_template('map.html', title='Map', Constats=cnsts)
+    return render_template('map.html', title='Map', Constats=cnsts,form=form)
 
 @app.route('/form',methods=['GET', 'POST'])
 def form():
@@ -82,7 +91,6 @@ def add():
     """
     Réalise l'ajout de données dans la BD
     """
-    print('LAAAAAAAAAAAAA')
     print(request.form)
     data = request.form 
     p2154=DB.session.query(func.ST_AsGeoJson(func.ST_Transform(func.ST_SetSRID(func.ST_Point(float(data['geomlng']),float(data['geomlat'])),4326),2154)))
@@ -167,6 +175,39 @@ def delete(idc):
     dataGeom = DB.session.query(Constats).filter(Constats.id_constat==idc).delete()
     DB.session.commit()
     return redirect(url_for('map'))
+
+@app.route('/download',methods=['GET', 'POST'])
+def download():
+    print("oheee")
+    dataStatut=DB.session.query(bib_statut)
+    dataAnimaux=DB.session.query(bib_type_animaux)
+    query=DB.session.query(Constats)
+    dataGeom = query.order_by(Constats.id_constat).all()
+    cnsts=[["id_constat","date_attaque","date_constat","nom_agent1","nom_agent2","proprietaire","type_animaux","nb_victimes_mort","nb_victimes_blesse","statut"]]
+    for d in dataGeom:
+        dico=[]
+        dico.append(d.id_constat)
+        dico.append(d.date_attaque)
+        dico.append(d.date_constat)
+        dico.append(d.nom_agent1)
+        dico.append(d.nom_agent2)
+        dico.append(d.proprietaire)
+        for da in dataAnimaux:
+            if da.id==d.type_animaux:
+                dico.append(da.nom)
+        dico.append(d.nb_victimes_mort)
+        dico.append(d.nb_victimes_blesse)
+        for ds in dataStatut:
+            if ds.id==d.statut:        
+                dico.append(ds.nom)
+        cnsts.append(dico)    
+    sheet=pe.Sheet(cnsts)
+    oi=io.StringIO()
+    sheet.save_to_memory("csv",oi)
+    output=make_response(oi.getvalue())
+    output.headers["Content-Disposition"]="Attachment; filename=export.csv"
+    output.headers["Content-type"]="text/csv"
+    return output
 
 @app.route('/decla')
 def decla():
