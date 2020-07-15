@@ -26,8 +26,6 @@ def map():
     """
     filter_query = request.args.to_dict()
     print(filter_query)
-
-
     dataStatut=DB.session.query(bib_statut)
     dataAnimaux=DB.session.query(bib_type_animaux)
     query = DB.session.query(Constats,func.ST_AsGeoJson(func.ST_Transform(Constats.the_geom_point,4326)))
@@ -178,11 +176,17 @@ def delete(idc):
 
 @app.route('/download',methods=['GET', 'POST'])
 def download():
-    print("oheee")
+    filter_query = request.args.to_dict()
     dataStatut=DB.session.query(bib_statut)
     dataAnimaux=DB.session.query(bib_type_animaux)
     query=DB.session.query(Constats)
-    dataGeom = query.order_by(Constats.id_constat).all()
+    if 'date' in filter_query:
+        query = query.filter(extract('year',Constats.date_constat) == int(filter_query['date']))
+    if 'animaux' in filter_query:
+        query = query.filter(Constats.type_animaux == int(filter_query['animaux']))
+    if 'statut' in filter_query:
+        query = query.filter(Constats.statut == int(filter_query['statut'])) 
+    dataGeom = query.order_by(Constats.id_constat).all()     
     cnsts=[["id_constat","date_attaque","date_constat","nom_agent1","nom_agent2","proprietaire","type_animaux","nb_victimes_mort","nb_victimes_blesse","statut"]]
     for d in dataGeom:
         dico=[]

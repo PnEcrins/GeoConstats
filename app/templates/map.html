@@ -25,10 +25,9 @@
 				{% endfor %}
 			</div>
 			<div><button id="subform" type="submit" class="btn btn-primary">Filtrer</button></div>
-			<div><button id="download" onclick="window.location.href='{{url_for('download')}}'">Telecharger</button></div>
-			<button onclick="downloadFilter()">Telecharger avec filtres</button>
+			<button type="submit" formaction="{{url_for('download')}}">Telecharger avec filtres</button>
 		</form>
-		
+		<button onclick="window.location.href='{{url_for('download')}}';">Telecharger toutes les données</button>
 		{% for constats in Constats %}
 			<button class="btn btn-light" data-toggle="collapse" data-target="#textConstat{{constats.properties.id_constat}}" style="margin:10px; display:list-item block;" >{{constats.properties.date_attaque}} {{ constats.properties.type_animaux }}</button>
 			<center><div style="vertical-align:middle;"id="textConstat{{constats.properties.id_constat}}" class="collapse">
