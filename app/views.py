@@ -1,4 +1,4 @@
-from flask import Flask, render_template, flash, redirect, url_for, request, jsonify, make_response
+from flask import Flask, render_template, flash, redirect, url_for, request, jsonify
 from flask_wtf import FlaskForm
 from wtforms import StringField, IntegerField, SubmitField
 from .env import DB
@@ -11,8 +11,6 @@ from shapely import wkb
 from shapely.ops import transform
 from geoalchemy2.shape import to_shape, from_shape
 import datetime
-import pyexcel as pe
-import io
 
 app = Flask(__name__)
 
@@ -25,7 +23,6 @@ def map():
     Lance la "page d'acceuil" avec une carte + une liste avec toutes les données
     """
     filter_query = request.args.to_dict()
-    print(filter_query)
     dataStatut=DB.session.query(bib_statut)
     dataAnimaux=DB.session.query(bib_type_animaux)
     query = DB.session.query(Constats,func.ST_AsGeoJson(func.ST_Transform(Constats.the_geom_point,4326)))
@@ -33,18 +30,15 @@ def map():
     if 'date' in filter_query:
         query = query.filter(extract('year',Constats.date_constat) == int(filter_query['date']))
     if 'animaux' in filter_query:
-        query = query.filter(Constats.type_animaux == int(filter_query['animaux']))
-    if 'statut' in filter_query:
-        query = query.filter(Constats.statut == int(filter_query['statut']))                  
+        query = query.filter(Constats. == filter_query['animaux'])
+        
     dataGeom =  query.order_by(Constats.id_constat).all()  
 
     form=FilterForm()
     form.animaux.choices=[]
-    form.statut.choices=[]
     for da in dataAnimaux:
         form.animaux.choices+=[(da.id,da.nom)]       
-    for ds in dataStatut:
-        form.statut.choices+=[(ds.id,ds.nom)] 
+
     cnsts=[]
     for d in dataGeom:
         geojson=json.loads(d[1])
@@ -89,6 +83,7 @@ def add():
     """
     Réalise l'ajout de données dans la BD
     """
+    print('LAAAAAAAAAAAAA')
     print(request.form)
     data = request.form 
     p2154=DB.session.query(func.ST_AsGeoJson(func.ST_Transform(func.ST_SetSRID(func.ST_Point(float(data['geomlng']),float(data['geomlat'])),4326),2154)))
@@ -173,45 +168,6 @@ def delete(idc):
     dataGeom = DB.session.query(Constats).filter(Constats.id_constat==idc).delete()
     DB.session.commit()
     return redirect(url_for('map'))
-
-@app.route('/download',methods=['GET', 'POST'])
-def download():
-    filter_query = request.args.to_dict()
-    dataStatut=DB.session.query(bib_statut)
-    dataAnimaux=DB.session.query(bib_type_animaux)
-    query=DB.session.query(Constats)
-    if 'date' in filter_query:
-        query = query.filter(extract('year',Constats.date_constat) == int(filter_query['date']))
-    if 'animaux' in filter_query:
-        query = query.filter(Constats.type_animaux == int(filter_query['animaux']))
-    if 'statut' in filter_query:
-        query = query.filter(Constats.statut == int(filter_query['statut'])) 
-    dataGeom = query.order_by(Constats.id_constat).all()     
-    cnsts=[["id_constat","date_attaque","date_constat","nom_agent1","nom_agent2","proprietaire","type_animaux","nb_victimes_mort","nb_victimes_blesse","statut"]]
-    for d in dataGeom:
-        dico=[]
-        dico.append(d.id_constat)
-        dico.append(d.date_attaque)
-        dico.append(d.date_constat)
-        dico.append(d.nom_agent1)
-        dico.append(d.nom_agent2)
-        dico.append(d.proprietaire)
-        for da in dataAnimaux:
-            if da.id==d.type_animaux:
-                dico.append(da.nom)
-        dico.append(d.nb_victimes_mort)
-        dico.append(d.nb_victimes_blesse)
-        for ds in dataStatut:
-            if ds.id==d.statut:        
-                dico.append(ds.nom)
-        cnsts.append(dico)    
-    sheet=pe.Sheet(cnsts)
-    oi=io.StringIO()
-    sheet.save_to_memory("csv",oi)
-    output=make_response(oi.getvalue())
-    output.headers["Content-Disposition"]="Attachment; filename=export.csv"
-    output.headers["Content-type"]="text/csv"
-    return output
 
 @app.route('/decla')
 def decla():

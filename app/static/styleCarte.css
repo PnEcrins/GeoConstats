@@ -21,7 +21,7 @@ html, body{
 button{
 	button-align:right;
 }
-#liste button .btn btn-light{
+#liste button[name="dataBouton"]{
 	width:95%;
 }
 .mycluster {
