@@ -39,3 +39,6 @@ button{
 nav a{
 	border: solid 1px black;
 }
+form{
+	margin: 2%;
+}

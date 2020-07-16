@@ -2,6 +2,34 @@
 {% block content %}
 	<center><h1>Constats dans le Parc national des Ecrins</h1></center>
 	<div id="liste" class="leftMap">
+		<h3>Filtres sur les constats</h3>
+		<form method="GET" novalidate>
+			<div class="form-group">
+				Type d'animaux <br>
+				{{ form.animaux(size=4) }}
+				{% for error in form.animaux.errors %}
+				<span style="color: red;">[{{ error }}]</span>
+				{% endfor %}
+			</div>		
+			<div class="form-group">
+				Année du constat <br>
+				{{ form.date(size=18) }}
+				{% for error in form.date.errors %}
+				<span style="color: red;">[{{ error }}]</span>
+				{% endfor %}
+			</div>
+			<div class="form-group">
+				Statut du constat <br>
+				{{ form.statut(size=3) }}
+				{% for error in form.statut.errors %}
+				<span style="color: red;">[{{ error }}]</span>
+				{% endfor %}
+			</div>
+			<div class="form-group"><button id="subform" type="submit" formaction="{{url_for('decla')}}" class="btn btn-primary">Filtrer les données</button></div>
+			<div class="form-group"><button type="submit" formaction="{{url_for('downloadDecla')}}" class="btn btn-secondary">Télécharger les données filtrées</button></div>	
+		</form>
+		<div class="form-group"><button onclick="window.location.href='{{url_for('downloadDecla')}}';" class="btn btn-secondary">Télécharger toutes les données</button></div>
+		<center><h3>Liste des constats</h3></center>	
 		{% for decla in Declaratifs %}
 			<button class="btn btn-light" data-toggle="collapse" data-target="#textDecla{{decla.properties.id_constat_d}}" style="margin:10px; display:list-item block;">{{decla.properties.date_constat_d}} {{decla.properties.type_animaux_d}}</button>
 			<center><div style="vertical-align:middle;"id="textDecla{{decla.properties.id_constat_d}}" class="collapse">

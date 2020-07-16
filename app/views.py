@@ -212,15 +212,32 @@ def download():
     output = make_response(si.getvalue())
     output.headers["Content-Disposition"] = "attachment; filename="+datetime.now().strftime('%d-%b-%Y--%H-%M')+".csv"
     output.headers["Content-type"] = "text/csv"
-    return output    
+    return output   
+ 
 @app.route('/decla')
 def decla():
     """
     Lance la page de consultation des constats déclaratifs avec une carte + une liste avec toutes les données
     """    
+    filter_query = request.args.to_dict()
     dataStatut=DB.session.query(bib_statut)
     dataAnimaux=DB.session.query(bib_type_animaux)
-    dataGeom = DB.session.query(Declaratif,func.ST_AsGeoJson(func.ST_Transform(Declaratif.geom,4326))).order_by(Declaratif.id_constat_d).all()
+    query = DB.session.query(Declaratif,func.ST_AsGeoJson(func.ST_Transform(Declaratif.geom,4326)))
+    if 'date' in filter_query:
+        query = query.filter(extract('year',Declaratif.date_constat_d) == int(filter_query['date']))
+    if 'animaux' in filter_query:
+        query = query.filter(Declaratif.type_animaux_d == filter_query['animaux'])
+    if 'statut' in filter_query:
+        query = query.filter(Declaratif.statut_d == filter_query['statut'])       
+    dataGeom=query.order_by(Declaratif.id_constat_d).all()
+    
+    form=FilterForm()
+    form.animaux.choices=[]
+    for da in dataAnimaux:
+        form.animaux.choices+=[(da.id,da.nom)]       
+    for ds in dataStatut:
+        form.statut.choices+=[(ds.id,ds.nom)]    
+    
     decla=[]
     for d in dataGeom:
         geojson=json.loads(d[1])
@@ -242,7 +259,7 @@ def decla():
                 dico['properties']['statut_d']=ds.nom
         decla.append(dico)
         print(dico)
-    return render_template('decla.html', title='Declaratif', Declaratifs=decla)
+    return render_template('decla.html', title='Declaratif', Declaratifs=decla,form=form)
 
 @app.route('/deleteDecla/<idc>',methods=['GET', 'POST'])
 def deleteDecla(idc):
@@ -345,3 +362,42 @@ def updateDBDecla():
     cst.geom=from_shape(Point(json2154['coordinates'][0],json2154['coordinates'][1]),srid=2154)
     DB.session.commit()       
     return redirect(url_for('decla'))    
+@app.route('/downloadDecla', methods=['GET', 'POST'])
+def downloadDecla():
+    filter_query = request.args.to_dict()
+    dataStatut=DB.session.query(bib_statut)
+    dataAnimaux=DB.session.query(bib_type_animaux)
+    query = DB.session.query(Declaratif)
+    
+    if 'date' in filter_query:
+        query = query.filter(extract('year',Declaratif.date_constat_d) == int(filter_query['date']))
+    if 'animaux' in filter_query:
+        query = query.filter(Declaratif.type_animaux_d == filter_query['animaux'])
+    if 'statut' in filter_query:
+        query = query.filter(Declaratif.statut_d == filter_query['statut'])   
+    dataGeom =  query.order_by(Declaratif.id_constat_d).all()  
+    
+    cnsts=[]
+    for d in dataGeom:
+        dico=[]
+        dico.append(d.id_constat_d)
+        dico.append(d.date_attaque_d)
+        dico.append(d.date_constat_d)
+        dico.append(d.lieu_dit)
+        dico.append(d.proprietaire_d)
+        for da in dataAnimaux:
+            if da.id==d.type_animaux_d:
+                dico.append(da.nom)
+        dico.append(d.nb_victimes_mort_d)
+        dico.append(d.nb_victimes_blesse_d)
+        for ds in dataStatut:
+            if ds.id==d.statut_d:
+                dico.append(ds.nom)
+        cnsts.append(dico)       
+    si = io.StringIO()
+    cw = csv.writer(si)
+    cw.writerows(cnsts)
+    output = make_response(si.getvalue())
+    output.headers["Content-Disposition"] = "attachment; filename="+datetime.now().strftime('%d-%b-%Y--%H-%M')+".csv"
+    output.headers["Content-type"] = "text/csv"
+    return output
