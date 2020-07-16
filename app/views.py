@@ -1,4 +1,4 @@
-from flask import Flask, render_template, flash, redirect, url_for, request, jsonify
+from flask import Flask, render_template, flash, redirect, url_for, request, jsonify, make_response
 from flask_wtf import FlaskForm
 from wtforms import StringField, IntegerField, SubmitField
 from .env import DB
@@ -10,7 +10,10 @@ from shapely.geometry import Point, shape
 from shapely import wkb
 from shapely.ops import transform
 from geoalchemy2.shape import to_shape, from_shape
-import datetime
+from datetime import datetime
+import pyexcel as pe
+import io
+import csv
 
 app = Flask(__name__)
 
@@ -30,15 +33,17 @@ def map():
     if 'date' in filter_query:
         query = query.filter(extract('year',Constats.date_constat) == int(filter_query['date']))
     if 'animaux' in filter_query:
-        query = query.filter(Constats. == filter_query['animaux'])
-        
+        query = query.filter(Constats.type_animaux == filter_query['animaux'])
+    if 'statut' in filter_query:
+        query = query.filter(Constats.statut == filter_query['statut'])   
     dataGeom =  query.order_by(Constats.id_constat).all()  
 
     form=FilterForm()
     form.animaux.choices=[]
     for da in dataAnimaux:
         form.animaux.choices+=[(da.id,da.nom)]       
-
+    for ds in dataStatut:
+        form.statut.choices+=[(ds.id,ds.nom)]
     cnsts=[]
     for d in dataGeom:
         geojson=json.loads(d[1])
@@ -169,6 +174,45 @@ def delete(idc):
     DB.session.commit()
     return redirect(url_for('map'))
 
+@app.route('/download', methods=['GET', 'POST'])
+def download():
+    filter_query = request.args.to_dict()
+    dataStatut=DB.session.query(bib_statut)
+    dataAnimaux=DB.session.query(bib_type_animaux)
+    query = DB.session.query(Constats)
+    
+    if 'date' in filter_query:
+        query = query.filter(extract('year',Constats.date_constat) == int(filter_query['date']))
+    if 'animaux' in filter_query:
+        query = query.filter(Constats.type_animaux == filter_query['animaux'])
+    if 'statut' in filter_query:
+        query = query.filter(Constats.statut == filter_query['statut'])   
+    dataGeom =  query.order_by(Constats.id_constat).all()  
+    cnsts=[]
+    for d in dataGeom:
+        dico=[]
+        dico.append(d.id_constat)
+        dico.append(d.date_attaque)
+        dico.append(d.date_constat)
+        dico.append(d.nom_agent1)
+        dico.append(d.nom_agent2)
+        dico.append(d.proprietaire)
+        for da in dataAnimaux:
+            if da.id==d.type_animaux:
+                dico.append(da.nom)
+        dico.append(d.nb_victimes_mort)
+        dico.append(d.nb_victimes_blesse)
+        for ds in dataStatut:
+            if ds.id==d.statut:
+                dico.append(ds.nom)
+        cnsts.append(dico)       
+    si = io.StringIO()
+    cw = csv.writer(si)
+    cw.writerows(cnsts)
+    output = make_response(si.getvalue())
+    output.headers["Content-Disposition"] = "attachment; filename="+datetime.now().strftime('%d-%b-%Y--%H-%M')+".csv"
+    output.headers["Content-type"] = "text/csv"
+    return output    
 @app.route('/decla')
 def decla():
     """
