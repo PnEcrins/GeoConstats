@@ -29,7 +29,7 @@
 			<div class="form-group"><button type="submit" formaction="{{url_for('download')}}" class="btn btn-secondary">Télécharger les données filtrées</button></div>
 			
 		</form>
-		<div class="form-group"><button onclick="window.location.href='{{url_for('download')}}';" class="btn btn-secondary">Télécharger toutes les données</button></div>
+		<div class="form-group" id="avecForm"><button onclick="window.location.href='{{url_for('download')}}';" class="btn btn-secondary">Télécharger toutes les données</button></div>
 		<center><h3>Liste des constats</h3></center>
 		{% for constats in Constats %}
 			<button class="btn btn-light" data-toggle="collapse" name="dataBouton" data-target="#textConstat{{constats.properties.id_constat}}" style="margin:3px; display:list-item block;" >{{constats.properties.date_attaque}} {{ constats.properties.type_animaux }}</button>

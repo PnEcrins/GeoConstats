@@ -31,7 +31,9 @@ def map():
     query = DB.session.query(Constats,func.ST_AsGeoJson(func.ST_Transform(Constats.the_geom_point,4326)))
     
     if 'date' in filter_query:
-        query = query.filter(extract('year',Constats.date_constat) == int(filter_query['date']))
+        if filter_query['date'] == None:
+            #Filtre différent pour date car meme si il est null il est envoye dans l'url
+            query = query.filter(extract('year',Constats.date_constat) == int(filter_query['date']))
     if 'animaux' in filter_query:
         query = query.filter(Constats.type_animaux == filter_query['animaux'])
     if 'statut' in filter_query:
@@ -182,7 +184,8 @@ def download():
     query = DB.session.query(Constats)
     
     if 'date' in filter_query:
-        query = query.filter(extract('year',Constats.date_constat) == int(filter_query['date']))
+        if filter_query['date'] == None:
+            query = query.filter(extract('year',Constats.date_constat) == int(filter_query['date']))
     if 'animaux' in filter_query:
         query = query.filter(Constats.type_animaux == filter_query['animaux'])
     if 'statut' in filter_query:
@@ -224,7 +227,8 @@ def decla():
     dataAnimaux=DB.session.query(bib_type_animaux)
     query = DB.session.query(Declaratif,func.ST_AsGeoJson(func.ST_Transform(Declaratif.geom,4326)))
     if 'date' in filter_query:
-        query = query.filter(extract('year',Declaratif.date_constat_d) == int(filter_query['date']))
+        if filter_query['date'] == None:
+            query = query.filter(extract('year',Declaratif.date_constat_d) == int(filter_query['date']))
     if 'animaux' in filter_query:
         query = query.filter(Declaratif.type_animaux_d == filter_query['animaux'])
     if 'statut' in filter_query:
@@ -370,7 +374,8 @@ def downloadDecla():
     query = DB.session.query(Declaratif)
     
     if 'date' in filter_query:
-        query = query.filter(extract('year',Declaratif.date_constat_d) == int(filter_query['date']))
+        if filter_query['date'] == None:
+            query = query.filter(extract('year',Declaratif.date_constat_d) == int(filter_query['date']))
     if 'animaux' in filter_query:
         query = query.filter(Declaratif.type_animaux_d == filter_query['animaux'])
     if 'statut' in filter_query:
