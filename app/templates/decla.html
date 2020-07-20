@@ -107,6 +107,21 @@
 				markersCluster.addLayer(markerC); 
         };
         jsonData.forEach(addMarkers);
+		
+		const queryString = window.location.search;
+		const urlParams = new URLSearchParams(queryString);
+		const date = urlParams.get('date');
+		if(date != null){
+			document.getElementById("date").value=date;
+		}
+		const animaux = urlParams.get('animaux');
+		if(animaux != null){
+			document.getElementById("animaux").value=animaux;
+		}
+		const statut = urlParams.get('statut');
+		if(statut != null){
+			document.getElementById("statut").value=statut;
+		}		
 	
 	</script>
 {% endblock %}

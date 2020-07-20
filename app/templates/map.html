@@ -112,20 +112,20 @@
         };
         jsonData.forEach(addMarkers);
 
-		function downloadFilter(){
-
-			var queryString=window.location.search;
-			var urlParams=new URLSearchParams(queryString)
-			var entries=urlParams.entries()
-			for (const entry of entries){
-				eval(entry[0] + " = " + entry[1])
-			}
-			console.log(date)
-			window.location.href="{{url_for('download',annee=date)}}"
+		const queryString = window.location.search;
+		const urlParams = new URLSearchParams(queryString);
+		const date = urlParams.get('date');
+		if(date != null){
+			document.getElementById("date").value=date;
 		}
-
-
-		
+		const animaux = urlParams.get('animaux');
+		if(animaux != null){
+			document.getElementById("animaux").value=animaux;
+		}
+		const statut = urlParams.get('statut');
+		if(statut != null){
+			document.getElementById("statut").value=statut;
+		}		
 
 	</script>
 {% endblock %}

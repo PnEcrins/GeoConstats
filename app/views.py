@@ -30,8 +30,18 @@ def map():
     dataAnimaux=DB.session.query(bib_type_animaux)
     query = DB.session.query(Constats,func.ST_AsGeoJson(func.ST_Transform(Constats.the_geom_point,4326)))
     
+    form=FilterForm()
+    form.animaux.choices=[]
+    for da in dataAnimaux:
+        form.animaux.choices+=[(da.id,da.nom)]       
+    for ds in dataStatut:
+        form.statut.choices+=[(ds.id,ds.nom)]
+    
+    
+    
+    
     if 'date' in filter_query:
-        if filter_query['date'] == None:
+        if filter_query['date'] != None:
             #Filtre différent pour date car meme si il est null il est envoye dans l'url
             query = query.filter(extract('year',Constats.date_constat) == int(filter_query['date']))
     if 'animaux' in filter_query:
@@ -40,12 +50,7 @@ def map():
         query = query.filter(Constats.statut == filter_query['statut'])   
     dataGeom =  query.order_by(Constats.id_constat).all()  
 
-    form=FilterForm()
-    form.animaux.choices=[]
-    for da in dataAnimaux:
-        form.animaux.choices+=[(da.id,da.nom)]       
-    for ds in dataStatut:
-        form.statut.choices+=[(ds.id,ds.nom)]
+
     cnsts=[]
     for d in dataGeom:
         geojson=json.loads(d[1])
@@ -90,7 +95,6 @@ def add():
     """
     Réalise l'ajout de données dans la BD
     """
-    print('LAAAAAAAAAAAAA')
     print(request.form)
     data = request.form 
     p2154=DB.session.query(func.ST_AsGeoJson(func.ST_Transform(func.ST_SetSRID(func.ST_Point(float(data['geomlng']),float(data['geomlat'])),4326),2154)))
@@ -226,8 +230,18 @@ def decla():
     dataStatut=DB.session.query(bib_statut)
     dataAnimaux=DB.session.query(bib_type_animaux)
     query = DB.session.query(Declaratif,func.ST_AsGeoJson(func.ST_Transform(Declaratif.geom,4326)))
+    
+    form=FilterForm()
+    form.animaux.choices=[]
+    for da in dataAnimaux:
+        form.animaux.choices+=[(da.id,da.nom)]       
+    for ds in dataStatut:
+        form.statut.choices+=[(ds.id,ds.nom)]  
+    
+    
+    
     if 'date' in filter_query:
-        if filter_query['date'] == None:
+        if filter_query['date'] != None:
             query = query.filter(extract('year',Declaratif.date_constat_d) == int(filter_query['date']))
     if 'animaux' in filter_query:
         query = query.filter(Declaratif.type_animaux_d == filter_query['animaux'])
@@ -235,12 +249,7 @@ def decla():
         query = query.filter(Declaratif.statut_d == filter_query['statut'])       
     dataGeom=query.order_by(Declaratif.id_constat_d).all()
     
-    form=FilterForm()
-    form.animaux.choices=[]
-    for da in dataAnimaux:
-        form.animaux.choices+=[(da.id,da.nom)]       
-    for ds in dataStatut:
-        form.statut.choices+=[(ds.id,ds.nom)]    
+  
     
     decla=[]
     for d in dataGeom:
