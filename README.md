@@ -47,11 +47,11 @@ Enregistrer les modifications.
 
 2.4. Lancement
 
-De retour dans la console dans le dossier où la ligne virtualenv -p /usr/bin/python3 env a été lancée, exécuter la ligne de commande source activate.
+De retour dans la console dans le dossier où la ligne : virtualenv -p /usr/bin/python3 env a été lancée, exécuter la ligne de commande : source activate.
 A ce moment, on rentre dans l'environnement de travail.
 Placer le temrinal dans le dossier contenant les fichiers téléchargés.
-On commence par charger les librairies nécessaires au fonctionnementde l'application avec la ligne de commande pip install -r requirements.txt . Il n'est utile de lancer cette commande qu'une seule fois tant qu'il n'y a pas de changements ou d'ajouts dans la liste des librairies.
-Ensuite, on lance l'application avec la ligne de commande python3 run.py .
+On commence par charger les librairies nécessaires au fonctionnementde l'application avec la ligne de commande : pip install -r requirements.txt . Il n'est utile de lancer cette commande qu'une seule fois tant qu'il n'y a pas de changements ou d'ajouts dans la liste des librairies.
+Ensuite, on lance l'application avec la ligne de commande : python3 run.py .
 Dans un navigateur web, rentrer l'url http://localhost:5000/ pour accéder à la carte.
 
 **Auteur** : Raphaël Bres / Juillet 2020
