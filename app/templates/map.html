@@ -30,7 +30,7 @@
 			
 		</form>
 		<div class="form-group" id="avecForm"><button onclick="window.location.href='{{url_for('download')}}';" class="btn btn-secondary">Télécharger toutes les données</button></div>
-		<center><h3>Liste des constats</h3></center>
+		<center><h3 id="countCsts">Liste des constats</h3></center>
 		{% for constats in Constats %}
 			<button class="btn btn-light" data-toggle="collapse" name="dataBouton" data-target="#textConstat{{constats.properties.id_constat}}" style="margin:3px; display:list-item block;" >{{constats.properties.date_attaque}} {{ constats.properties.type_animaux }}</button>
 			<center><div style="vertical-align:middle;"id="textConstat{{constats.properties.id_constat}}" class="collapse">
@@ -43,6 +43,7 @@
 				Nom du 2ème agent recenseur : {{ constats.properties.nom_agent2 }}<br>
 				Propriétaire : {{ constats.properties.proprietaire }}<br>
 				Type d'animaux : {{ constats.properties.type_animaux }}<br>
+				Secteur : {{constats.properties.secteur}}<br>
 				Statut : {{ constats.properties.statut }}<br>
 				<a href="{{url_for('update',idc=constats.properties.id_constat)}}">Modifier le constat</a><br>
 				<a href="{{url_for('delete',idc=constats.properties.id_constat)}}">Supprimer le constat</a><br>				
@@ -80,10 +81,14 @@
 				'proprietaire': '{{ constats.properties.proprietaire }}',
 				'type_animaux': '{{ constats.properties.type_animaux }}',
 				'statut': '{{ constats.properties.statut }}',
+				'secteur':'{{constats.properties.secteur}}',
 				'geometry': '{{ constats.geometry | tojson}}'
 				},
 			{% endfor %}
         ]
+		var nbc=jsonData.length;
+		console.log(nbc)
+		document.getElementById("countCsts").textContent += " ("+ nbc+")";
 		var markersCluster = new L.MarkerClusterGroup({
 		    iconCreateFunction: function(cluster) {
 				return L.divIcon({ 
@@ -105,7 +110,8 @@
 					"Nom du 2eme agent recenseur : "+point.nom_agent2+"<br>"+ 
 					"Propriétaire : "+point.proprietaire+"<br>"+ 
 					"Type d'animaux : "+point.type_animaux+"<br>"+ 
-					"Statut : "+point.statut+"<br>" 
+					"Statut : "+point.statut+"<br>" +
+					"Secteur : "+point.secteur+"<br>"
 					) ;
 					
 				markersCluster.addLayer(markerC); 

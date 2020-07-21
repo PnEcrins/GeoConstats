@@ -2,7 +2,7 @@ from flask import Flask, render_template, flash, redirect, url_for, request, jso
 from flask_wtf import FlaskForm
 from wtforms import StringField, IntegerField, SubmitField
 from .env import DB
-from app.models import Constats,Declaratif,bib_statut, bib_type_animaux
+from app.models import Constats,Declaratif,bib_statut, bib_type_animaux, l_areas
 from app.forms import LoginForm, DeclaForm, FilterForm
 from sqlalchemy import func, extract
 import json
@@ -25,9 +25,11 @@ def map():
     """
     Lance la "page d'acceuil" avec une carte + une liste avec toutes les données
     """
+    #Recuperation des filtres et requete sur la table
     filter_query = request.args.to_dict()
     dataStatut=DB.session.query(bib_statut)
     dataAnimaux=DB.session.query(bib_type_animaux)
+    dataSecteur=DB.session.query(l_areas)
     query = DB.session.query(Constats,func.ST_AsGeoJson(func.ST_Transform(Constats.the_geom_point,4326)))
     
     form=FilterForm()
@@ -41,8 +43,8 @@ def map():
     
     
     if 'date' in filter_query:
-        if filter_query['date'] != None:
-            #Filtre différent pour date car meme si il est null il est envoye dans l'url
+        if filter_query['date'] != "":
+            #Filtre différent pour date car meme si il est null il est envoye dans l'url. Le 1er if est utile au chargement car il n'apparait pas dans l'url
             query = query.filter(extract('year',Constats.date_constat) == int(filter_query['date']))
     if 'animaux' in filter_query:
         query = query.filter(Constats.type_animaux == filter_query['animaux'])
@@ -71,6 +73,9 @@ def map():
         for ds in dataStatut:
             if ds.id==d[0].statut:
                 dico['properties']['statut']=ds.nom
+        for dsec in dataSecteur:
+            if dsec.id_area == d[0].id_secteur:
+                dico['properties']['secteur']=dsec.area_name
         cnsts.append(dico)        
     return render_template('map.html', title='Map', Constats=cnsts,form=form)
 
@@ -95,7 +100,6 @@ def add():
     """
     Réalise l'ajout de données dans la BD
     """
-    print(request.form)
     data = request.form 
     p2154=DB.session.query(func.ST_AsGeoJson(func.ST_Transform(func.ST_SetSRID(func.ST_Point(float(data['geomlng']),float(data['geomlat'])),4326),2154)))
     json2154=json.loads(p2154[0][0])
@@ -108,7 +112,7 @@ def add():
         type_animaux=data.get('type_animaux',None),
         nb_victimes_mort=data['nb_victimes_mort'],
         nb_victimes_blesse=data['nb_victimes_blesse'],
-        statut=data.get('statut',"En attente"),
+        statut=data.get('statut',1),
         the_geom_point=from_shape(Point(json2154['coordinates'][0],json2154['coordinates'][1]),srid=2154)
     )    
     DB.session.add(constats)
@@ -154,8 +158,9 @@ def updateDB():
     """
     Réalise les mises à jour dans la BD
     """
-    data=request.json
-    p2154=DB.session.query(func.ST_AsGeoJson(func.ST_Transform(func.ST_SetSRID(func.ST_Point(data['geom']['lng'],data['geom']['lat']),4326),2154)))
+    data=request.form
+    print(data['date_attaque'])
+    p2154=DB.session.query(func.ST_AsGeoJson(func.ST_Transform(func.ST_SetSRID(func.ST_Point(float(data['geomlng']),float(data['geomlat'])),4326),2154)))
     json2154=json.loads(p2154[0][0])    
     cst=DB.session.query(Constats).filter(Constats.id_constat==data['id_constat']).one()
     cst.date_attaque=data['date_attaque']
@@ -185,39 +190,46 @@ def download():
     filter_query = request.args.to_dict()
     dataStatut=DB.session.query(bib_statut)
     dataAnimaux=DB.session.query(bib_type_animaux)
-    query = DB.session.query(Constats)
+    query = DB.session.query(Constats,func.ST_AsGeoJson(func.ST_Transform(Constats.the_geom_point,4326)))
     
     if 'date' in filter_query:
-        if filter_query['date'] == None:
+        if filter_query['date'] != "":
             query = query.filter(extract('year',Constats.date_constat) == int(filter_query['date']))
     if 'animaux' in filter_query:
         query = query.filter(Constats.type_animaux == filter_query['animaux'])
     if 'statut' in filter_query:
         query = query.filter(Constats.statut == filter_query['statut'])   
     dataGeom =  query.order_by(Constats.id_constat).all()  
+    
     cnsts=[]
     for d in dataGeom:
-        dico=[]
-        dico.append(d.id_constat)
-        dico.append(d.date_attaque)
-        dico.append(d.date_constat)
-        dico.append(d.nom_agent1)
-        dico.append(d.nom_agent2)
-        dico.append(d.proprietaire)
+        print(str(d[0].id_constat)+" "+str(d[0].statut))
+        geojson=json.loads(d[1])
+        dico={}
+        dico['id_constat']=d[0].id_constat
+        dico['date_attaque']=d[0].date_attaque
+        dico['date_constat']=d[0].date_constat
+        dico['nom_agent1']=d[0].nom_agent1
+        dico['nom_agent2']=d[0].nom_agent2
+        dico['proprietaire']=d[0].proprietaire
         for da in dataAnimaux:
-            if da.id==d.type_animaux:
-                dico.append(da.nom)
-        dico.append(d.nb_victimes_mort)
-        dico.append(d.nb_victimes_blesse)
+            if da.id==d[0].type_animaux:
+                dico['type_animaux']=da.nom
+        dico['nb_victimes_mort']=d[0].nb_victimes_mort
+        dico['nb_victimes_blesse']=d[0].nb_victimes_blesse
         for ds in dataStatut:
-            if ds.id==d.statut:
-                dico.append(ds.nom)
+            if ds.id==d[0].statut:
+                dico['statut']=ds.nom
+        dico['x']=geojson['coordinates'][1]
+        dico['y']=geojson['coordinates'][0]
         cnsts.append(dico)       
     si = io.StringIO()
-    cw = csv.writer(si)
+    print(dico)
+    cw = csv.DictWriter(si,fieldnames=dico.keys())
+    cw.writeheader()
     cw.writerows(cnsts)
     output = make_response(si.getvalue())
-    output.headers["Content-Disposition"] = "attachment; filename="+datetime.now().strftime('%d-%b-%Y--%H-%M')+".csv"
+    output.headers["Content-Disposition"] = "attachment; filename=constats-"+datetime.now().strftime('%d-%b-%Y--%H-%M')+".csv"
     output.headers["Content-type"] = "text/csv"
     return output   
  

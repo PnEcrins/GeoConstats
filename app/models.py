@@ -4,7 +4,7 @@ from geoalchemy2 import Geometry
 class Constats(DB.Model):
     __tablename__ = "t_constats"
     __table_args__={"schema":"constats_loups"}
-    id_constat = DB.Column(DB.Integer, primary_key=True)
+    id_constat = DB.Column(DB.Integer, primary_key=True,autoincrement=True)
     date_attaque = DB.Column(DB.Date)
     date_constat = DB.Column(DB.Date)
     nom_agent1 = DB.Column(DB.String)
@@ -14,6 +14,7 @@ class Constats(DB.Model):
     nb_victimes_mort = DB.Column(DB.Integer)
     nb_victimes_blesse = DB.Column(DB.Integer)
     statut = DB.Column(DB.Integer)
+    id_secteur=DB.Column(DB.Integer)
     the_geom_point= DB.Column(Geometry("GEOMETRY", 2154))
 class Declaratif(DB.Model):
     __tablename__="t_constats_declaratifs"
@@ -39,3 +40,9 @@ class bib_type_animaux(DB.Model):
     __table_args__={"schema":"constats_loups"}
     id=DB.Column(DB.Integer, primary_key=True)
     nom=DB.Column(DB.String)    
+class l_areas(DB.Model):
+    __tablename__="l_areas"
+    __table_args__={"schema":"ref_geo"}
+    id_area=DB.Column(DB.Integer, primary_key=True,autoincrement=True)
+    area_name=DB.Column(DB.String)
+    area_code=DB.Column(DB.String)    

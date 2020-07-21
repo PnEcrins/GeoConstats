@@ -4,7 +4,7 @@
 <center><h1>Constat {{Constats.properties.id_constat}}</h1></center>
 <div id="map" style="height: 92vh;"></div>
 <div class="leftMap">
-    <form action="" method="post" novalidate>
+    <form action="/updateDB" method="post">
             {{ form.hidden_tag() }}
 			<div class="form-group">
 				Date de l'attaque <br>
@@ -77,8 +77,11 @@
 				<span style="color: red;">[{{ error }}]</span>
 				{% endfor %}
 		</div>
+		<input type="hidden"  type="text" name="id_constat" id="id_constat">
+		<input type="hidden"  type="text" name="geomlat" id="geomlat">
+        <input type="hidden"  type="text" name="geomlng" id="geomlng">
 		<br>		
-		<button type="submit" class="btn btn-primary">Modifier le constat</button>
+		<button type="submit" class="btn btn-primary" formaction="{{url_for('updateDB')}}">Modifier le constat</button>
     </form>
 </div>
 <script>
@@ -113,43 +116,14 @@
 		"Type d'animaux : "+constatFilter.type_animaux+"<br>"+ 
 		"Statut : "+constatFilter.statut+"<br>" 
 	) 
-	.addTo(map); 
-	var dict={};
-	dict["geom"]={};
-	dict["geom"]["lat"]=JSON.parse(constatFilter.geometry).coordinates[1];
-	dict["geom"]["lng"]=JSON.parse(constatFilter.geometry).coordinates[0];
-	$( "form" ).on( "submit", function( event ) {
-		event.preventDefault();
-		var formValue = $( this ).serializeArray();
-		dict["id_constat"]=constatFilter.id_constat;
-		dict["date_attaque"]=formValue[1].value;
-		dict["date_constat"]=formValue[2].value;
-		dict["nom_agent1"]=formValue[3].value;
-		dict["nom_agent2"]=formValue[4].value;
-		dict["proprietaire"]=formValue[5].value;
-		dict["type_animaux"]=formValue[6].value;
-		dict["nb_victimes_mort"]=formValue[7].value;
-		dict["nb_victimes_blesse"]=formValue[8].value;
-		dict["statut"]=formValue[9].value;
-		console.log(dict)
-        $.ajax({
-			url: "http://localhost:5000/updateDB",
-            data : dico=JSON.stringify(dict),
-            contentType : 'application/json',
-            type : 'POST',
-			datatype:'html'
-        })
-        .done(function( data ) {
-            window.location.href="http://localhost:5000/map"
-        });			
-	});	
+	.addTo(map);
+document.getElementById("id_constat").value = {{Constats.properties.id_constat}};	
 	var addConstat=function(e){
 		if(marker!=undefined){
             map.removeLayer(marker)	
 		}
         marker = L.marker(e.latlng)
         marker.addTo(map);
-		console.log(e)
         marker.bindPopup("Constat numéro : "+constatFilter.id_constat+"<br>"+ 
 			"Date de l'attaque : "+constatFilter.date_attaque+"<br>"+ 
 			"Date du constat : "+constatFilter.date_constat+"<br>"+ 
@@ -161,7 +135,8 @@
 			"Type d'animaux : "+constatFilter.type_animaux+"<br>"+ 
 			"Statut : "+constatFilter.statut+"<br>" 
 		).openPopup();		
-		dict["geom"]=e.latlng;
+		document.getElementById("geomlat").value = e.latlng.lat;
+        document.getElementById("geomlng").value = e.latlng.lng;
 	}
 	map.on("click",addConstat);
 </script>
