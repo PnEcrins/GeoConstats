@@ -38,10 +38,7 @@ def map():
         form.animaux.choices+=[(da.id,da.nom)]       
     for ds in dataStatut:
         form.statut.choices+=[(ds.id,ds.nom)]
-    
-    
-    
-    
+ 
     if 'date' in filter_query:
         if filter_query['date'] != "":
             #Filtre différent pour date car meme si il est null il est envoye dans l'url. Le 1er if est utile au chargement car il n'apparait pas dans l'url
@@ -203,7 +200,6 @@ def download():
     
     cnsts=[]
     for d in dataGeom:
-        print(str(d[0].id_constat)+" "+str(d[0].statut))
         geojson=json.loads(d[1])
         dico={}
         dico['id_constat']=d[0].id_constat
@@ -224,7 +220,6 @@ def download():
         dico['y']=geojson['coordinates'][0]
         cnsts.append(dico)       
     si = io.StringIO()
-    print(dico)
     cw = csv.DictWriter(si,fieldnames=dico.keys())
     cw.writeheader()
     cw.writerows(cnsts)
@@ -241,6 +236,7 @@ def decla():
     filter_query = request.args.to_dict()
     dataStatut=DB.session.query(bib_statut)
     dataAnimaux=DB.session.query(bib_type_animaux)
+    dataSecteur=DB.session.query(l_areas)
     query = DB.session.query(Declaratif,func.ST_AsGeoJson(func.ST_Transform(Declaratif.geom,4326)))
     
     form=FilterForm()
@@ -249,20 +245,16 @@ def decla():
         form.animaux.choices+=[(da.id,da.nom)]       
     for ds in dataStatut:
         form.statut.choices+=[(ds.id,ds.nom)]  
-    
-    
-    
+
     if 'date' in filter_query:
-        if filter_query['date'] != None:
+        if filter_query['date'] != "":
             query = query.filter(extract('year',Declaratif.date_constat_d) == int(filter_query['date']))
     if 'animaux' in filter_query:
         query = query.filter(Declaratif.type_animaux_d == filter_query['animaux'])
     if 'statut' in filter_query:
         query = query.filter(Declaratif.statut_d == filter_query['statut'])       
     dataGeom=query.order_by(Declaratif.id_constat_d).all()
-    
-  
-    
+ 
     decla=[]
     for d in dataGeom:
         geojson=json.loads(d[1])
@@ -282,8 +274,10 @@ def decla():
         for ds in dataStatut:
             if ds.id==d[0].statut_d:        
                 dico['properties']['statut_d']=ds.nom
+        for dsec in dataSecteur:
+            if dsec.id_area == d[0].id_secteur_d:
+                dico['properties']['secteur_d']=dsec.area_name        
         decla.append(dico)
-        print(dico)
     return render_template('decla.html', title='Declaratif', Declaratifs=decla,form=form)
 
 @app.route('/deleteDecla/<idc>',methods=['GET', 'POST'])
@@ -392,7 +386,7 @@ def downloadDecla():
     filter_query = request.args.to_dict()
     dataStatut=DB.session.query(bib_statut)
     dataAnimaux=DB.session.query(bib_type_animaux)
-    query = DB.session.query(Declaratif)
+    query = DB.session.query(Declaratif,func.ST_AsGeoJson(func.ST_Transform(Declaratif.geom,4326)))
     
     if 'date' in filter_query:
         if filter_query['date'] == None:
@@ -405,25 +399,29 @@ def downloadDecla():
     
     cnsts=[]
     for d in dataGeom:
-        dico=[]
-        dico.append(d.id_constat_d)
-        dico.append(d.date_attaque_d)
-        dico.append(d.date_constat_d)
-        dico.append(d.lieu_dit)
-        dico.append(d.proprietaire_d)
+        geojson=json.loads(d[1])
+        dico={}
+        dico['id_constat']=d[0].id_constat_d
+        dico['date_attaque']=d[0].date_attaque_d
+        dico['date_constat']=d[0].date_constat_d
+        dico['lieu_dit']=d[0].lieu_dit
+        dico['proprietaire']=d[0].proprietaire_d
         for da in dataAnimaux:
-            if da.id==d.type_animaux_d:
-                dico.append(da.nom)
-        dico.append(d.nb_victimes_mort_d)
-        dico.append(d.nb_victimes_blesse_d)
+            if da.id==d[0].type_animaux_d:
+                dico['type_animaux']=da.nom
+        dico['nb_victimes_mort']=d[0].nb_victimes_mort_d
+        dico['nb_victimes_blesse']=d[0].nb_victimes_blesse_d
         for ds in dataStatut:
-            if ds.id==d.statut_d:
-                dico.append(ds.nom)
+            if ds.id==d[0].statut_d:
+                dico['statut']=ds.nom
+        dico['x']=geojson['coordinates'][1]
+        dico['y']=geojson['coordinates'][0]
         cnsts.append(dico)       
     si = io.StringIO()
-    cw = csv.writer(si)
+    cw = csv.DictWriter(si,fieldnames=dico.keys())
+    cw.writeheader()
     cw.writerows(cnsts)
     output = make_response(si.getvalue())
-    output.headers["Content-Disposition"] = "attachment; filename="+datetime.now().strftime('%d-%b-%Y--%H-%M')+".csv"
+    output.headers["Content-Disposition"] = "attachment; filename=constats-"+datetime.now().strftime('%d-%b-%Y--%H-%M')+".csv"
     output.headers["Content-type"] = "text/csv"
     return output

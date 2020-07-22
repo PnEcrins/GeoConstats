@@ -4,7 +4,7 @@
 <center><h1>Constat {{Declaratif.id_constat}}</h1></center>
 <div id="map" style="height: 92vh;"></div>
 <div class="leftMap">
-    <form action="" method="post" novalidate>
+    <form action="{{url_for('updateDBDecla')}}" method="post" novalidate>
             {{ form.hidden_tag() }}
 		<div class="row">	
 			<div class="col-7">
@@ -103,6 +103,8 @@
 		</div>
 		<br>		
         <center><button type="submit" class="btn btn-primary">Modifier le constat</button></center>
+		<input type="hidden"  type="text" name="geomlat" id="geomlat">
+        <input type="hidden"  type="text" name="geomlng" id="geomlng">		
     </form>
 </div>
 <script>
@@ -120,68 +122,42 @@
 		'proprietaire_d': '{{ Declaratif.properties.proprietaire_d }}',
 		'type_animaux_d': '{{ Declaratif.properties.type_animaux_d }}',
 		'statut_d': '{{ Declaratif.properties.statut_d }}',
+		'secteur_d': '{{ Declaratif.properties.secteur_d }}',
 		'geometry':'{{Declaratif.geometry | tojson}}'
 	}
 	var marker=L.marker([JSON.parse(constatFilter.geometry).coordinates[1],JSON.parse(constatFilter.geometry).coordinates[0]]) 
-	.bindPopup("Constat numéro : "+constatFilter.id_constat+"<br>"+ 
-		"Date de l'attaque : "+constatFilter.date_attaque+"<br>"+ 
-		"Date du constat : "+constatFilter.date_constat+"<br>"+ 
-		"Nombre de victimes (mort) : "+constatFilter.nb_victimes_mort+"<br>"+ 
-		"Nombre de victimes (blessé) : "+constatFilter.nb_victimes_blesse+"<br>"+ 
-		"Nom du 1er agent recenseur : "+constatFilter.nom_agent1+"<br>"+ 
-		"Nom du 2eme agent recenseur : "+constatFilter.nom_agent2+"<br>"+ 
-		"Propriétaire : "+constatFilter.proprietaire+"<br>"+ 
-		"Type d'animaux : "+constatFilter.type_animaux+"<br>"+ 
+	.bindPopup("Constat numéro : "+constatFilter.id_constat_d+"<br>"+ 
+		"Date de l'attaque : "+constatFilter.date_attaque_d+"<br>"+ 
+		"Date du constat : "+constatFilter.date_constat_d+"<br>"+ 
+		"Nombre de victimes (mort) : "+constatFilter.nb_victimes_mort_d+"<br>"+ 
+		"Nombre de victimes (blessé) : "+constatFilter.nb_victimes_blesse_d+"<br>"+ 
+		"Lieu dit : "+constatFilter.lieu_dit+"<br>"+ 
+		"Propriétaire : "+constatFilter.proprietaire_d+"<br>"+ 
+		"Type d'animaux : "+constatFilter.type_animaux_d+"<br>"+ 
+		"Secteur : "+constatFilter.secteur_d+"<br>" 
 		"Statut : "+constatFilter.statut+"<br>" 
 	).addTo(map); 
-	var dict={};
-	dict["geom"]={};
-	dict["geom"]["lat"]=JSON.parse(constatFilter.geometry).coordinates[1];
-	dict["geom"]["lng"]=JSON.parse(constatFilter.geometry).coordinates[0];
-	$( "form" ).on( "submit", function( event ) {
-		event.preventDefault();
-		var formValue = $( this ).serializeArray();
-		console.log(formValue)
-		dict["id_constat_d"]=constatFilter.id_constat_d;
-		dict["date_attaque_d"]=formValue[1].value;
-		dict["date_constat_d"]=formValue[2].value;
-		dict["lieu_dit"]=formValue[3].value;
-		dict["proprietaire_d"]=formValue[4].value;
-		dict["type_animaux_d"]=formValue[5].value;
-		dict["nb_victimes_mort_d"]=formValue[6].value;
-		dict["nb_victimes_blesse_d"]=formValue[7].value;
-		dict["statut_d"]=formValue[8].value;
-		console.log(dict)
-        $.ajax({
-			url: "http://localhost:5000/updateDBDecla",
-            data : dico=JSON.stringify(dict),
-            contentType : 'application/json',
-            type : 'POST',
-			datatype:'html'
-        })
-        .done(function( data ) {
-            window.location.href="http://localhost:5000/decla"
-        });			
-	});	
+
 	var addConstat=function(e){
 		if(marker!=undefined){
             map.removeLayer(marker)	
 		}
         marker = L.marker(e.latlng)
         marker.addTo(map);
-		console.log(e)
-        marker.bindPopup("Constat numéro : "+constatFilter.id_constat+"<br>"+ 
-			"Date de l'attaque : "+constatFilter.date_attaque+"<br>"+ 
-			"Date du constat : "+constatFilter.date_constat+"<br>"+ 
-			"Nombre de victimes (mort) : "+constatFilter.nb_victimes_mort+"<br>"+ 
-			"Nombre de victimes (blessé) : "+constatFilter.nb_victimes_blesse+"<br>"+ 
+        marker.bindPopup("Constat numéro : "+constatFilter.id_constat_d+"<br>"+ 
+			"Date de l'attaque : "+constatFilter.date_attaque_d+"<br>"+ 
+			"Date du constat : "+constatFilter.date_constat_d+"<br>"+ 
+			"Nombre de victimes (mort) : "+constatFilter.nb_victimes_mort_d+"<br>"+ 
+			"Nombre de victimes (blessé) : "+constatFilter.nb_victimes_blesse_d+"<br>"+ 
 			"Nom du 1er agent recenseur : "+constatFilter.nom_agent1+"<br>"+ 
 			"Nom du 2eme agent recenseur : "+constatFilter.nom_agent2+"<br>"+ 
 			"Propriétaire : "+constatFilter.proprietaire+"<br>"+ 
 			"Type d'animaux : "+constatFilter.type_animaux+"<br>"+ 
+			"Secteur : "+constatFilter.secteur_d+"<br>"+ 
 			"Statut : "+constatFilter.statut+"<br>" 
-		).openPopup();		
-		dict["geom"]=e.latlng;
+		).openPopup();
+		document.getElementById("geomlat").value = e.latlng.lat;
+        document.getElementById("geomlng").value = e.latlng.lng;		
 	}
 	map.on("click",addConstat);	
 </script>

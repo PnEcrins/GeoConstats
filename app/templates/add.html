@@ -4,7 +4,7 @@
 <center><h1>Ajouter un constat</h1></center>
 <div id="map" style="height: 92vh;"></div>
 <div class="leftMap">
-    <form action="/add" method="post" novalidate>
+    <form action="{{url_for('add')}}" method="post" novalidate>
             {{ form.hidden_tag() }}
         <div class="form-group">
             Date de l'attaque <br>
@@ -90,7 +90,6 @@
         marker = L.marker(e.latlng)
         marker.addTo(map);
         marker.bindPopup("Vous placez un constat ici").openPopup();		
-		console.log(e)
 		document.getElementById("geomlat").value = e.latlng.lat;
         document.getElementById("geomlng").value = e.latlng.lng;
 		document.getElementById("subform").disabled=false;

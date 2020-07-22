@@ -4,7 +4,7 @@
 <center><h1>Constat {{Constats.properties.id_constat}}</h1></center>
 <div id="map" style="height: 92vh;"></div>
 <div class="leftMap">
-    <form action="/updateDB" method="post">
+    <form action="{{url_for('updateDB')}}" method="post">
             {{ form.hidden_tag() }}
 			<div class="form-group">
 				Date de l'attaque <br>
@@ -81,7 +81,7 @@
 		<input type="hidden"  type="text" name="geomlat" id="geomlat">
         <input type="hidden"  type="text" name="geomlng" id="geomlng">
 		<br>		
-		<button type="submit" class="btn btn-primary" formaction="{{url_for('updateDB')}}">Modifier le constat</button>
+		<button type="submit" class="btn btn-primary">Modifier le constat</button>
     </form>
 </div>
 <script>
@@ -101,6 +101,7 @@
 		'proprietaire': '{{ Constats.properties.proprietaire }}',
 		'type_animaux': '{{ Constats.properties.type_animaux }}',
 		'statut': '{{ Constats.properties.statut }}',
+		'secteur': '{{ Constats.properties.secteur }}',
 		'geometry': '{{ Constats.geometry | tojson}}'
 	};
 	console.log(constatFilter)
@@ -114,6 +115,7 @@
 		"Nom du 2eme agent recenseur : "+constatFilter.nom_agent2+"<br>"+ 
 		"Propriétaire : "+constatFilter.proprietaire+"<br>"+ 
 		"Type d'animaux : "+constatFilter.type_animaux+"<br>"+ 
+		"Secteur : "+constatFilter.secteur+"<br>"+ 
 		"Statut : "+constatFilter.statut+"<br>" 
 	) 
 	.addTo(map);
@@ -133,6 +135,7 @@ document.getElementById("id_constat").value = {{Constats.properties.id_constat}}
 			"Nom du 2eme agent recenseur : "+constatFilter.nom_agent2+"<br>"+ 
 			"Propriétaire : "+constatFilter.proprietaire+"<br>"+ 
 			"Type d'animaux : "+constatFilter.type_animaux+"<br>"+ 
+			"Secteur : "+constatFilter.secteur+"<br>"+ 
 			"Statut : "+constatFilter.statut+"<br>" 
 		).openPopup();		
 		document.getElementById("geomlat").value = e.latlng.lat;

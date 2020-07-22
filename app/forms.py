@@ -4,7 +4,6 @@ from app.models import Constats,Declaratif, bib_statut, bib_type_animaux
 from .env import DB
 from wtforms.validators import DataRequired
 from datetime import date
-import datetime
     
 class LoginForm(FlaskForm):
     date_attaque = DateField('date_attaque', format='%Y/%m/%d',default=date.today)

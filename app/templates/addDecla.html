@@ -4,7 +4,7 @@
 <center><h1>Ajouter un constat</h1></center>
 <div id="map" style="height: 92vh;"></div>
 <div class="leftMap">
-    <form action="" method="post" novalidate>
+    <form action="{{url_for('addDecla')}}" method="post" novalidate>
             {{ form.hidden_tag() }}
         <div class="form-group">
             Date de l'attaque<br>
@@ -63,6 +63,8 @@
             <span style="color: red;">[{{ error }}]</span>
             {% endfor %}
         </div>		
+        <input type="hidden"  type="text" name="geomlat" id="geomlat">
+        <input type="hidden"  type="text" name="geomlng" id="geomlng">		
         <div><button id="subform" type="submit" class="btn btn-primary" disabled>Ajouter le constat</button></div>
     </form>
 </div>
@@ -72,31 +74,7 @@
         attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
     }).addTo(map);	
 	var marker;
-	var dict={};
-	$( "form" ).on( "submit", function( event ) {
-		event.preventDefault();
-		var formValue = $( this ).serializeArray();
-		console.log(formValue)	
-		dict["date_attaque_d"]=formValue[1].value;
-		dict["date_constat_d"]=formValue[2].value;
-		dict["lieu_dit"]=formValue[3].value;
-		dict["proprietaire_d"]=formValue[4].value;
-		dict["type_animaux_d"]=formValue[5].value;
-		dict["nb_victimes_mort_d"]=formValue[6].value;
-		dict["nb_victimes_blesse_d"]=formValue[7].value;
-		dict["statut_d"]=formValue[8].value;
-		
-        $.ajax({
-            url: "http://localhost:5000/addDecla",
-            data : dico=JSON.stringify(dict),
-            contentType : 'application/json',
-            type : 'POST',
-			datatype:'html'
-        })
-        .done(function( data ) {
-            window.location.href="http://localhost:5000/decla"
-        });			
-	});
+
 	var addConstat=function(e){
 		if(marker!=undefined){
             map.removeLayer(marker)	
@@ -104,8 +82,8 @@
         marker = L.marker(e.latlng)
         marker.addTo(map);
         marker.bindPopup("Vous placez un constat ici").openPopup();		
-		console.log(e)
-		dict["geom"]=e.latlng;
+		document.getElementById("geomlat").value = e.latlng.lat;
+        document.getElementById("geomlng").value = e.latlng.lng;		
 		document.getElementById("subform").disabled=false;
 	}
 	map.on("click",addConstat);	

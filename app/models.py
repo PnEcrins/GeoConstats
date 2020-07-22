@@ -28,6 +28,7 @@ class Declaratif(DB.Model):
     nb_victimes_mort_d = DB.Column(DB.Integer)
     nb_victimes_blesse_d = DB.Column(DB.Integer)
     statut_d = DB.Column(DB.String(10))
+    id_secteur_d=DB.Column(DB.Integer)
     geom=DB.Column(Geometry("GEOMETRY",2154))    
 
 class bib_statut(DB.Model):   

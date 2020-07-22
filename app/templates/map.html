@@ -86,9 +86,7 @@
 				},
 			{% endfor %}
         ]
-		var nbc=jsonData.length;
-		console.log(nbc)
-		document.getElementById("countCsts").textContent += " ("+ nbc+")";
+		document.getElementById("countCsts").textContent += " ("+ jsonData.length+")";
 		var markersCluster = new L.MarkerClusterGroup({
 		    iconCreateFunction: function(cluster) {
 				return L.divIcon({ 
