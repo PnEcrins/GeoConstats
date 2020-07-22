@@ -15,6 +15,7 @@ class Constats(DB.Model):
     nb_victimes_blesse = DB.Column(DB.Integer)
     statut = DB.Column(DB.Integer)
     id_secteur=DB.Column(DB.Integer)
+    id_commune=DB.Column(DB.Integer)
     the_geom_point= DB.Column(Geometry("GEOMETRY", 2154))
 class Declaratif(DB.Model):
     __tablename__="t_constats_declaratifs"
@@ -29,6 +30,7 @@ class Declaratif(DB.Model):
     nb_victimes_blesse_d = DB.Column(DB.Integer)
     statut_d = DB.Column(DB.String(10))
     id_secteur_d=DB.Column(DB.Integer)
+    id_commune=DB.Column(DB.Integer)
     geom=DB.Column(Geometry("GEOMETRY",2154))    
 
 class bib_statut(DB.Model):   

@@ -44,6 +44,7 @@
 				Propriétaire : {{ constats.properties.proprietaire }}<br>
 				Type d'animaux : {{ constats.properties.type_animaux }}<br>
 				Secteur : {{constats.properties.secteur}}<br>
+				Commune : {{constats.properties.commune}}<br>
 				Statut : {{ constats.properties.statut }}<br>
 				<a href="{{url_for('update',idc=constats.properties.id_constat)}}">Modifier le constat</a><br>
 				<a href="{{url_for('delete',idc=constats.properties.id_constat)}}">Supprimer le constat</a><br>				
@@ -82,6 +83,7 @@
 				'type_animaux': '{{ constats.properties.type_animaux }}',
 				'statut': '{{ constats.properties.statut }}',
 				'secteur':'{{constats.properties.secteur}}',
+				'commune':'{{constats.properties.commune}}',
 				'geometry': '{{ constats.geometry | tojson}}'
 				},
 			{% endfor %}
@@ -109,7 +111,8 @@
 					"Propriétaire : "+point.proprietaire+"<br>"+ 
 					"Type d'animaux : "+point.type_animaux+"<br>"+ 
 					"Statut : "+point.statut+"<br>" +
-					"Secteur : "+point.secteur+"<br>"
+					"Secteur : "+point.secteur+"<br>"+
+					"Commune : "+point.commune+"<br>"
 					) ;
 					
 				markersCluster.addLayer(markerC); 

@@ -42,6 +42,7 @@
 				Propriétaire : {{ decla.properties.proprietaire_d }}<br>
 				Type d'animaux : {{ decla.properties.type_animaux_d }}<br>
 				Secteur : {{decla.properties.secteur_d}}<br>
+				Commune : {{decla.properties.commune_d}}<br>
 				Statut : {{ decla.properties.statut_d }}<br>
 				<a href="{{url_for('updateDecla',idc=decla.properties.id_constat_d)}}">Modifier le constat</a><br>
 				<a href="{{url_for('deleteDecla',idc=decla.properties.id_constat_d)}}">Supprimer le constat</a><br>
@@ -80,6 +81,7 @@
 				'type_animaux_d': '{{ decla.properties.type_animaux_d }}',
 				'statut_d': '{{ decla.properties.statut_d }}',
 				'secteur_d': '{{ decla.properties.secteur_d }}',
+				'commune_d': '{{ decla.properties.commune_d }}',
 				'geom':'{{decla.geometry | tojson}}',
 				},
 			{% endfor %}
@@ -107,6 +109,7 @@
 					"Propriétaire : "+point.proprietaire_d+"<br>"+ 
 					"Type d'animaux : "+point.type_animaux_d+"<br>"+ 
 					"Secteur : "+point.secteur_d+"<br>"+ 
+					"Commune : "+point.commune_d+"<br>"+ 
 					"Statut : "+point.statut_d+"<br>" 
 					) ;
 					

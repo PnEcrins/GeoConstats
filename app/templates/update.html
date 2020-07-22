@@ -102,6 +102,7 @@
 		'type_animaux': '{{ Constats.properties.type_animaux }}',
 		'statut': '{{ Constats.properties.statut }}',
 		'secteur': '{{ Constats.properties.secteur }}',
+		'commune': '{{ Constats.properties.commune }}',
 		'geometry': '{{ Constats.geometry | tojson}}'
 	};
 	console.log(constatFilter)
@@ -116,6 +117,7 @@
 		"Propriétaire : "+constatFilter.proprietaire+"<br>"+ 
 		"Type d'animaux : "+constatFilter.type_animaux+"<br>"+ 
 		"Secteur : "+constatFilter.secteur+"<br>"+ 
+		"Commune : "+constatFilter.commune+"<br>"+ 
 		"Statut : "+constatFilter.statut+"<br>" 
 	) 
 	.addTo(map);
@@ -136,6 +138,7 @@ document.getElementById("id_constat").value = {{Constats.properties.id_constat}}
 			"Propriétaire : "+constatFilter.proprietaire+"<br>"+ 
 			"Type d'animaux : "+constatFilter.type_animaux+"<br>"+ 
 			"Secteur : "+constatFilter.secteur+"<br>"+ 
+			"Commune : "+constatFilter.commune+"<br>"+ 
 			"Statut : "+constatFilter.statut+"<br>" 
 		).openPopup();		
 		document.getElementById("geomlat").value = e.latlng.lat;

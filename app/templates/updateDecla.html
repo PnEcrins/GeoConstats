@@ -123,6 +123,7 @@
 		'type_animaux_d': '{{ Declaratif.properties.type_animaux_d }}',
 		'statut_d': '{{ Declaratif.properties.statut_d }}',
 		'secteur_d': '{{ Declaratif.properties.secteur_d }}',
+		'commune_d': '{{ Declaratif.properties.commune_d }}',
 		'geometry':'{{Declaratif.geometry | tojson}}'
 	}
 	var marker=L.marker([JSON.parse(constatFilter.geometry).coordinates[1],JSON.parse(constatFilter.geometry).coordinates[0]]) 
@@ -135,6 +136,7 @@
 		"Propriétaire : "+constatFilter.proprietaire_d+"<br>"+ 
 		"Type d'animaux : "+constatFilter.type_animaux_d+"<br>"+ 
 		"Secteur : "+constatFilter.secteur_d+"<br>" 
+		"Commune : "+constatFilter.commune_d+"<br>" 
 		"Statut : "+constatFilter.statut+"<br>" 
 	).addTo(map); 
 
@@ -154,6 +156,7 @@
 			"Propriétaire : "+constatFilter.proprietaire+"<br>"+ 
 			"Type d'animaux : "+constatFilter.type_animaux+"<br>"+ 
 			"Secteur : "+constatFilter.secteur_d+"<br>"+ 
+			"Commune : "+constatFilter.commune_d+"<br>"+ 
 			"Statut : "+constatFilter.statut+"<br>" 
 		).openPopup();
 		document.getElementById("geomlat").value = e.latlng.lat;

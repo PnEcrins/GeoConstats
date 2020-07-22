@@ -73,6 +73,8 @@ def map():
         for dsec in dataSecteur:
             if dsec.id_area == d[0].id_secteur:
                 dico['properties']['secteur']=dsec.area_name
+            if dsec.id_area == d[0].id_commune:
+                dico['properties']['commune']=dsec.area_name            
         cnsts.append(dico)        
     return render_template('map.html', title='Map', Constats=cnsts,form=form)
 
@@ -121,6 +123,9 @@ def update(idc):
     """
     Lance la page de mise à jour d'une donnée
     """
+    dataStatut=DB.session.query(bib_statut)
+    dataAnimaux=DB.session.query(bib_type_animaux)
+    dataSecteur=DB.session.query(l_areas)
     dataGeom = DB.session.query(Constats,func.ST_AsGeoJson(func.ST_Transform(Constats.the_geom_point,4326))).filter(Constats.id_constat==idc).all()
     geojson=json.loads(dataGeom[0][1])
     dico={}
@@ -133,9 +138,20 @@ def update(idc):
     dico['properties']['nom_agent2']=dataGeom[0][0].nom_agent2
     dico['properties']['proprietaire']=dataGeom[0][0].proprietaire
     dico['properties']['type_animaux']=dataGeom[0][0].type_animaux
+    for da in dataAnimaux:
+        if da.id==dataGeom[0][0].type_animaux:
+            dico['properties']['type_animaux_name']=da.nom    
     dico['properties']['nb_victimes_mort']=dataGeom[0][0].nb_victimes_mort
     dico['properties']['nb_victimes_blesse']=dataGeom[0][0].nb_victimes_blesse
     dico['properties']['statut']=dataGeom[0][0].statut
+    for ds in dataStatut:
+       if ds.id==dataGeom[0][0].statut:
+           dico['properties']['statut_name']=ds.nom
+    for dsec in dataSecteur:
+       if dsec.id_area == dataGeom[0][0].id_secteur:
+           dico['properties']['secteur']=dsec.area_name
+       if dsec.id_area == dataGeom[0][0].id_commune:
+           dico['properties']['commune']=dsec.area_name    
     form = LoginForm()
     form.statut.choices=[]
     dataStatut=DB.session.query(bib_statut)
@@ -156,7 +172,6 @@ def updateDB():
     Réalise les mises à jour dans la BD
     """
     data=request.form
-    print(data['date_attaque'])
     p2154=DB.session.query(func.ST_AsGeoJson(func.ST_Transform(func.ST_SetSRID(func.ST_Point(float(data['geomlng']),float(data['geomlat'])),4326),2154)))
     json2154=json.loads(p2154[0][0])    
     cst=DB.session.query(Constats).filter(Constats.id_constat==data['id_constat']).one()
@@ -187,6 +202,7 @@ def download():
     filter_query = request.args.to_dict()
     dataStatut=DB.session.query(bib_statut)
     dataAnimaux=DB.session.query(bib_type_animaux)
+    dataSecteur=DB.session.query(l_areas)
     query = DB.session.query(Constats,func.ST_AsGeoJson(func.ST_Transform(Constats.the_geom_point,4326)))
     
     if 'date' in filter_query:
@@ -216,6 +232,11 @@ def download():
         for ds in dataStatut:
             if ds.id==d[0].statut:
                 dico['statut']=ds.nom
+        for dsec in dataSecteur:
+            if dsec.id_area == d[0].id_secteur:
+                dico['secteur']=dsec.area_name
+            if dsec.id_area == d[0].id_commune:
+                dico['commune']=dsec.area_name         
         dico['x']=geojson['coordinates'][1]
         dico['y']=geojson['coordinates'][0]
         cnsts.append(dico)       
@@ -276,7 +297,9 @@ def decla():
                 dico['properties']['statut_d']=ds.nom
         for dsec in dataSecteur:
             if dsec.id_area == d[0].id_secteur_d:
-                dico['properties']['secteur_d']=dsec.area_name        
+                dico['properties']['secteur_d']=dsec.area_name  
+            if dsec.id_area == d[0].id_commune_d:
+                dico['properties']['commune_d']=dsec.area_name                 
         decla.append(dico)
     return render_template('decla.html', title='Declaratif', Declaratifs=decla,form=form)
 
@@ -333,6 +356,9 @@ def updateDecla(idc):
      """
      Lance la page de mise à jour d'une donnée
      """
+     dataStatut=DB.session.query(bib_statut)
+     dataAnimaux=DB.session.query(bib_type_animaux)
+     dataSecteur=DB.session.query(l_areas)
      dataGeom = DB.session.query(Declaratif,func.ST_AsGeoJson(func.ST_Transform(Declaratif.geom,4326))).filter(Declaratif.id_constat_d==idc).all()
      geojson=json.loads(dataGeom[0][1])
      dico={}
@@ -344,9 +370,20 @@ def updateDecla(idc):
      dico['properties']['lieu_dit']=dataGeom[0][0].lieu_dit
      dico['properties']['proprietaire_d']=dataGeom[0][0].proprietaire_d
      dico['properties']['type_animaux_d']=dataGeom[0][0].type_animaux_d
+     for da in dataAnimaux:
+         if da.id==dataGeom[0][0].type_animaux_d:
+             dico['properties']['type_animaux_name']=da.nom  
      dico['properties']['nb_victimes_mort_d']=dataGeom[0][0].nb_victimes_mort_d
      dico['properties']['nb_victimes_blesse_d']=dataGeom[0][0].nb_victimes_blesse_d
-     dico['properties']['statut_d']=dataGeom[0][0].statut_d     
+     dico['properties']['statut_d']=dataGeom[0][0].statut_d
+     for ds in dataStatut:
+         if ds.id==dataGeom[0][0].statut:
+             dico['properties']['statut_name']=ds.nom
+     for dsec in dataSecteur:
+         if dsec.id_area == dataGeom[0][0].id_secteur_d:
+             dico['properties']['secteur_d']=dsec.area_name
+         if dsec.id_area == dataGeom[0][0].id_commune_d:
+             dico['properties']['commune_d']=dsec.area_name         
      form = DeclaForm()
      form.statut_d.choices=[]
      dataStatut=DB.session.query(bib_statut)
@@ -386,6 +423,7 @@ def downloadDecla():
     filter_query = request.args.to_dict()
     dataStatut=DB.session.query(bib_statut)
     dataAnimaux=DB.session.query(bib_type_animaux)
+    dataSecteur=DB.session.query(l_areas)
     query = DB.session.query(Declaratif,func.ST_AsGeoJson(func.ST_Transform(Declaratif.geom,4326)))
     
     if 'date' in filter_query:
@@ -414,6 +452,11 @@ def downloadDecla():
         for ds in dataStatut:
             if ds.id==d[0].statut_d:
                 dico['statut']=ds.nom
+        for dsec in dataSecteur:
+            if dsec.id_area == d[0].id_secteur_d:
+                dico['secteur']=dsec.area_name
+            if dsec.id_area == d[0].id_commune_d:
+                dico['commune']=dsec.area_name          
         dico['x']=geojson['coordinates'][1]
         dico['y']=geojson['coordinates'][0]
         cnsts.append(dico)       
