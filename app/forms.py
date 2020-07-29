@@ -1,11 +1,11 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, BooleanField, IntegerField, DateField, SubmitField, SelectField, HiddenField
+from wtforms import StringField, BooleanField, IntegerField, DateField, SubmitField, SelectField, HiddenField, FloatField
 from app.models import Constats,Declaratif, bib_statut, bib_type_animaux
 from .env import DB
 from wtforms.validators import DataRequired
 from datetime import date
     
-class LoginForm(FlaskForm):
+class ConstatForm(FlaskForm):
     date_attaque = DateField('date_attaque', format='%Y/%m/%d',default=date.today)
     date_constat = DateField('date_constat', format='%Y/%m/%d',default=date.today)
     nom_agent1 = StringField('nom_agent1')
@@ -15,7 +15,8 @@ class LoginForm(FlaskForm):
     nb_victimes_mort = IntegerField('nb_victimes_mort')
     nb_victimes_blesse = IntegerField('nb_victimes_blesse')
     statut = SelectField('situation',choices=[])
-    submit = SubmitField('Confirmer le consat')
+    nb_jour_agent=FloatField('nb_jour_agent')
+    submit = SubmitField('Confirmer le constat')
 class DeclaForm(FlaskForm):
     date_attaque_d = DateField('date_attaque_d', format='%Y/%m/%d',default=date.today)
     date_constat_d = DateField('date_constat_d', format='%Y/%m/%d',default=date.today)
@@ -27,6 +28,6 @@ class DeclaForm(FlaskForm):
     statut_d = SelectField('situation',choices=[])
     submit = SubmitField('Confirmer le consat')    
 class FilterForm(FlaskForm):
-    date=IntegerField('Année du constat',default=date.today().year)
+    date=SelectField('Année du constat')
     animaux=SelectField("Type d'animaux victimes",choices=[])
     statut=SelectField("Statut du constat",choices=[])

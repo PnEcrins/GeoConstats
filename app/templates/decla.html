@@ -6,29 +6,28 @@
 		<form method="GET" novalidate>
 			<div class="form-group">
 				Type d'animaux <br>
-				{{ form.animaux(size=4) }}
+				{{ form.animaux(size=1) }}
 				{% for error in form.animaux.errors %}
 				<span style="color: red;">[{{ error }}]</span>
 				{% endfor %}
 			</div>		
 			<div class="form-group">
 				Année du constat <br>
-				{{ form.date(size=18) }}
+				{{ form.date(size=1,default=0) }}
 				{% for error in form.date.errors %}
 				<span style="color: red;">[{{ error }}]</span>
 				{% endfor %}
 			</div>
 			<div class="form-group">
 				Statut du constat <br>
-				{{ form.statut(size=3) }}
+				{{ form.statut(size=1) }}
 				{% for error in form.statut.errors %}
 				<span style="color: red;">[{{ error }}]</span>
 				{% endfor %}
 			</div>
 			<div class="form-group"><button id="subform" type="submit" formaction="{{url_for('decla')}}" class="btn btn-primary">Filtrer les données</button></div>
-			<div class="form-group"><button type="submit" formaction="{{url_for('downloadDecla')}}" class="btn btn-secondary">Télécharger les données filtrées</button></div>	
+			<div class="form-group"><button type="submit" formaction="{{url_for('downloadDecla')}}" class="btn btn-secondary">Télécharger les données</button></div>	
 		</form>
-		<div class="form-group"><button onclick="window.location.href='{{url_for('downloadDecla')}}';" class="btn btn-secondary">Télécharger toutes les données</button></div>
 		<center><h3 id="countCsts">Liste des constats</h3></center>
 		{% for decla in Declaratifs %}
 			<button class="btn btn-light" data-toggle="collapse" data-target="#textDecla{{decla.properties.id_constat_d}}" style="margin:10px; display:list-item block;">{{decla.properties.date_constat_d}} {{decla.properties.type_animaux_d}}</button>
@@ -46,6 +45,7 @@
 				Statut : {{ decla.properties.statut_d }}<br>
 				<a href="{{url_for('updateDecla',idc=decla.properties.id_constat_d)}}">Modifier le constat</a><br>
 				<a href="{{url_for('deleteDecla',idc=decla.properties.id_constat_d)}}">Supprimer le constat</a><br>
+				<a href="{{url_for('dataDecla',idc=decla.properties.id_constat_d)}}">Informations</a><br>
 			</div></center>
 			<br>
 

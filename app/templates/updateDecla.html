@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% block content %}
-<center><h1>Constat {{Declaratif.id_constat}}</h1></center>
+<center><h1>Constat {{Declaratif.properties.id_constat_d}}</h1></center>
 <div id="map" style="height: 92vh;"></div>
 <div class="leftMap">
     <form action="{{url_for('updateDBDecla')}}" method="post" novalidate>
@@ -59,7 +59,7 @@
 				Type d'animaux :
 			</div>
 			<div class="mr-1 col-4">			
-				{{ form.type_animaux_d(size=4,value=Declaratif.properties.type_animaux_d) }}
+				{{ form.type_animaux_d(size=3,value=Declaratif.properties.type_animaux_d) }}
 				{% for error in form.type_animaux_d.errors %}
 				<span style="color: red;">[{{ error }}]</span>
 				{% endfor %}
@@ -103,6 +103,7 @@
 		</div>
 		<br>		
         <center><button type="submit" class="btn btn-primary">Modifier le constat</button></center>
+		<input type="hidden"  type="text" name="id_constat_d" id="id_constat_d">
 		<input type="hidden"  type="text" name="geomlat" id="geomlat">
         <input type="hidden"  type="text" name="geomlng" id="geomlng">		
     </form>
@@ -126,6 +127,7 @@
 		'commune_d': '{{ Declaratif.properties.commune_d }}',
 		'geometry':'{{Declaratif.geometry | tojson}}'
 	}
+	document.getElementById("id_constat_d").value = constatFilter.id_constat_d;	
 	var marker=L.marker([JSON.parse(constatFilter.geometry).coordinates[1],JSON.parse(constatFilter.geometry).coordinates[0]]) 
 	.bindPopup("Constat numéro : "+constatFilter.id_constat_d+"<br>"+ 
 		"Date de l'attaque : "+constatFilter.date_attaque_d+"<br>"+ 
@@ -135,8 +137,8 @@
 		"Lieu dit : "+constatFilter.lieu_dit+"<br>"+ 
 		"Propriétaire : "+constatFilter.proprietaire_d+"<br>"+ 
 		"Type d'animaux : "+constatFilter.type_animaux_d+"<br>"+ 
-		"Secteur : "+constatFilter.secteur_d+"<br>" 
-		"Commune : "+constatFilter.commune_d+"<br>" 
+		"Secteur : "+constatFilter.secteur_d+"<br>" +
+		"Commune : "+constatFilter.commune_d+"<br>" +
 		"Statut : "+constatFilter.statut+"<br>" 
 	).addTo(map); 
 
@@ -151,13 +153,12 @@
 			"Date du constat : "+constatFilter.date_constat_d+"<br>"+ 
 			"Nombre de victimes (mort) : "+constatFilter.nb_victimes_mort_d+"<br>"+ 
 			"Nombre de victimes (blessé) : "+constatFilter.nb_victimes_blesse_d+"<br>"+ 
-			"Nom du 1er agent recenseur : "+constatFilter.nom_agent1+"<br>"+ 
-			"Nom du 2eme agent recenseur : "+constatFilter.nom_agent2+"<br>"+ 
-			"Propriétaire : "+constatFilter.proprietaire+"<br>"+ 
-			"Type d'animaux : "+constatFilter.type_animaux+"<br>"+ 
+			"Lieu dit : "+constatFilter.lieu_dit+"<br>"+  
+			"Propriétaire : "+constatFilter.proprietaire_d+"<br>"+ 
+			"Type d'animaux : "+constatFilter.type_animaux_d+"<br>"+ 
 			"Secteur : "+constatFilter.secteur_d+"<br>"+ 
 			"Commune : "+constatFilter.commune_d+"<br>"+ 
-			"Statut : "+constatFilter.statut+"<br>" 
+			"Statut : "+constatFilter.statut_d+"<br>" 
 		).openPopup();
 		document.getElementById("geomlat").value = e.latlng.lat;
         document.getElementById("geomlng").value = e.latlng.lng;		

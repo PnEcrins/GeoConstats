@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+
+{% block content %}
+<center><h1>Constat {{Constats.properties.id_constat}}</h1></center>
+<div id="map" style="height: 92vh;">
+</div>
+	<div class="leftMap">
+		<div style="vertical-align:middle;"id="textConstat">
+				Numéro : {{Constats.properties.id_constat}} <br>
+				Date de l'attaque : {{Constats.properties.date_attaque}} <br>
+				Date du constat : {{Constats.properties.date_constat}}<br>
+				Nombre de victimes (morts) : {{ Constats.properties.nb_victimes_mort }}<br>
+				Nombre de victimes (blessés) : {{ Constats.properties.nb_victimes_blesse }}<br>
+				Nom du 1er agent recenseur : {{ Constats.properties.nom_agent1 }}<br>
+				Nom du 2ème agent recenseur : {{ Constats.properties.nom_agent2 }}<br>
+				Propriétaire : {{ Constats.properties.proprietaire }}<br>
+				Type d'animaux : {{ Constats.properties.type_animaux }}<br>
+				Secteur : {{Constats.properties.secteur}}<br>
+				Commune : {{Constats.properties.commune}}<br>
+				Statut : {{ Constats.properties.statut }}<br>
+				Nombre de jours agent : {{Constats.properties.nb_jour_agent}}<br>		
+			</div>
+    <br />
+    </div>
+</div>
+
+<script>
+	var constatFilter={
+		'id_constat':'{{Constats.properties.id_constat}}',
+		'date_attaque': '{{ Constats.properties.date_attaque }}',
+		'date_constat': '{{ Constats.properties.date_constat }}',
+		'nb_victimes_mort': '{{ Constats.properties.nb_victimes_mort }}',
+		'nb_victimes_blesse': '{{ Constats.properties.nb_victimes_blesse }}',
+		'nom_agent1': '{{ Constats.properties.nom_agent1 }}',
+		'nom_agent2': '{{ Constats.properties.nom_agent2 }}',
+		'proprietaire': '{{ Constats.properties.proprietaire }}',
+		'type_animaux': '{{ Constats.properties.type_animaux }}',
+		'statut': '{{ Constats.properties.statut }}',
+		'secteur': '{{ Constats.properties.secteur }}',
+		'commune': '{{ Constats.properties.commune }}',
+		'geometry': '{{ Constats.geometry | tojson}}'
+	};    
+	var map = L.map('map').setView([JSON.parse(constatFilter.geometry).coordinates[1],JSON.parse(constatFilter.geometry).coordinates[0]], 12);
+    var osm=L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+    }).addTo(map);	
+	
+	var markerText=L.marker([JSON.parse(constatFilter.geometry).coordinates[1]+0.02,JSON.parse(constatFilter.geometry).coordinates[0]-0.1], { opacity: 0 }) 
+	.addTo(map)
+	.bindPopup("Constat numéro : "+constatFilter.id_constat+"<br>"+ 
+		"Date de l'attaque : "+constatFilter.date_attaque+"<br>"+ 
+	    "Date du constat : "+constatFilter.date_constat+"<br>"+ 
+		"Nombre de victimes (mort) : "+constatFilter.nb_victimes_mort+"<br>"+ 
+		"Nombre de victimes (blessé) : "+constatFilter.nb_victimes_blesse+"<br>"+ 
+		"Nom du 1er agent recenseur : "+constatFilter.nom_agent1+"<br>"+ 
+		"Nom du 2eme agent recenseur : "+constatFilter.nom_agent2+"<br>"+ 
+		"Propriétaire : "+constatFilter.proprietaire+"<br>"+ 
+		"Type d'animaux : "+constatFilter.type_animaux+"<br>"+ 
+		"Secteur : "+constatFilter.secteur+"<br>"+ 
+		"Commune : "+constatFilter.commune+"<br>"+ 
+		"Statut : "+constatFilter.statut+"<br>" 
+	,{autoClose:false}) .openPopup();
+
+	
+	var marker=L.marker([JSON.parse(constatFilter.geometry).coordinates[1],JSON.parse(constatFilter.geometry).coordinates[0]]) 
+	.addTo(map);
+	
+	var printer = L.easyPrint({
+      		tileLayer: osm,
+      		sizeModes: ['A4Landscape'],
+      		filename: 'constat {{Constats.properties.date_constat}}',
+      		exportOnly: true,
+      		hideClasses:['leaflet-control-zoom']
+		}).addTo(map);
+	
+</script>
+{% endblock %}
