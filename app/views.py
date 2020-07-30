@@ -2,7 +2,8 @@ from flask import Flask, render_template, flash, redirect, url_for, request, jso
 from flask_wtf import FlaskForm
 from wtforms import StringField, IntegerField, SubmitField
 from .env import DB
-from app.models import Constats,Declaratif,bib_statut, bib_type_animaux, l_areas
+from app.models import Constats,Declaratif,bib_statut, bib_type_animaux, l_areas, TRole
+from app.user_models import UsersView 
 from app.forms import ConstatForm, DeclaForm, FilterForm
 from sqlalchemy import func, extract
 import json
@@ -15,9 +16,10 @@ import pyexcel as pe
 import io
 import csv
 
+
 app = Flask(__name__)
 
-
+#from pypnusershub import routes as fnauth
 
 @app.route("/")
 @app.route("/map")

@@ -92,11 +92,6 @@
     </form>
 </div>
 <script>
-    var map = L.map('map').setView([44.8, 6.2], 10);
-    L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
-        attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
-    }).addTo(map);	
-	
 	var constatFilter={
 		'id_constat':'{{Constats.properties.id_constat}}',
 		'date_attaque': '{{ Constats.properties.date_attaque }}',
@@ -106,12 +101,17 @@
 		'nom_agent1': '{{ Constats.properties.nom_agent1 }}',
 		'nom_agent2': '{{ Constats.properties.nom_agent2 }}',
 		'proprietaire': '{{ Constats.properties.proprietaire }}',
-		'type_animaux': '{{ Constats.properties.type_animaux }}',
-		'statut': '{{ Constats.properties.statut }}',
+		'type_animaux': '{{ Constats.properties.type_animaux_name }}',
+		'statut': '{{ Constats.properties.statut_name }}',
 		'secteur': '{{ Constats.properties.secteur }}',
 		'commune': '{{ Constats.properties.commune }}',
 		'geometry': '{{ Constats.geometry | tojson}}'
 	};
+    var map = L.map('map').setView([JSON.parse(constatFilter.geometry).coordinates[1],JSON.parse(constatFilter.geometry).coordinates[0]], 14);
+    L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+    }).addTo(map);		
+	    document.getElementById("id_constat").value = {{Constats.properties.id_constat}};	
 		document.getElementById("geomlat").value = JSON.parse(constatFilter.geometry).coordinates[1];
         document.getElementById("geomlng").value = JSON.parse(constatFilter.geometry).coordinates[0];
 	var marker=L.marker([JSON.parse(constatFilter.geometry).coordinates[1],JSON.parse(constatFilter.geometry).coordinates[0]]) 
@@ -129,7 +129,7 @@
 		"Statut : "+constatFilter.statut+"<br>" 
 	) 
 	.addTo(map);
-document.getElementById("id_constat").value = {{Constats.properties.id_constat}};	
+
 	var addConstat=function(e){
 		if(marker!=undefined){
             map.removeLayer(marker)	

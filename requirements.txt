@@ -2,6 +2,7 @@ alembic==1.0.10
 Click==7.0
 Flask==1.1.1
 Flask-Login==0.4.1
+flask-marshmallow==0.9.0
 Flask-Migrate==2.5.2
 Flask-SQLAlchemy==2.3.2
 Flask-WTF==0.14.2
@@ -11,6 +12,8 @@ itsdangerous==1.1.0
 Jinja2==2.10.1
 Mako==1.0.12
 MarkupSafe==1.1.1
+marshmallow==2.15.6
+marshmallow-sqlalchemy==0.14.1
 psycopg2==2.7.5
 pyexcel==0.6.2
 python-dateutil==2.8.0
