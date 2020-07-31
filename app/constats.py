@@ -1,27 +1,13 @@
-from flask import Blueprint,Flask, render_template, flash, redirect, url_for, request, jsonify, make_response
-from flask_wtf import FlaskForm
-from wtforms import StringField, IntegerField, SubmitField
-from .env import DB
-from app.models import Constats,Declaratif,bib_statut, bib_type_animaux, l_areas
-from app.forms import ConstatForm, DeclaForm, FilterForm
-from sqlalchemy import func, extract
-import json
-from shapely.geometry import Point, shape
-from shapely import wkb
-from shapely.ops import transform
-from geoalchemy2.shape import to_shape, from_shape
-from datetime import datetime
-import pyexcel as pe
-import io
-import csv
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+Created on Fri Jul 31 08:51:25 2020
 
+@author: raphael
+"""
 
-routes = Blueprint('routes',__name__)
-
-#from pypnusershub import routes as fnauth
-
-@routes.route("/")
-@routes.route("/map")
+@app.route("/")
+@app.route("/map")
 def map():
     """
     Lance la "page d'acceuil" avec une carte + une liste avec toutes les données
@@ -87,7 +73,7 @@ def map():
         cnsts.append(dico)        
     return render_template('map.html', title='Map', Constats=cnsts,form=form)
 
-@routes.route('/form',methods=['GET', 'POST'])
+@app.route('/form',methods=['GET', 'POST'])
 def form():
     """
     Lance la page de formulaire d'ajout de données
@@ -103,7 +89,7 @@ def form():
         form.type_animaux.choices+=[(da.id,da.nom)]    
     return render_template('add.html', title="Add_to_database", form=form )
 
-@routes.route('/add', methods=['GET', 'POST'])
+@app.route('/add', methods=['GET', 'POST'])
 def add():
     """
     Réalise l'ajout de données dans la BD
@@ -134,7 +120,7 @@ def add():
     DB.session.commit()
     return redirect(url_for('map'))
 
-@routes.route('/update/<idc>', methods=['GET', 'POST'])
+@app.route('/update/<idc>', methods=['GET', 'POST'])
 def update(idc):
     """
     Lance la page de mise à jour d'une donnée
@@ -183,7 +169,7 @@ def update(idc):
     form.process()        
     return render_template('update.html', title='Map',form=form,Constats=dico)
 
-@routes.route('/updateDB',methods=['GET', 'POST'])
+@app.route('/updateDB',methods=['GET', 'POST'])
 def updateDB():
     """
     Réalise les mises à jour dans la BD
@@ -212,7 +198,7 @@ def updateDB():
     DB.session.commit()       
     return redirect(url_for('map'))
     
-@routes.route('/delete/<idc>', methods=['GET', 'POST'])
+@app.route('/delete/<idc>', methods=['GET', 'POST'])
 def delete(idc):
     """
     Réalise la suppression d'un constat déclaratif
@@ -221,7 +207,7 @@ def delete(idc):
     DB.session.commit()
     return redirect(url_for('map'))
 
-@routes.route('/download', methods=['GET', 'POST'])
+@app.route('/download', methods=['GET', 'POST'])
 def download():
     filter_query = request.args.to_dict()
     dataStatut=DB.session.query(bib_statut)
@@ -230,14 +216,12 @@ def download():
     query = DB.session.query(Constats,func.ST_AsGeoJson(func.ST_Transform(Constats.the_geom_point,4326)))
     
     if 'date' in filter_query:
-        if filter_query['date'] != "0":
+        if filter_query['date'] != "":
             query = query.filter(extract('year',Constats.date_constat) == int(filter_query['date']))
     if 'animaux' in filter_query:
-        if filter_query['animaux'] != "0":
-            query = query.filter(Constats.type_animaux == filter_query['animaux'])
+        query = query.filter(Constats.type_animaux == filter_query['animaux'])
     if 'statut' in filter_query:
-        if filter_query['statut'] != "0":
-            query = query.filter(Constats.statut == filter_query['statut'])   
+        query = query.filter(Constats.statut == filter_query['statut'])   
     dataGeom =  query.order_by(Constats.id_constat).all()  
     
     cnsts=[]
@@ -250,13 +234,11 @@ def download():
         dico['nom_agent1']=d[0].nom_agent1
         dico['nom_agent2']=d[0].nom_agent2
         dico['proprietaire']=d[0].proprietaire
-        dico['type_animaux']=None
         for da in dataAnimaux:
             if da.id==d[0].type_animaux:
                 dico['type_animaux']=da.nom
         dico['nb_victimes_mort']=d[0].nb_victimes_mort
         dico['nb_victimes_blesse']=d[0].nb_victimes_blesse
-        dico['statut']=None
         for ds in dataStatut:
             if ds.id==d[0].statut:
                 dico['statut']=ds.nom
@@ -278,7 +260,7 @@ def download():
     output.headers["Content-type"] = "text/csv"
     return output
    
-@routes.route('/data/<idc>')
+@app.route('/data/<idc>')
 def data(idc):
     dataStatut=DB.session.query(bib_statut)
     dataAnimaux=DB.session.query(bib_type_animaux)
@@ -314,7 +296,7 @@ def data(idc):
     
     
     
-@routes.route('/decla')
+@app.route('/decla')
 def decla():
     """
     Lance la page de consultation des constats déclaratifs avec une carte + une liste avec toutes les données
@@ -374,7 +356,7 @@ def decla():
         decla.append(dico)
     return render_template('decla.html', title='Declaratif', Declaratifs=decla,form=form)
 
-@routes.route('/deleteDecla/<idc>',methods=['GET', 'POST'])
+@app.route('/deleteDecla/<idc>',methods=['GET', 'POST'])
 def deleteDecla(idc):
     """
     Réalise la suppression d'un constat déclaratif
@@ -383,7 +365,7 @@ def deleteDecla(idc):
     DB.session.commit()
     return redirect(url_for('decla'))
 
-@routes.route ('/formDecla',methods=['GET', 'POST'])
+@app.route ('/formDecla',methods=['GET', 'POST'])
 def formDecla():
     """
     Lance la page de formulaire d'ajout de données
@@ -399,7 +381,7 @@ def formDecla():
         form.type_animaux_d.choices+=[(da.id,da.nom)]  
     return render_template('addDecla.html', title="Add_to_database", form=form )
 
-@routes.route('/addDecla', methods=['GET', 'POST'])
+@app.route('/addDecla', methods=['GET', 'POST'])
 def addDecla():
     """
     Réalise l'ajout de données dans la BD
@@ -429,7 +411,7 @@ def addDecla():
     DB.session.commit()
     return redirect(url_for('decla'))
 
-@routes.route('/updateDecla/<idc>', methods=['GET', 'POST'])
+@app.route('/updateDecla/<idc>', methods=['GET', 'POST'])
 def updateDecla(idc):
      """
      Lance la page de mise à jour d'une donnée
@@ -476,7 +458,7 @@ def updateDecla(idc):
      form.process()
      return render_template('updateDecla.html', title='Map',form=form,Declaratif=dico)
 
-@routes.route('/updateDBDecla',methods=['GET', 'POST'])
+@app.route('/updateDBDecla',methods=['GET', 'POST'])
 def updateDBDecla():
     """
     Réalise les mises à jour dans la BD
@@ -502,7 +484,7 @@ def updateDBDecla():
     cst.geom=from_shape(Point(json2154['coordinates'][0],json2154['coordinates'][1]),srid=2154)
     DB.session.commit()       
     return redirect(url_for('decla'))    
-@routes.route('/downloadDecla', methods=['GET', 'POST'])
+@app.route('/downloadDecla', methods=['GET', 'POST'])
 def downloadDecla():
     filter_query = request.args.to_dict()
     dataStatut=DB.session.query(bib_statut)
@@ -511,14 +493,12 @@ def downloadDecla():
     query = DB.session.query(Declaratif,func.ST_AsGeoJson(func.ST_Transform(Declaratif.geom,4326)))
     
     if 'date' in filter_query:
-        if filter_query['date'] != "0":
+        if filter_query['date'] == None:
             query = query.filter(extract('year',Declaratif.date_constat_d) == int(filter_query['date']))
     if 'animaux' in filter_query:
-        if filter_query['animaux'] != "0":
-            query = query.filter(Declaratif.type_animaux_d == filter_query['animaux'])
+        query = query.filter(Declaratif.type_animaux_d == filter_query['animaux'])
     if 'statut' in filter_query:
-        if filter_query['statut'] != "0":
-            query = query.filter(Declaratif.statut_d == filter_query['statut'])   
+        query = query.filter(Declaratif.statut_d == filter_query['statut'])   
     dataGeom =  query.order_by(Declaratif.id_constat_d).all()  
     
     cnsts=[]
@@ -530,13 +510,11 @@ def downloadDecla():
         dico['date_constat']=d[0].date_constat_d
         dico['lieu_dit']=d[0].lieu_dit
         dico['proprietaire']=d[0].proprietaire_d
-        dico['type_animaux']=None
         for da in dataAnimaux:
             if da.id==d[0].type_animaux_d:
                 dico['type_animaux']=da.nom
         dico['nb_victimes_mort']=d[0].nb_victimes_mort_d
         dico['nb_victimes_blesse']=d[0].nb_victimes_blesse_d
-        dico['statut']=None
         for ds in dataStatut:
             if ds.id==d[0].statut_d:
                 dico['statut']=ds.nom
@@ -557,7 +535,7 @@ def downloadDecla():
     output.headers["Content-type"] = "text/csv"
     return output
 
-@routes.route('/dataDecla/<idc>')
+@app.route('/dataDecla/<idc>')
 def dataDecla(idc):
     dataStatut=DB.session.query(bib_statut)
     dataAnimaux=DB.session.query(bib_type_animaux)

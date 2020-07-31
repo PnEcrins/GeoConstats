@@ -53,7 +53,7 @@ class l_areas(DB.Model):
     area_name=DB.Column(DB.String)
     area_code=DB.Column(DB.String)    
 
-class TRole(DB.Model):
+"""class TRole(DB.Model):
     __tablename__ = 't_roles'
     __table_args__ = {'schema': 'utilisateurs'}
 
@@ -74,4 +74,4 @@ class TRole(DB.Model):
     pn = DB.Column(DB.Boolean)
     session_appli = DB.Column(DB.String(50))
     date_insert = DB.Column(DB.DateTime)
-    date_update = DB.Column(DB.DateTime)    
+    date_update = DB.Column(DB.DateTime)"""    

@@ -4,7 +4,7 @@
 <center><h1>Constat {{Declaratif.properties.id_constat_d}}</h1></center>
 <div id="map" style="height: 92vh;"></div>
 <div class="leftMap">
-    <form action="{{url_for('updateDBDecla')}}" method="post" novalidate>
+    <form action="{{url_for('routes.updateDBDecla')}}" method="post" novalidate>
             {{ form.hidden_tag() }}
 		<div class="row">	
 			<div class="col-7">

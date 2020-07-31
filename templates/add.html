@@ -4,7 +4,7 @@
 <center><h1>Ajouter un constat</h1></center>
 <div id="map" style="height: 92vh;"></div>
 <div class="leftMap">
-    <form action="{{url_for('add')}}" method="post" novalidate>
+    <form action="{{url_for('routes.add')}}" method="post" novalidate>
             {{ form.hidden_tag() }}
         <div class="form-group">
             Date de l'attaque <br>

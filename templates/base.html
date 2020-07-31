@@ -22,8 +22,6 @@
 		
           <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.2.0/leaflet.css">
           
-          <link rel="stylesheet" href="css/font-awesome.min.css">
-		  <link rel="stylesheet" type= "text/css" href="{{ url_for('static', filename='font-awesome.min.css') }}"/>
           <link rel="stylesheet" type= "text/css" href="{{ url_for('static', filename='styleCarte.css') }}"/>
 		  <link rel="stylesheet" type= "text/css" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.4.1/MarkerCluster.css"/>
       
@@ -38,8 +36,8 @@
 						Constats
 					</a>
 					<div class="dropdown-menu" aria-labelledby="navConstat">
-						<a class="dropdown-item" href="{{url_for('map')}}">Visualiser les constats</a>
-						<a class="dropdown-item" href="{{ url_for('form') }}">Ajouter un constat</a>
+						<a class="dropdown-item" href="{{url_for('routes.map')}}">Visualiser les constats</a>
+						<a class="dropdown-item" href="{{ url_for('routes.form') }}">Ajouter un constat</a>
 					</div>
 				</li>
 				<li class="nav-item dropdown">
@@ -47,8 +45,8 @@
 						Déclaratifs
 					</a>
 					<div class="dropdown-menu" aria-labelledby="navDecla">
-						<a class="dropdown-item" href="{{url_for('decla')}}">Visualiser les constats déclaratifs</a>
-						<a class="dropdown-item" href="{{ url_for('formDecla') }}">Ajouter un constat déclaratif</a>
+						<a class="dropdown-item" href="{{url_for('routes.decla')}}">Visualiser les constats déclaratifs</a>
+						<a class="dropdown-item" href="{{ url_for('routes.formDecla') }}">Ajouter un constat déclaratif</a>
 					</div>
 				</li>				
 		  <li class="nav-item"><a class="navbar-brand" href="http://www.ecrins-parcnational.fr/">Site du Parc</a></li>
