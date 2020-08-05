@@ -9,10 +9,12 @@ from geoalchemy2.shape import from_shape
 from datetime import datetime
 import io
 import csv
-from pypnusershub.db.models import Application
+from pypnusershub.db.models import Application,AppUser
+from pypnusershub.routes import check_auth
 
 routes = Blueprint('routes',__name__)
 
+@routes.route("/")
 @routes.route("/login")
 def login():
     dataApp=DB.session.query(Application.id_application).filter(Application.code_application=='GC').one()
@@ -21,8 +23,8 @@ def login():
         bonApp=dataApp[0]
     return render_template('login.html',id_app=bonApp)
 
-@routes.route("/")
 @routes.route("/map")
+@check_auth(1)
 def map():
     """
     Lance la "page d'acceuil" avec une carte + une liste avec toutes les données
@@ -85,7 +87,8 @@ def map():
         cnsts.append(dico)        
     return render_template('map.html', title='Map', Constats=cnsts,form=form)
 
-@routes.route('/form',methods=['GET', 'POST'])
+@routes.route('/form',methods=['POST','GET'])
+@check_auth(2)
 def form():
     """
     Lance la page de formulaire d'ajout de données
@@ -102,7 +105,8 @@ def form():
     return render_template('add.html', title="Add_to_database", form=form )
 
 @routes.route('/add', methods=['GET', 'POST'])
-def add():
+@check_auth(2,True)
+def add(id_role):
     """
     Réalise l'ajout de données dans la BD
     """
@@ -126,62 +130,79 @@ def add():
         nb_victimes_blesse=data['nb_victimes_blesse'],
         statut=changeStatut,
         nb_jour_agent=data['nb_jour_agent'],
-        the_geom_point=from_shape(Point(json2154['coordinates'][0],json2154['coordinates'][1]),srid=2154)
+        the_geom_point=from_shape(Point(json2154['coordinates'][0],json2154['coordinates'][1]),srid=2154),
+        id_role=id_role
     )    
     DB.session.add(constats)
     DB.session.commit()
     return redirect(url_for('routes.map'))
 
 @routes.route('/update/<idc>', methods=['GET', 'POST'])
-def update(idc):
+@check_auth(
+    2,
+    True,
+    # redirect_on_expiration=URL_REDIRECT,
+    # redirect_on_invalid_token=URL_REDIRECT,
+    # redirect_on_insufficient_right=URL_REDIRECT,
+    )
+def update(idc, id_role):
     """
     Lance la page de mise à jour d'une donnée
     """
+    
     dataStatut=DB.session.query(bib_statut)
     dataAnimaux=DB.session.query(bib_type_animaux)
     dataSecteur=DB.session.query(l_areas)
     dataGeom = DB.session.query(Constats,func.ST_AsGeoJson(func.ST_Transform(Constats.the_geom_point,4326))).filter(Constats.id_constat==idc).all()
-    geojson=json.loads(dataGeom[0][1])
-    dico={}
-    dico['geometry']=geojson
-    dico['properties']={}
-    dico['properties']['id_constat']=dataGeom[0][0].id_constat
-    dico['properties']['date_attaque']=dataGeom[0][0].date_attaque
-    dico['properties']['date_constat']=dataGeom[0][0].date_constat
-    dico['properties']['nom_agent1']=dataGeom[0][0].nom_agent1
-    dico['properties']['nom_agent2']=dataGeom[0][0].nom_agent2
-    dico['properties']['proprietaire']=dataGeom[0][0].proprietaire
-    dico['properties']['type_animaux']=dataGeom[0][0].type_animaux
-    for da in dataAnimaux:
-        if da.id==dataGeom[0][0].type_animaux:
-            dico['properties']['type_animaux_name']=da.nom    
-    dico['properties']['nb_victimes_mort']=dataGeom[0][0].nb_victimes_mort
-    dico['properties']['nb_victimes_blesse']=dataGeom[0][0].nb_victimes_blesse
-    dico['properties']['statut']=dataGeom[0][0].statut
-    for ds in dataStatut:
-       if ds.id==dataGeom[0][0].statut:
-           dico['properties']['statut_name']=ds.nom
-    dico['properties']['nb_jour_agent']=dataGeom[0][0].nb_jour_agent       
-    for dsec in dataSecteur:
-       if dsec.id_area == dataGeom[0][0].id_secteur:
-           dico['properties']['secteur']=dsec.area_name
-       if dsec.id_area == dataGeom[0][0].id_commune:
-           dico['properties']['commune']=dsec.area_name    
-    form = ConstatForm()
-    form.statut.choices=[(0,"")]
-    dataStatut=DB.session.query(bib_statut)
-    for ds in dataStatut:
-        form.statut.choices+=[(ds.id,ds.nom)]
-    form.type_animaux.choices=[(0,"")]
-    dataAnimaux=DB.session.query(bib_type_animaux)
-    for da in dataAnimaux:
-        form.type_animaux.choices+=[(da.id,da.nom)] 
-    form.type_animaux.default=dataGeom[0][0].type_animaux
-    form.statut.default=dataGeom[0][0].statut
-    form.process()        
-    return render_template('update.html', title='Map',form=form,Constats=dico)
+    dataApp=DB.session.query(Application.id_application).filter(Application.code_application=='GC').one()
+    nivDroit=DB.session.query(AppUser.id_droit_max).filter(AppUser.id_role==id_role).filter(AppUser.id_application==dataApp[0]).one()
+
+    if nivDroit[0]>2 or id_role==dataGeom[0][0].id_role:
+        geojson=json.loads(dataGeom[0][1])
+        dico={}
+        dico['user']=dataGeom[0][0].id_role
+        dico['geometry']=geojson
+        dico['properties']={}
+        dico['properties']['id_constat']=dataGeom[0][0].id_constat
+        dico['properties']['date_attaque']=dataGeom[0][0].date_attaque
+        dico['properties']['date_constat']=dataGeom[0][0].date_constat
+        dico['properties']['nom_agent1']=dataGeom[0][0].nom_agent1
+        dico['properties']['nom_agent2']=dataGeom[0][0].nom_agent2
+        dico['properties']['proprietaire']=dataGeom[0][0].proprietaire
+        dico['properties']['type_animaux']=dataGeom[0][0].type_animaux
+        for da in dataAnimaux:
+            if da.id==dataGeom[0][0].type_animaux:
+                dico['properties']['type_animaux_name']=da.nom    
+        dico['properties']['nb_victimes_mort']=dataGeom[0][0].nb_victimes_mort
+        dico['properties']['nb_victimes_blesse']=dataGeom[0][0].nb_victimes_blesse
+        dico['properties']['statut']=dataGeom[0][0].statut
+        for ds in dataStatut:
+            if ds.id==dataGeom[0][0].statut:
+                dico['properties']['statut_name']=ds.nom
+        dico['properties']['nb_jour_agent']=dataGeom[0][0].nb_jour_agent       
+        for dsec in dataSecteur:
+            if dsec.id_area == dataGeom[0][0].id_secteur:
+                dico['properties']['secteur']=dsec.area_name
+            if dsec.id_area == dataGeom[0][0].id_commune:
+                dico['properties']['commune']=dsec.area_name    
+        form = ConstatForm()
+        form.statut.choices=[(0,"")]
+        dataStatut=DB.session.query(bib_statut)
+        for ds in dataStatut:
+            form.statut.choices+=[(ds.id,ds.nom)]
+        form.type_animaux.choices=[(0,"")]
+        dataAnimaux=DB.session.query(bib_type_animaux)
+        for da in dataAnimaux:
+            form.type_animaux.choices+=[(da.id,da.nom)] 
+        form.type_animaux.default=dataGeom[0][0].type_animaux
+        form.statut.default=dataGeom[0][0].statut
+        form.process()        
+        return render_template('update.html', title='Map',form=form,Constats=dico)
+    else:
+        return render_template('pas_les_droits.html')
 
 @routes.route('/updateDB',methods=['GET', 'POST'])
+@check_auth(2)
 def updateDB():
     """
     Réalise les mises à jour dans la BD
@@ -211,15 +232,25 @@ def updateDB():
     return redirect(url_for('routes.map'))
     
 @routes.route('/delete/<idc>', methods=['GET', 'POST'])
-def delete(idc):
+@check_auth(2,True)
+def delete(idc,id_role):
     """
     Réalise la suppression d'un constat déclaratif
     """
-    dataGeom = DB.session.query(Constats).filter(Constats.id_constat==idc).delete()
-    DB.session.commit()
-    return redirect(url_for('routes.map'))
+    #Meme topo que pour l'update
+    dataGeom = DB.session.query(Constats).filter(Constats.id_constat==idc).one()
+    dataApp=DB.session.query(Application.id_application).filter(Application.code_application=='GC').one()
+    nivDroit=DB.session.query(AppUser.id_droit_max).filter(AppUser.id_role==id_role).filter(AppUser.id_application==dataApp[0]).one()
+
+    if nivDroit[0]>2 or id_role==dataGeom[0][0].id_role:
+        dataGeom = DB.session.query(Constats).filter(Constats.id_constat==idc).delete()
+        DB.session.commit()
+        return redirect(url_for('routes.map'))
+    else:
+        return render_template('pas_les_droits.html')    
 
 @routes.route('/download', methods=['GET', 'POST'])
+@check_auth(2)
 def download():
     filter_query = request.args.to_dict()
     dataStatut=DB.session.query(bib_statut)
@@ -277,6 +308,7 @@ def download():
     return output
    
 @routes.route('/data/<idc>')
+@check_auth(2)
 def data(idc):
     dataStatut=DB.session.query(bib_statut)
     dataAnimaux=DB.session.query(bib_type_animaux)
@@ -313,6 +345,7 @@ def data(idc):
     
     
 @routes.route('/decla')
+@check_auth(1)
 def decla():
     """
     Lance la page de consultation des constats déclaratifs avec une carte + une liste avec toutes les données
@@ -373,6 +406,7 @@ def decla():
     return render_template('decla.html', title='Declaratif', Declaratifs=decla,form=form)
 
 @routes.route('/deleteDecla/<idc>',methods=['GET', 'POST'])
+@check_auth(2)
 def deleteDecla(idc):
     """
     Réalise la suppression d'un constat déclaratif
@@ -382,6 +416,7 @@ def deleteDecla(idc):
     return redirect(url_for('routes.decla'))
 
 @routes.route ('/formDecla',methods=['GET', 'POST'])
+@check_auth(2)
 def formDecla():
     """
     Lance la page de formulaire d'ajout de données
@@ -398,6 +433,7 @@ def formDecla():
     return render_template('addDecla.html', title="Add_to_database", form=form )
 
 @routes.route('/addDecla', methods=['GET', 'POST'])
+@check_auth(2)
 def addDecla():
     """
     Réalise l'ajout de données dans la BD
@@ -428,6 +464,7 @@ def addDecla():
     return redirect(url_for('routes.decla'))
 
 @routes.route('/updateDecla/<idc>', methods=['GET', 'POST'])
+@check_auth(2)
 def updateDecla(idc):
      """
      Lance la page de mise à jour d'une donnée
@@ -475,6 +512,7 @@ def updateDecla(idc):
      return render_template('updateDecla.html', title='Map',form=form,Declaratif=dico)
 
 @routes.route('/updateDBDecla',methods=['GET', 'POST'])
+@check_auth(2)
 def updateDBDecla():
     """
     Réalise les mises à jour dans la BD
@@ -501,6 +539,7 @@ def updateDBDecla():
     DB.session.commit()       
     return redirect(url_for('routes.decla'))    
 @routes.route('/downloadDecla', methods=['GET', 'POST'])
+@check_auth(2)
 def downloadDecla():
     filter_query = request.args.to_dict()
     dataStatut=DB.session.query(bib_statut)
@@ -556,6 +595,7 @@ def downloadDecla():
     return output
 
 @routes.route('/dataDecla/<idc>')
+@check_auth(2)
 def dataDecla(idc):
     dataStatut=DB.session.query(bib_statut)
     dataAnimaux=DB.session.query(bib_type_animaux)
