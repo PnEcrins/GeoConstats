@@ -1,24 +1,24 @@
-from flask import Blueprint,Flask, render_template, flash, redirect, url_for, request, jsonify, make_response
-from flask_wtf import FlaskForm
-from wtforms import StringField, IntegerField, SubmitField
+from flask import Blueprint, render_template, redirect, url_for, request, make_response
 from .env import DB
 from app.models import Constats,Declaratif,bib_statut, bib_type_animaux, l_areas
 from app.forms import ConstatForm, DeclaForm, FilterForm
 from sqlalchemy import func, extract
 import json
-from shapely.geometry import Point, shape
-from shapely import wkb
-from shapely.ops import transform
-from geoalchemy2.shape import to_shape, from_shape
+from shapely.geometry import Point
+from geoalchemy2.shape import from_shape
 from datetime import datetime
-import pyexcel as pe
 import io
 import csv
-
+from pypnusershub.db.models import Application
 
 routes = Blueprint('routes',__name__)
 
-#from pypnusershub import routes as fnauth
+@routes.route("/login")
+def login():
+    dataApp=DB.session.query(Application.id_application).filter(Application.code_application=='GC')
+    for d in dataApp:
+        bonApp=int(d[0])
+    return render_template('login.html',id_app=bonApp)
 
 @routes.route("/")
 @routes.route("/map")
@@ -26,19 +26,17 @@ def map():
     """
     Lance la "page d'acceuil" avec une carte + une liste avec toutes les données
     """
-    #Recuperation des filtres et requete sur la table
+    #Recuperation des filtres et requete sur la table constats
     filter_query = request.args.to_dict()
     dataStatut=DB.session.query(bib_statut)
     dataAnimaux=DB.session.query(bib_type_animaux)
     dataSecteur=DB.session.query(l_areas)
-    dataAnnee=DB.session.query(func.distinct(extract('year',Constats.date_constat)).label("date"))
+    dataAnnee=DB.session.query(func.distinct(extract('year',Constats.date_constat)).label("date")).order_by(extract('year',Constats.date_constat).desc())
     query = DB.session.query(Constats,func.ST_AsGeoJson(func.ST_Transform(Constats.the_geom_point,4326)))
-    
     form=FilterForm()
     form.animaux.choices=[(0,"")]
     for da in dataAnimaux:
-        form.animaux.choices+=[(da.id,da.nom)]  
-    #Solution envisagee: demarer les id dans la base a 2 au lieu de 1 et donner le 1 au blanc dans le python   
+        form.animaux.choices+=[(da.id,da.nom)]    
     form.statut.choices=[(0,"")]
     for ds in dataStatut:
         form.statut.choices+=[(ds.id,ds.nom)]
@@ -47,7 +45,6 @@ def map():
         form.date.choices+=[(int(dy[0]),int(dy[0]))]       
     if 'date' in filter_query:
         if filter_query['date'] != "0":
-            #Filtre différent pour date car meme si il est null il est envoye dans l'url. Le 1er if est utile au chargement car il n'apparait pas dans l'url
             query = query.filter(extract('year',Constats.date_constat) == int(filter_query['date']))
     if 'animaux' in filter_query:
         if filter_query['animaux'] != "0":
@@ -323,7 +320,7 @@ def decla():
     dataStatut=DB.session.query(bib_statut)
     dataAnimaux=DB.session.query(bib_type_animaux)
     dataSecteur=DB.session.query(l_areas)
-    dataAnnee=DB.session.query(func.distinct(extract('year',Declaratif.date_constat_d)).label("date"))
+    dataAnnee=DB.session.query(func.distinct(extract('year',Declaratif.date_constat_d)).label("date")).order_by(extract('year',Declaratif.date_constat_d).desc())
     query = DB.session.query(Declaratif,func.ST_AsGeoJson(func.ST_Transform(Declaratif.geom,4326)))
     
     form=FilterForm()

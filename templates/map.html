@@ -31,8 +31,8 @@
 		</form>
 		<center><h3 id="countCsts">Liste des constats</h3></center>
 		{% for constats in Constats %}
-			<button class="btn btn-light" data-toggle="collapse" name="dataBouton" data-target="#textConstat{{constats.properties.id_constat}}" style="margin:3px; display:list-item block;" >{{constats.properties.date_attaque}} {{ constats.properties.type_animaux }}</button>
-			<center><div style="vertical-align:middle;"id="textConstat{{constats.properties.id_constat}}" class="collapse">
+			<center><button class="btn btn-light" data-toggle="collapse" name="dataBouton" data-target="#textConstat{{constats.properties.id_constat}}" style="margin:3px; display:list-item block;" >{{constats.properties.date_attaque}} {{ constats.properties.type_animaux }}</button></center>
+			<center><div style="vertical-align:middle;"id="textConstat{{constats.properties.id_constat}}" class="collapse bg-light">
 				Numéro : {{constats.properties.id_constat}} <br>
 				Date de l'attaque : {{constats.properties.date_attaque}} <br>
 				Date du constat : {{constats.properties.date_constat}}<br>
@@ -46,9 +46,9 @@
 				Commune : {{constats.properties.commune}}<br>
 				Statut : {{ constats.properties.statut }}<br>
 				Nombre de jours agent : {{constats.properties.nb_jour_agent}}<br>
-				<a href="{{url_for('routes.update',idc=constats.properties.id_constat)}}">Modifier le constat</a><br>
-				<a href="{{url_for('routes.delete',idc=constats.properties.id_constat)}}">Supprimer le constat</a><br>				
-				<a href="{{url_for('routes.data',idc=constats.properties.id_constat)}}">Informations</a><br>
+				<p><a class="btn btn-primary" role="button" href="{{url_for('routes.update',idc=constats.properties.id_constat)}}">Modifier le constat</a></p>
+				<p><a class="btn btn-primary" role="button" href="{{url_for('routes.delete',idc=constats.properties.id_constat)}}">Supprimer le constat</a></p>			
+				<p><a class="btn btn-primary" role="button" href="{{url_for('routes.data',idc=constats.properties.id_constat)}}">Informations</a></p>
 			</div></center>
 			<br>
 

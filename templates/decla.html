@@ -30,8 +30,8 @@
 		</form>
 		<center><h3 id="countCsts">Liste des constats</h3></center>
 		{% for decla in Declaratifs %}
-			<button class="btn btn-light" data-toggle="collapse" data-target="#textDecla{{decla.properties.id_constat_d}}" style="margin:10px; display:list-item block;">{{decla.properties.date_constat_d}} {{decla.properties.type_animaux_d}}</button>
-			<center><div style="vertical-align:middle;"id="textDecla{{decla.properties.id_constat_d}}" class="collapse">
+			<center><button class="btn btn-light" data-toggle="collapse" name="dataBouton" data-target="#textDecla{{decla.properties.id_constat_d}}" style="margin:3px; display:list-item block;">{{decla.properties.date_constat_d}} {{decla.properties.type_animaux_d}}</button></center>
+			<center><div style="vertical-align:middle;"id="textDecla{{decla.properties.id_constat_d}}" class="collapse bg-light">
 				Numéro : {{decla.properties.id_constat_d}} <br>
 				Date de l'attaque : {{decla.properties.date_attaque_d}} <br>
 				Date du constat : {{decla.properties.date_constat_d}}<br>
@@ -43,9 +43,9 @@
 				Secteur : {{decla.properties.secteur_d}}<br>
 				Commune : {{decla.properties.commune_d}}<br>
 				Statut : {{ decla.properties.statut_d }}<br>
-				<a href="{{url_for('routes.updateDecla',idc=decla.properties.id_constat_d)}}">Modifier le constat</a><br>
-				<a href="{{url_for('routes.deleteDecla',idc=decla.properties.id_constat_d)}}">Supprimer le constat</a><br>
-				<a href="{{url_for('routes.dataDecla',idc=decla.properties.id_constat_d)}}">Informations</a><br>
+				<p><a class="btn btn-primary" role="button" href="{{url_for('routes.updateDecla',idc=decla.properties.id_constat_d)}}">Modifier le constat</a></p>
+				<p><a class="btn btn-primary" role="button" href="{{url_for('routes.deleteDecla',idc=decla.properties.id_constat_d)}}">Supprimer le constat</a></p>
+				<p><a class="btn btn-primary" role="button" href="{{url_for('routes.dataDecla',idc=decla.properties.id_constat_d)}}">Informations</a></p>
 			</div></center>
 			<br>
 

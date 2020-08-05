@@ -53,25 +53,25 @@ class l_areas(DB.Model):
     area_name=DB.Column(DB.String)
     area_code=DB.Column(DB.String)    
 
-"""class TRole(DB.Model):
-    __tablename__ = 't_roles'
-    __table_args__ = {'schema': 'utilisateurs'}
+# class TRole(DB.Model):
+#     __tablename__ = 't_roles'
+#     __table_args__ = {'schema': 'utilisateurs'}
 
-    groupe = DB.Column(DB.Boolean, nullable=False,
-                       server_default=DB.FetchedValue())
-    id_role = DB.Column(DB.Integer, primary_key=True,
-                        server_default=DB.FetchedValue())
-    identifiant = DB.Column(DB.String(100))
-    nom_role = DB.Column(DB.String(50))
-    prenom_role = DB.Column(DB.String(50))
-    desc_role = DB.Column(DB.Text)
-    _pass = DB.Column('pass', DB.String(100))
-    email = DB.Column(DB.String(250))
-    id_organisme = DB.Column(DB.ForeignKey(
-        'utilisateurs.bib_organismes.id_organisme', onupdate='CASCADE'))
-    organisme = DB.Column(DB.String(32))
-    remarques = DB.Column(DB.Text)
-    pn = DB.Column(DB.Boolean)
-    session_appli = DB.Column(DB.String(50))
-    date_insert = DB.Column(DB.DateTime)
-    date_update = DB.Column(DB.DateTime)"""    
+#     groupe = DB.Column(DB.Boolean, nullable=False,
+#                        server_default=DB.FetchedValue())
+#     id_role = DB.Column(DB.Integer, primary_key=True,
+#                         server_default=DB.FetchedValue())
+#     identifiant = DB.Column(DB.String(100))
+#     nom_role = DB.Column(DB.String(50))
+#     prenom_role = DB.Column(DB.String(50))
+#     desc_role = DB.Column(DB.Text)
+#     _pass = DB.Column('pass', DB.String(100))
+#     email = DB.Column(DB.String(250))
+#     id_organisme = DB.Column(DB.ForeignKey(
+#         'utilisateurs.bib_organismes.id_organisme', onupdate='CASCADE'))
+#     organisme = DB.Column(DB.String(32))
+#     remarques = DB.Column(DB.Text)
+#     pn = DB.Column(DB.Boolean)
+#     session_appli = DB.Column(DB.String(50))
+#     date_insert = DB.Column(DB.DateTime)
+#     date_update = DB.Column(DB.DateTime)

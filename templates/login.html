@@ -1,0 +1,65 @@
+<html>
+<head>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous">
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js" integrity="sha384-alpBpkh1PFOepccYVYDB4do5UnbKysX5WZXm3XxPqe5iKTfUKjNkCk9SaVuEZflJ" crossorigin="anonymous"></script>    
+    <script
+    src="https://code.jquery.com/jquery-3.5.1.js"
+    integrity="sha256-QWo7LDvxbWT2tbbQ97B53yJnYU3WhH/C8ycbRAkjPDc="
+    crossorigin="anonymous"></script>
+</head>
+<div class="container main-zone ng-scope ">
+    <div class="row justify-content-center align-items-center">
+     <div class="col-4">
+       <h2>GéoConstats</h2>
+   
+       <div class="alert alert-danger" role="alert" id="login-error">
+           Paramètres de connexion invalides
+       </div>
+       <div class="form-horizontal">
+           <input type="hidden" name="" id="user_app" value="{{id_app}}">
+           <div class="form-group">
+           <input type="text" class="form-control" id="user_id" placeholder="Identifiant">
+           </div>
+           <div class="form-group">
+           <input type="password" class="form-control" id="user_pwd" placeholder="Mot de passe">
+           </div>
+           <button onclick="login()" id="submit" class="btn btn-success">Connexion</button>
+       </div>
+     </div>
+    </div>
+   </div>
+   
+   <script>
+    console.log("{{id_app}}")
+   $("#login-error").hide();
+   
+   $(window).keypress(function(event) {
+       if (event.keyCode == 13 || event.which == 13) {
+           login();
+       }
+   })
+   
+   login = function() {
+       $("#login-error").hide();
+       $.post({
+           url : "{{url_for('auth.login')}}",
+           data : JSON.stringify ({
+               "id_application": $('#user_app').val(),
+               "login": $('#user_id').val(),
+               "password" : $('#user_pwd').val()
+           }),
+           contentType:"application/json; charset=utf-8",
+           dataType:"json",
+           success: function(response){
+               console.log(response);
+               window.location.href = "{{url_for('routes.map')}}";
+           },
+           error: function(error){
+               $("#login-error" ).show();
+               console.log(error);
+           }
+       });
+   };
+   
+   </script>
+</html>

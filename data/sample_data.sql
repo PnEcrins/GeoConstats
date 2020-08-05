@@ -1,0 +1,33 @@
+
+---------------------------------------------------- DONNEES EXEMPLE----------------------------------------------
+
+
+
+--Schema constats_loups
+
+--bib_statut
+
+INSERT INTO constats_loups.bib_statut(id,nom) VALUES
+(1,"En attente"),
+(2,"Rejeté"),
+(3,"Indemnisé");
+
+--bib_type_animaux
+
+INSERT INTO constats_loups.bib_type_animaux(id,nom) VALUES
+(1,"Ovins"),
+(2,"Bovins"),
+(3,"Caprins");
+
+--t_constats
+
+INSERT INTO constats_loups.t_constats(date_attaque,date_constat,nom_agent1,nom_agent2,proprietaire,type_animaux,nb_victimes_mort,nb_victimes_blesse,statut,the_geom_point) VALUES
+('2020-04-18','2020-04-20','agent 1','agent 2','Berger 1','bovins',3,4,'attente',ST_transform(ST_geometryFromText('POINT(6.30630 44.84194)',4326),2154)),
+('2020-05-01','2020-05-04','agent 1','agent 3','Berger 2','caprins',2,6,'attente',ST_transform(ST_geometryFromText('POINT(5.9477 44.9602)',4326),2154));
+
+--t_constats_declaratifs
+
+INSERT INTO constats_loups.t_constats_declaratifs (date_attaque_d, date_constat_d, lieu_dit, proprietaire_d, type_animaux_d, nb_victimes_mort_d, nb_victimes_blesse_d, statut_d, geom) VALUES (NULL, NULL, NULL, NULL, NULL, NULL, NULL, 2, '01010000206A0800004E0F1845157B2D41A44B179DF68A5841');
+INSERT INTO constats_loups.t_constats_declaratifs (date_attaque_d, date_constat_d, lieu_dit, proprietaire_d, type_animaux_d, nb_victimes_mort_d, nb_victimes_blesse_d, statut_d, geom) VALUES ('2020-06-05', '2020-06-11', 'Les Têtes', NULL, 3, 1, NULL, 3, '01010000206A0800001ED9175372E22D41FBB64D86E37A5841');
+INSERT INTO constats_loups.t_constats_declaratifs (date_attaque_d, date_constat_d, lieu_dit, proprietaire_d, type_animaux_d, nb_victimes_mort_d, nb_victimes_blesse_d, statut_d, geom) VALUES ('2020-06-09', '2020-06-11', 'La Salce', NULL, 1, 1, NULL, 3, '01010000206A0800008A56101AA1B72D41BF19DCCB9C795841');
+INSERT INTO constats_loups.t_constats_declaratifs (date_attaque_d, date_constat_d, lieu_dit, proprietaire_d, type_animaux_d, nb_victimes_mort_d, nb_victimes_blesse_d, statut_d, geom) VALUES ('2020-06-30', '2020-06-30', 'Palluel', NULL, 1, 1, NULL, 1, '01010000206A080000FBA841B1BCA62D41ED80AA00F6725841');
