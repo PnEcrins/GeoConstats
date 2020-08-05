@@ -15,9 +15,10 @@ routes = Blueprint('routes',__name__)
 
 @routes.route("/login")
 def login():
-    dataApp=DB.session.query(Application.id_application).filter(Application.code_application=='GC')
-    for d in dataApp:
-        bonApp=int(d[0])
+    dataApp=DB.session.query(Application.id_application).filter(Application.code_application=='GC').one()
+    if dataApp:
+        print(dataApp[0])
+        bonApp=dataApp[0]
     return render_template('login.html',id_app=bonApp)
 
 @routes.route("/")
@@ -129,7 +130,7 @@ def add():
     )    
     DB.session.add(constats)
     DB.session.commit()
-    return redirect(url_for('map'))
+    return redirect(url_for('routes.map'))
 
 @routes.route('/update/<idc>', methods=['GET', 'POST'])
 def update(idc):
@@ -207,7 +208,7 @@ def updateDB():
     cst.nb_jour_agent=data['nb_jour_agent']
     cst.the_geom_point=from_shape(Point(json2154['coordinates'][0],json2154['coordinates'][1]),srid=2154)
     DB.session.commit()       
-    return redirect(url_for('map'))
+    return redirect(url_for('routes.map'))
     
 @routes.route('/delete/<idc>', methods=['GET', 'POST'])
 def delete(idc):
@@ -216,7 +217,7 @@ def delete(idc):
     """
     dataGeom = DB.session.query(Constats).filter(Constats.id_constat==idc).delete()
     DB.session.commit()
-    return redirect(url_for('map'))
+    return redirect(url_for('routes.map'))
 
 @routes.route('/download', methods=['GET', 'POST'])
 def download():
@@ -378,7 +379,7 @@ def deleteDecla(idc):
     """
     dataGeom = DB.session.query(Declaratif).filter(Declaratif.id_constat_d==idc).delete()
     DB.session.commit()
-    return redirect(url_for('decla'))
+    return redirect(url_for('routes.decla'))
 
 @routes.route ('/formDecla',methods=['GET', 'POST'])
 def formDecla():
@@ -424,7 +425,7 @@ def addDecla():
     )
     DB.session.add(decla)
     DB.session.commit()
-    return redirect(url_for('decla'))
+    return redirect(url_for('routes.decla'))
 
 @routes.route('/updateDecla/<idc>', methods=['GET', 'POST'])
 def updateDecla(idc):
@@ -498,7 +499,7 @@ def updateDBDecla():
     cst.statut_d=changeStatut
     cst.geom=from_shape(Point(json2154['coordinates'][0],json2154['coordinates'][1]),srid=2154)
     DB.session.commit()       
-    return redirect(url_for('decla'))    
+    return redirect(url_for('routes.decla'))    
 @routes.route('/downloadDecla', methods=['GET', 'POST'])
 def downloadDecla():
     filter_query = request.args.to_dict()
