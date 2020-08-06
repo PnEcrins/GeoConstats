@@ -6,14 +6,14 @@ CREATE SCHEMA IF NOT EXISTS constats_loups;
 
 CREATE TABLE constats_loups.bib_type_animaux
 (
-  id serial NOT NULL,
+  id integer NOT NULL,
   nom character varying(7),
   CONSTRAINT animauxpkey PRIMARY KEY (id)
 );
 
 CREATE TABLE constats_loups.bib_statut
 (
-  id serial NOT NULL,
+  id integer NOT NULL,
   nom character varying(10),
   CONSTRAINT statutpkey PRIMARY KEY (id)
 );
@@ -21,7 +21,8 @@ CREATE TABLE constats_loups.bib_statut
 --Fonctions pour les triggers de maj des secteurs et communes
 
 CREATE OR REPLACE FUNCTION constats_loups.update_com_sec()
- RETURNS TRIGGER AS $BODY$
+  RETURNS trigger AS
+$BODY$
  DECLARE
  geom_change boolean; 
 BEGIN
@@ -30,15 +31,24 @@ BEGIN
      SELECT INTO geom_change NOT ST_EQUALS(OLD.the_geom_point, NEW.the_geom_point);
  END IF;
  IF(TG_OP='INSERT' OR (TG_OP='UPDATE' AND geom_change)) THEN
-    UPDATE constats_loups.t_constats SET id_secteur=ref_geo.l_areas.id_area FROM ref_geo.l_areas WHERE ref_geo.l_areas.area_code='SEC' and ST_Within(constats_loups.t_constats.the_geom_point,ref_geo.l_areas.geom);
-    UPDATE constats_loups.t_constats SET id_commune=ref_geo.l_areas.id_area FROM ref_geo.l_areas WHERE ref_geo.l_areas.area_code='COM' and ST_Within(constats_loups.t_constats.the_geom_point,ref_geo.l_areas.geom);
+    UPDATE constats_loups.t_constats SET id_secteur=ref_geo.l_areas.id_area FROM ref_geo.l_areas WHERE ref_geo.l_areas.id_type=30 and ST_Within(constats_loups.t_constats.the_geom_point,ref_geo.l_areas.geom);
+    UPDATE constats_loups.t_constats SET id_commune=ref_geo.l_areas.id_area FROM ref_geo.l_areas WHERE ref_geo.l_areas.id_type=25 and ST_Within(constats_loups.t_constats.the_geom_point,ref_geo.l_areas.geom);
+    UPDATE constats_loups.t_constats SET departement=substring(ref_geo.l_areas.area_code from 1 for 2) from ref_geo.l_areas where id_commune=ref_geo.l_areas.id_area;
+    UPDATE constats_loups.t_constats SET dans_coeur=ST_Within(NEW.the_geom_point,ref_geo.l_areas.geom) from ref_geo.l_areas WHERE ref_geo.l_areas.id_type=1;
+    UPDATE constats_loups.t_constats SET dans_aa=ST_Within(NEW.the_geom_point,ref_geo.l_areas.geom) from ref_geo.l_areas WHERE ref_geo.l_areas.id_type=20;
  END IF;
  RETURN NEW;
 END;
-$BODY$ LANGUAGE plpgsql;
+$BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100;
+ALTER FUNCTION constats_loups.update_com_sec()
+  OWNER TO raph;
+
 
 CREATE OR REPLACE FUNCTION constats_loups.update_com_sec_d()
- RETURNS TRIGGER AS $BODY$
+  RETURNS trigger AS
+$BODY$
  DECLARE
  geom_change boolean; 
 BEGIN
@@ -47,12 +57,19 @@ BEGIN
     SELECT INTO geom_change NOT ST_EQUALS(OLD.geom, NEW.geom);
  END IF;
  IF(TG_OP='INSERT' OR (TG_OP='UPDATE' AND geom_change)) THEN
-    UPDATE constats_loups.t_constats_declaratifs SET id_secteur_d=ref_geo.l_areas.id_area FROM ref_geo.l_areas WHERE ref_geo.l_areas.area_code='SEC' and ST_Within(constats_loups.t_constats_declaratifs.geom,ref_geo.l_areas.geom);
-    UPDATE constats_loups.t_constats_declaratifs SET id_commune_d=ref_geo.l_areas.id_area FROM ref_geo.l_areas WHERE ref_geo.l_areas.area_code='COM' and ST_Within(constats_loups.t_constats_declaratifs.geom,ref_geo.l_areas.geom);
+    UPDATE constats_loups.t_constats_declaratifs SET id_secteur_d=ref_geo.l_areas.id_area FROM ref_geo.l_areas WHERE ref_geo.l_areas.id_type=30 and ST_Within(constats_loups.t_constats_declaratifs.geom,ref_geo.l_areas.geom);
+    UPDATE constats_loups.t_constats_declaratifs SET id_commune_d=ref_geo.l_areas.id_area FROM ref_geo.l_areas WHERE ref_geo.l_areas.id_type=25 and ST_Within(constats_loups.t_constats_declaratifs.geom,ref_geo.l_areas.geom);
+    UPDATE constats_loups.t_constats_declaratifs SET departement_d=substring(ref_geo.l_areas.area_code from 1 for 2) from ref_geo.l_areas where id_commune_d=ref_geo.l_areas.id_area;
+    UPDATE constats_loups.t_constats_declaratifs SET dans_coeur_d=ST_Within(constats_loups.t_constats_declaratifs.geom,ref_geo.l_areas.geom) from ref_geo.l_areas WHERE ref_geo.l_areas.id_type=1;
+    UPDATE constats_loups.t_constats_declaratifs SET dans_aa_d=ST_Within(constats_loups.t_constats_declaratifs.geom,ref_geo.l_areas.geom) from ref_geo.l_areas WHERE ref_geo.l_areas.id_type=20;
  END IF;
  RETURN NEW;
 END;
-$BODY$ LANGUAGE plpgsql;
+$BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100;
+ALTER FUNCTION constats_loups.update_com_sec_d()
+  OWNER TO raph;
 
 -- table t_constats
 
@@ -74,9 +91,18 @@ CREATE TABLE constats_loups.t_constats
   id_commune integer,
   nb_jour_agent real,
   departement character varying(2),
+  id_role integer,
+  dans_coeur boolean,
+  dans_aa boolean,
   CONSTRAINT t_constats_pkey PRIMARY KEY (id_constat),
   CONSTRAINT animaux_fkey FOREIGN KEY (type_animaux)
       REFERENCES constats_loups.bib_type_animaux (id) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION,
+  CONSTRAINT commune_fkey FOREIGN KEY (id_commune)
+      REFERENCES ref_geo.l_areas (id_area) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION,
+  CONSTRAINT role_fkey FOREIGN KEY (id_role)
+      REFERENCES utilisateurs.t_roles (id_role) MATCH SIMPLE
       ON UPDATE NO ACTION ON DELETE NO ACTION,
   CONSTRAINT secteur_fkey FOREIGN KEY (id_secteur)
       REFERENCES ref_geo.l_areas (id_area) MATCH SIMPLE
@@ -110,7 +136,16 @@ CREATE TABLE constats_loups.t_constats_declaratifs
   id_secteur_d integer,
   id_commune_d integer,
   departement_d character varying(2),
+  dans_coeur_d boolean,
+  dans_aa_d boolean,
+  id_role integer,
   CONSTRAINT decla_pkey PRIMARY KEY (id_constat_d),
+  CONSTRAINT commune_d_fkey FOREIGN KEY (id_commune_d)
+      REFERENCES ref_geo.l_areas (id_area) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION,
+  CONSTRAINT role_d_fkey FOREIGN KEY (id_role)
+      REFERENCES utilisateurs.t_roles (id_role) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION,
   CONSTRAINT t_constats_declaratifs_id_secteur_d_fkey FOREIGN KEY (id_secteur_d)
       REFERENCES ref_geo.l_areas (id_area) MATCH SIMPLE
       ON UPDATE NO ACTION ON DELETE NO ACTION,

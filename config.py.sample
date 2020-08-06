@@ -1,3 +1,6 @@
 SECRET_KEY ='you-will-never-guess'
+COOKIE_EXPIRATION=600
+COOKIE_AUTORENEW=True
+
 SQLALCHEMY_DATABASE_URI = 'postgresql://user:password@localhost:5432/database'
 SQLALCHEMY_TRACK_MODIFICATIONS = False

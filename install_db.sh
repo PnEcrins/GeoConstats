@@ -70,13 +70,19 @@ else
 fi
 unzip /tmp/communes_fr_admin_express_2020-02.zip -d /tmp
 
+write_log 'Add municipalities secteurs coeur aa to ref geo'
+
 sudo -n -u postgres -s psql -d $db_name -f /tmp/fr_municipalities.sql &>> log/install_db.log
 sudo -n -u postgres -s psql -d $db_name -c "ALTER TABLE ref_geo.temp_fr_municipalities OWNER TO $user_pg;" &>> log/install_db.log
 wget https://raw.githubusercontent.com/PnX-SI/GeoNature/$ref_geo_release/data/core/ref_geo_municipalities.sql -P /tmp
 export PGPASSWORD=$user_pg_pass;psql -h $db_host -U $user_pg -d $db_name -f /tmp/ref_geo_municipalities.sql &>> log/install_db.log
+export PGPASSWORD=$user_pg_pass;psql -h $db_host -U $user_pg -d $db_name -f data/l_areas_secteur_aa_coeur.sql &>> log/install_db.log
 
 write_log 'Create database structure'
 export PGPASSWORD=$user_pg_pass;psql -h $db_host -U $user_pg -d $db_name -f data/scriptSQL_Constats.sql &>> log/install_db.log
 
+write_log 'Add some example data into constats_loups schema'
+export PGPASSWORD=$user_pg_pass;psql -h $db_host -U $user_pg -d $db_name -f data/sample_data.sql &>> log/install_db.log
 
 rm /tmp/*.sql
+rm /tmp/*.zip
