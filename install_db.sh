@@ -52,9 +52,9 @@ wget https://raw.githubusercontent.com/PnX-SI/UsersHub/$usershub_release/data/us
 export PGPASSWORD=$user_pg_pass;psql -h $db_host -U $user_pg -d $db_name -f /tmp/usershub.sql  &>> log/install_db.log
 
 write_log 'Add some example data into users'
-wget https://raw.githubusercontent.com/PnX-SI/UsersHub/master/data/usershub-data.sql -P /tmp
+wget https://raw.githubusercontent.com/PnX-SI/UsersHub/$usershub_release/data/usershub-data.sql -P /tmp
 export PGPASSWORD=$user_pg_pass;psql -h $db_host -U $user_pg -d $db_name -f /tmp/usershub-data.sql  &>> log/install_db.log
-wget https://raw.githubusercontent.com/PnX-SI/UsersHub/master/data/usershub-dataset.sql -P /tmp
+wget https://raw.githubusercontent.com/PnX-SI/UsersHub/$usershub_release/data/usershub-dataset.sql -P /tmp
 export PGPASSWORD=$user_pg_pass;psql -h $db_host -U $user_pg -d $db_name -f /tmp/usershub-dataset.sql &>> log/install_db.log
 export PGPASSWORD=$user_pg_pass;psql -h $db_host -U $user_pg -d $db_name -f data/users_hub_geoconstats.sql &>> log/install_db.log
 write_log 'Create ref_geo'
@@ -72,7 +72,7 @@ unzip /tmp/communes_fr_admin_express_2020-02.zip -d /tmp
 
 sudo -n -u postgres -s psql -d $db_name -f /tmp/fr_municipalities.sql &>> log/install_db.log
 sudo -n -u postgres -s psql -d $db_name -c "ALTER TABLE ref_geo.temp_fr_municipalities OWNER TO $user_pg;" &>> log/install_db.log
-wget https://raw.githubusercontent.com/PnX-SI/GeoNature/master/data/core/ref_geo_municipalities.sql -P /tmp
+wget https://raw.githubusercontent.com/PnX-SI/GeoNature/$ref_geo_release/data/core/ref_geo_municipalities.sql -P /tmp
 export PGPASSWORD=$user_pg_pass;psql -h $db_host -U $user_pg -d $db_name -f /tmp/ref_geo_municipalities.sql &>> log/install_db.log
 
 write_log 'Create database structure'

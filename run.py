@@ -19,7 +19,7 @@ def init_app():
         app.config['DB'] = DB
         
         from pypnusershub import routes
-        app.register_blueprint(routes.routes, url_prefix="/pypn/auth")  
+        app.register_blueprint(routes.routes, url_prefix='/pypn/auth')    
 
         from app.views import routes
         app.register_blueprint(routes, url_prefix='/')

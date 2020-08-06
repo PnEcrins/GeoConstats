@@ -17,6 +17,9 @@
 				Type d'animaux : {{ Constats.properties.type_animaux }}<br>
 				Secteur : {{Constats.properties.secteur}}<br>
 				Commune : {{Constats.properties.commune}}<br>
+				Département : {{Constats.properties.departement}}<br>
+				Localisation : {{Constats.properties.localisation}}<br>
+				Créateur du constat : {{Constats.user.prenom}} {{Constats.user.nom}}<br>
 				Statut : {{ Constats.properties.statut }}<br>
 				Nombre de jours agent : {{Constats.properties.nb_jour_agent}}<br>		
 			</div>
@@ -38,6 +41,10 @@
 		'statut': '{{ Constats.properties.statut }}',
 		'secteur': '{{ Constats.properties.secteur }}',
 		'commune': '{{ Constats.properties.commune }}',
+		'departement': '{{ Constats.properties.departement }}',
+		'localisation': '{{ Constats.properties.localisation }}',
+		'prenom': '{{ Constats.user.prenom }}',
+		'nom': '{{ Constats.user.nom }}',
 		'geometry': '{{ Constats.geometry | tojson}}'
 	};    
 	var map = L.map('map').setView([JSON.parse(constatFilter.geometry).coordinates[1],JSON.parse(constatFilter.geometry).coordinates[0]], 12);
@@ -57,7 +64,10 @@
 		"Propriétaire : "+constatFilter.proprietaire+"<br>"+ 
 		"Type d'animaux : "+constatFilter.type_animaux+"<br>"+ 
 		"Secteur : "+constatFilter.secteur+"<br>"+ 
-		"Commune : "+constatFilter.commune+"<br>"+ 
+		"Commune : "+constatFilter.commune+"<br>"+
+		"Département : "+constatFilter.departement+"<br>"+
+		"Localisation : "+constatFilter.localisation+"<br>"+
+		"Créateur du constat : "+constatFilter.prenom+" "+constatFilter.nom+"<br>"+
 		"Statut : "+constatFilter.statut+"<br>" 
 	,{autoClose:false}) .openPopup();
 

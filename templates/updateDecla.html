@@ -121,6 +121,10 @@
 		'statut_d': '{{ Declaratif.properties.statut_name }}',
 		'secteur_d': '{{ Declaratif.properties.secteur_d }}',
 		'commune_d': '{{ Declaratif.properties.commune_d }}',
+		'departement_d': '{{ Declaratif.properties.departement_d }}',
+		'localisation_d': '{{ Declaratif.properties.localisation_d }}',
+		'nom_d':'{{ Constats.user.nom_d }}',
+		'prenom_d':'{{ Constats.user.prenom_d }}',
 		'geometry':'{{Declaratif.geometry | tojson}}'
 	}
 	 var map = L.map('map').setView([JSON.parse(constatFilter.geometry).coordinates[1],JSON.parse(constatFilter.geometry).coordinates[0]], 14);
@@ -141,6 +145,9 @@
 		"Type d'animaux : "+constatFilter.type_animaux_d+"<br>"+ 
 		"Secteur : "+constatFilter.secteur_d+"<br>" +
 		"Commune : "+constatFilter.commune_d+"<br>" +
+		"Département : "+constatFilter.departement_d+"<br>" +
+		"Localisation : "+constatFilter.localisation_d+"<br>" +
+		"Créateur du constat : "+constatFilter.prenom_d+" "+constatFilter.nom_d+"<br>"+
 		"Statut : "+constatFilter.statut_d+"<br>" 
 	).addTo(map); 
 
@@ -159,7 +166,10 @@
 			"Propriétaire : "+constatFilter.proprietaire_d+"<br>"+ 
 			"Type d'animaux : "+constatFilter.type_animaux_d+"<br>"+ 
 			"Secteur : "+constatFilter.secteur_d+"<br>"+ 
-			"Commune : "+constatFilter.commune_d+"<br>"+ 
+			"Commune : "+constatFilter.commune_d+"<br>"+
+			"Département : "+constatFilter.departement_d+"<br>"+
+			"localisation : "+constatFilter.localisation_d+"<br>"+ 
+			"Créateur du constat : "+constatFilter.prenom_d+" "+constatFilter.nom_d+"<br>"+
 			"Statut : "+constatFilter.statut_d+"<br>" 
 		).openPopup();
 		document.getElementById("geomlat").value = e.latlng.lat;

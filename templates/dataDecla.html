@@ -16,6 +16,9 @@
 				Type d'animaux : {{ Decla.properties.type_animaux }}<br>
 				Secteur : {{Decla.properties.secteur}}<br>
 				Commune : {{Decla.properties.commune}}<br>
+				Département : {{Decla.properties.departement}}<br>
+				Localisation : {{Decla.properties.localisation}}<br>
+				Créateur du constat : {{Decla.user.prenom}} {{Decla.user.nom}}<br>
 				Statut : {{ Decla.properties.statut }}<br>	
 			</div>
     <br />
@@ -35,6 +38,10 @@
 		'statut': '{{ Decla.properties.statut }}',
 		'secteur': '{{ Decla.properties.secteur }}',
 		'commune': '{{ Decla.properties.commune }}',
+		'departement': '{{ Decla.properties.departement }}',
+		'localisation': '{{ Decla.properties.localisation }}',
+		'nom':'{{Decla.user.nom}}',
+		'prenom':'{{Decla.user.prenom}}',
 		'geometry': '{{ Decla.geometry | tojson}}'
 	};    
 	var map = L.map('map').setView([JSON.parse(constatFilter.geometry).coordinates[1],JSON.parse(constatFilter.geometry).coordinates[0]], 12);
@@ -54,6 +61,9 @@
 		"Type d'animaux : "+constatFilter.type_animaux+"<br>"+ 
 		"Secteur : "+constatFilter.secteur+"<br>"+ 
 		"Commune : "+constatFilter.commune+"<br>"+ 
+		"Département : "+constatFilter.departement+"<br>"+
+		"Localisation : "+constatFilter.localisation+"<br>"+
+		"Créateur du constat : "+constatFilter.prenom+" "+constatFilter.nom+"<br>"+
 		"Statut : "+constatFilter.statut+"<br>" 
 	,{autoClose:false}) .openPopup();
 

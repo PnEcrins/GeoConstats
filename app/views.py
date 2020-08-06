@@ -24,8 +24,8 @@ def login():
     return render_template('login.html',id_app=bonApp)
 
 @routes.route("/map")
-@check_auth(1)
-def map():
+@check_auth(1,True)
+def map(id_role):
     """
     Lance la "page d'acceuil" avec une carte + une liste avec toutes les données
     """
@@ -34,6 +34,8 @@ def map():
     dataStatut=DB.session.query(bib_statut)
     dataAnimaux=DB.session.query(bib_type_animaux)
     dataSecteur=DB.session.query(l_areas)
+    dataApp=DB.session.query(Application.id_application).filter(Application.code_application=='GC').one()
+    dataUser=DB.session.query(AppUser.prenom_role,AppUser.nom_role).filter(AppUser.id_role==id_role).filter(AppUser.id_application==dataApp[0]).one()
     dataAnnee=DB.session.query(func.distinct(extract('year',Constats.date_constat)).label("date")).order_by(extract('year',Constats.date_constat).desc())
     query = DB.session.query(Constats,func.ST_AsGeoJson(func.ST_Transform(Constats.the_geom_point,4326)))
     form=FilterForm()
@@ -64,6 +66,9 @@ def map():
         dico={}
         dico['geometry']=geojson
         dico['properties']={}
+        dico['user']={}
+        dico['user']['nom']=dataUser.nom_role
+        dico['user']['prenom']=dataUser.prenom_role        
         dico['properties']['id_constat']=d[0].id_constat
         dico['properties']['date_attaque']=d[0].date_attaque
         dico['properties']['date_constat']=d[0].date_constat
@@ -83,7 +88,14 @@ def map():
             if dsec.id_area == d[0].id_secteur:
                 dico['properties']['secteur']=dsec.area_name
             if dsec.id_area == d[0].id_commune:
-                dico['properties']['commune']=dsec.area_name            
+                dico['properties']['commune']=dsec.area_name
+        dico['properties']['departement']=d[0].departement
+        if d[0].dans_coeur:
+            dico['properties']['localisation']="Dans le coeur"
+        elif d[0].dans_aa:
+            dico['properties']['localisation']="Dans l'aire d'adhésion"
+        else:
+            dico['properties']['localisation']="Hors du parc"            
         cnsts.append(dico)        
     return render_template('map.html', title='Map', Constats=cnsts,form=form)
 
@@ -141,9 +153,9 @@ def add(id_role):
 @check_auth(
     2,
     True,
-    # redirect_on_expiration=URL_REDIRECT,
-    # redirect_on_invalid_token=URL_REDIRECT,
-    # redirect_on_insufficient_right=URL_REDIRECT,
+    # redirect_on_expiration=url_for('routes.login'),
+    # redirect_on_invalid_token=url_for('routes.login'),
+    # redirect_on_insufficient_right=render_template('pas_les_droits.html'),
     )
 def update(idc, id_role):
     """
@@ -156,11 +168,13 @@ def update(idc, id_role):
     dataGeom = DB.session.query(Constats,func.ST_AsGeoJson(func.ST_Transform(Constats.the_geom_point,4326))).filter(Constats.id_constat==idc).all()
     dataApp=DB.session.query(Application.id_application).filter(Application.code_application=='GC').one()
     nivDroit=DB.session.query(AppUser.id_droit_max).filter(AppUser.id_role==id_role).filter(AppUser.id_application==dataApp[0]).one()
-
+    dataUser=DB.session.query(AppUser.prenom_role,AppUser.nom_role).filter(AppUser.id_role==id_role).filter(AppUser.id_application==dataApp[0]).one()
     if nivDroit[0]>2 or id_role==dataGeom[0][0].id_role:
         geojson=json.loads(dataGeom[0][1])
         dico={}
-        dico['user']=dataGeom[0][0].id_role
+        dico['user']={}
+        dico['user']['nom']=dataUser.nom_role
+        dico['user']['prenom']=dataUser.prenom_role
         dico['geometry']=geojson
         dico['properties']={}
         dico['properties']['id_constat']=dataGeom[0][0].id_constat
@@ -184,7 +198,14 @@ def update(idc, id_role):
             if dsec.id_area == dataGeom[0][0].id_secteur:
                 dico['properties']['secteur']=dsec.area_name
             if dsec.id_area == dataGeom[0][0].id_commune:
-                dico['properties']['commune']=dsec.area_name    
+                dico['properties']['commune']=dsec.area_name
+        dico['properties']['departement']=dataGeom[0][0].departement            
+        if dataGeom[0][0].dans_coeur:
+            dico['properties']['localisation']="Dans le coeur"
+        elif dataGeom[0][0].dans_aa:
+            dico['properties']['localisation']="Dans l'aire d'adhésion"
+        else:
+            dico['properties']['localisation']="Hors du parc"              
         form = ConstatForm()
         form.statut.choices=[(0,"")]
         dataStatut=DB.session.query(bib_statut)
@@ -250,12 +271,14 @@ def delete(idc,id_role):
         return render_template('pas_les_droits.html')    
 
 @routes.route('/download', methods=['GET', 'POST'])
-@check_auth(2)
-def download():
+@check_auth(2,True)
+def download(id_role):
     filter_query = request.args.to_dict()
     dataStatut=DB.session.query(bib_statut)
     dataAnimaux=DB.session.query(bib_type_animaux)
     dataSecteur=DB.session.query(l_areas)
+    dataApp=DB.session.query(Application.id_application).filter(Application.code_application=='GC').one()
+    dataUser=DB.session.query(AppUser.prenom_role,AppUser.nom_role).filter(AppUser.id_role==id_role).filter(AppUser.id_application==dataApp[0]).one()
     query = DB.session.query(Constats,func.ST_AsGeoJson(func.ST_Transform(Constats.the_geom_point,4326)))
     
     if 'date' in filter_query:
@@ -272,7 +295,7 @@ def download():
     cnsts=[]
     for d in dataGeom:
         geojson=json.loads(d[1])
-        dico={}
+        dico={}        
         dico['id_constat']=d[0].id_constat
         dico['date_attaque']=d[0].date_attaque
         dico['date_constat']=d[0].date_constat
@@ -294,7 +317,15 @@ def download():
             if dsec.id_area == d[0].id_secteur:
                 dico['secteur']=dsec.area_name
             if dsec.id_area == d[0].id_commune:
-                dico['commune']=dsec.area_name         
+                dico['commune']=dsec.area_name
+        dico['departement']=d[0].departement          
+        if d[0].dans_coeur:
+            dico['localisation']="Dans le coeur"
+        elif d[0].dans_aa:
+            dico['localisation']="Dans l'aire d'adhésion"
+        else:
+            dico['localisation']="Hors du parc"
+        dico['createur']=dataUser.prenom_role+" "+dataUser.nom_role                               
         dico['x']=geojson['coordinates'][1]
         dico['y']=geojson['coordinates'][0]
         cnsts.append(dico)       
@@ -308,14 +339,19 @@ def download():
     return output
    
 @routes.route('/data/<idc>')
-@check_auth(2)
-def data(idc):
+@check_auth(2,True)
+def data(idc,id_role):
     dataStatut=DB.session.query(bib_statut)
     dataAnimaux=DB.session.query(bib_type_animaux)
     dataSecteur=DB.session.query(l_areas)
     dataGeom = DB.session.query(Constats,func.ST_AsGeoJson(func.ST_Transform(Constats.the_geom_point,4326))).filter(Constats.id_constat==idc).all()
+    dataApp=DB.session.query(Application.id_application).filter(Application.code_application=='GC').one()
+    dataUser=DB.session.query(AppUser.prenom_role,AppUser.nom_role).filter(AppUser.id_role==id_role).filter(AppUser.id_application==dataApp[0]).one()
     geojson=json.loads(dataGeom[0][1])
     dico={}
+    dico['user']={}
+    dico['user']['nom']=dataUser.nom_role
+    dico['user']['prenom']=dataUser.prenom_role    
     dico['geometry']=geojson
     dico['properties']={}
     dico['properties']['id_constat']=dataGeom[0][0].id_constat
@@ -340,13 +376,20 @@ def data(idc):
            dico['properties']['secteur']=dsec.area_name
        if dsec.id_area == dataGeom[0][0].id_commune:
            dico['properties']['commune']=dsec.area_name  
+    dico['properties']['departement']=dataGeom[0][0].departement       
+    if dataGeom[0][0].dans_coeur:
+        dico['properties']['localisation']="Dans le coeur"
+    elif dataGeom[0][0].dans_aa:
+        dico['properties']['localisation']="Dans l'aire d'adhésion"
+    else:
+        dico['properties']['localisation']="Hors du parc"       
     return render_template('data.html', title='Map',Constats=dico)
     
     
     
 @routes.route('/decla')
-@check_auth(1)
-def decla():
+@check_auth(1,True)
+def decla(id_role):
     """
     Lance la page de consultation des constats déclaratifs avec une carte + une liste avec toutes les données
     """    
@@ -355,6 +398,8 @@ def decla():
     dataAnimaux=DB.session.query(bib_type_animaux)
     dataSecteur=DB.session.query(l_areas)
     dataAnnee=DB.session.query(func.distinct(extract('year',Declaratif.date_constat_d)).label("date")).order_by(extract('year',Declaratif.date_constat_d).desc())
+    dataApp=DB.session.query(Application.id_application).filter(Application.code_application=='GC').one()
+    dataUser=DB.session.query(AppUser.prenom_role,AppUser.nom_role).filter(AppUser.id_role==id_role_d).filter(AppUser.id_application==dataApp[0]).one()
     query = DB.session.query(Declaratif,func.ST_AsGeoJson(func.ST_Transform(Declaratif.geom,4326)))
     
     form=FilterForm()
@@ -382,6 +427,9 @@ def decla():
     for d in dataGeom:
         geojson=json.loads(d[1])
         dico={}
+        dico['user']={}
+        dico['user']['nom']=dataUser.nom_role
+        dico['user']['prenom']=dataUser.prenom_role         
         dico['geometry']=geojson
         dico['properties']={}
         dico['properties']['id_constat_d']=d[0].id_constat_d
@@ -401,13 +449,20 @@ def decla():
             if dsec.id_area == d[0].id_secteur_d:
                 dico['properties']['secteur_d']=dsec.area_name  
             if dsec.id_area == d[0].id_commune_d:
-                dico['properties']['commune_d']=dsec.area_name                 
+                dico['properties']['commune_d']=dsec.area_name
+        dico['properties']['departement_d']=d[0].departement_d          
+        if d[0].dans_coeur_d:
+            dico['properties']['localisation_d']="Dans le coeur"
+        elif d[0].dans_aa_d:
+            dico['properties']['localisation_d']="Dans l'aire d'adhésion"
+        else:
+            dico['properties']['localisation_d']="Hors du parc"                       
         decla.append(dico)
     return render_template('decla.html', title='Declaratif', Declaratifs=decla,form=form)
 
 @routes.route('/deleteDecla/<idc>',methods=['GET', 'POST'])
-@check_auth(2)
-def deleteDecla(idc):
+@check_auth(2,True)
+def deleteDecla(idc,id_role):
     """
     Réalise la suppression d'un constat déclaratif
     """
@@ -439,7 +494,6 @@ def addDecla():
     Réalise l'ajout de données dans la BD
     """
     data=request.form
-    print(data)
     p2154=DB.session.query(func.ST_AsGeoJson(func.ST_Transform(func.ST_SetSRID(func.ST_Point(data['geomlng'],data['geomlat']),4326),2154)))
     json2154=json.loads(p2154[0][0])    
     changeAnimaux=data['type_animaux_d']
@@ -464,52 +518,64 @@ def addDecla():
     return redirect(url_for('routes.decla'))
 
 @routes.route('/updateDecla/<idc>', methods=['GET', 'POST'])
-@check_auth(2)
-def updateDecla(idc):
-     """
-     Lance la page de mise à jour d'une donnée
-     """
-     dataStatut=DB.session.query(bib_statut)
-     dataAnimaux=DB.session.query(bib_type_animaux)
-     dataSecteur=DB.session.query(l_areas)
-     dataGeom = DB.session.query(Declaratif,func.ST_AsGeoJson(func.ST_Transform(Declaratif.geom,4326))).filter(Declaratif.id_constat_d==idc).all()
-     geojson=json.loads(dataGeom[0][1])
-     dico={}
-     dico['geometry']=geojson
-     dico['properties']={}
-     dico['properties']['id_constat_d']=dataGeom[0][0].id_constat_d
-     dico['properties']['date_attaque_d']=dataGeom[0][0].date_attaque_d
-     dico['properties']['date_constat_d']=dataGeom[0][0].date_constat_d
-     dico['properties']['lieu_dit']=dataGeom[0][0].lieu_dit
-     dico['properties']['proprietaire_d']=dataGeom[0][0].proprietaire_d
-     dico['properties']['type_animaux_d']=dataGeom[0][0].type_animaux_d
-     for da in dataAnimaux:
-         if da.id==dataGeom[0][0].type_animaux_d:
-             dico['properties']['type_animaux_name']=da.nom  
-     dico['properties']['nb_victimes_mort_d']=dataGeom[0][0].nb_victimes_mort_d
-     dico['properties']['nb_victimes_blesse_d']=dataGeom[0][0].nb_victimes_blesse_d
-     dico['properties']['statut_d']=dataGeom[0][0].statut_d
-     for ds in dataStatut:
-         if ds.id==dataGeom[0][0].statut_d:
-             dico['properties']['statut_name']=ds.nom
-     for dsec in dataSecteur:
-         if dsec.id_area == dataGeom[0][0].id_secteur_d:
-             dico['properties']['secteur_d']=dsec.area_name
-         if dsec.id_area == dataGeom[0][0].id_commune_d:
-             dico['properties']['commune_d']=dsec.area_name         
-     form = DeclaForm()
-     form.statut_d.choices=[(0,"")]
-     dataStatut=DB.session.query(bib_statut)
-     for ds in dataStatut:
+@check_auth(2,True)
+def updateDecla(idc,id_role):
+    """
+    Lance la page de mise à jour d'une donnée
+    """
+    dataStatut=DB.session.query(bib_statut)
+    dataAnimaux=DB.session.query(bib_type_animaux)
+    dataSecteur=DB.session.query(l_areas)
+    dataGeom = DB.session.query(Declaratif,func.ST_AsGeoJson(func.ST_Transform(Declaratif.geom,4326))).filter(Declaratif.id_constat_d==idc).all()
+    dataApp=DB.session.query(Application.id_application).filter(Application.code_application=='GC').one()
+    dataUser=DB.session.query(AppUser.prenom_role,AppUser.nom_role).filter(AppUser.id_role==id_role).filter(AppUser.id_application==dataApp[0]).one()
+    geojson=json.loads(dataGeom[0][1])
+    dico={}
+    dico['user']={}
+    dico['user']['nom']=dataUser.nom_role
+    dico['user']['prenom']=dataUser.prenom_role     
+    dico['geometry']=geojson
+    dico['properties']={}
+    dico['properties']['id_constat_d']=dataGeom[0][0].id_constat_d
+    dico['properties']['date_attaque_d']=dataGeom[0][0].date_attaque_d
+    dico['properties']['date_constat_d']=dataGeom[0][0].date_constat_d
+    dico['properties']['lieu_dit']=dataGeom[0][0].lieu_dit
+    dico['properties']['proprietaire_d']=dataGeom[0][0].proprietaire_d
+    dico['properties']['type_animaux_d']=dataGeom[0][0].type_animaux_d
+    for da in dataAnimaux:
+        if da.id==dataGeom[0][0].type_animaux_d:
+            dico['properties']['type_animaux_name']=da.nom  
+    dico['properties']['nb_victimes_mort_d']=dataGeom[0][0].nb_victimes_mort_d
+    dico['properties']['nb_victimes_blesse_d']=dataGeom[0][0].nb_victimes_blesse_d
+    dico['properties']['statut_d']=dataGeom[0][0].statut_d
+    for ds in dataStatut:
+        if ds.id==dataGeom[0][0].statut_d:
+            dico['properties']['statut_name']=ds.nom
+    for dsec in dataSecteur:
+        if dsec.id_area == dataGeom[0][0].id_secteur_d:
+            dico['properties']['secteur_d']=dsec.area_name
+        if dsec.id_area == dataGeom[0][0].id_commune_d:
+            dico['properties']['commune_d']=dsec.area_name
+    dico['properties']['departement_d']=dataGeom[0][0].departement_d        
+    if dataGeom[0][0].dans_coeur_d:
+        dico['properties']['localisation_d']="Dans le coeur"
+    elif dataGeom[0][0].dans_aa_d:
+        dico['properties']['localisation_d']="Dans l'aire d'adhésion"
+    else:
+        dico['properties']['localisation_d']="Hors du parc"                 
+    form = DeclaForm()
+    form.statut_d.choices=[(0,"")]
+    dataStatut=DB.session.query(bib_statut)
+    for ds in dataStatut:
         form.statut_d.choices+=[(ds.id,ds.nom)]
-     form.type_animaux_d.choices=[(0,"")]
-     dataAnimaux=DB.session.query(bib_type_animaux)
-     for da in dataAnimaux:
+    form.type_animaux_d.choices=[(0,"")]
+    dataAnimaux=DB.session.query(bib_type_animaux)
+    for da in dataAnimaux:
         form.type_animaux_d.choices+=[(da.id,da.nom)]
-     form.type_animaux_d.default=dataGeom[0][0].type_animaux_d
-     form.statut_d.default=dataGeom[0][0].statut_d
-     form.process()
-     return render_template('updateDecla.html', title='Map',form=form,Declaratif=dico)
+    form.type_animaux_d.default=dataGeom[0][0].type_animaux_d
+    form.statut_d.default=dataGeom[0][0].statut_d
+    form.process()
+    return render_template('updateDecla.html', title='Map',form=form,Declaratif=dico)
 
 @routes.route('/updateDBDecla',methods=['GET', 'POST'])
 @check_auth(2)
@@ -539,12 +605,14 @@ def updateDBDecla():
     DB.session.commit()       
     return redirect(url_for('routes.decla'))    
 @routes.route('/downloadDecla', methods=['GET', 'POST'])
-@check_auth(2)
-def downloadDecla():
+@check_auth(2,True)
+def downloadDecla(id_role):
     filter_query = request.args.to_dict()
     dataStatut=DB.session.query(bib_statut)
     dataAnimaux=DB.session.query(bib_type_animaux)
     dataSecteur=DB.session.query(l_areas)
+    dataApp=DB.session.query(Application.id_application).filter(Application.code_application=='GC').one()
+    dataUser=DB.session.query(AppUser.prenom_role,AppUser.nom_role).filter(AppUser.id_role==id_role).filter(AppUser.id_application==dataApp[0]).one()
     query = DB.session.query(Declaratif,func.ST_AsGeoJson(func.ST_Transform(Declaratif.geom,4326)))
     
     if 'date' in filter_query:
@@ -581,7 +649,15 @@ def downloadDecla():
             if dsec.id_area == d[0].id_secteur_d:
                 dico['secteur']=dsec.area_name
             if dsec.id_area == d[0].id_commune_d:
-                dico['commune']=dsec.area_name          
+                dico['commune']=dsec.area_name
+        dico['departement']=d[0].departement_d   
+        if d[0].dans_coeur_d:
+            dico['localisation']="Dans le coeur"
+        elif d[0].dans_aa_d:
+            dico['localisation']="Dans l'aire d'adhésion"
+        else:
+            dico['localisation']="Hors du parc"
+        dico['createur']=dataUser.prenom_role+" "+dataUser.nom_role                   
         dico['x']=geojson['coordinates'][1]
         dico['y']=geojson['coordinates'][0]
         cnsts.append(dico)       
@@ -595,34 +671,46 @@ def downloadDecla():
     return output
 
 @routes.route('/dataDecla/<idc>')
-@check_auth(2)
-def dataDecla(idc):
+@check_auth(2,True)
+def dataDecla(idc,id_role):
     dataStatut=DB.session.query(bib_statut)
     dataAnimaux=DB.session.query(bib_type_animaux)
     dataSecteur=DB.session.query(l_areas)
-    dataGeom = DB.session.query(Declaratif,func.ST_AsGeoJson(func.ST_Transform(Declaratif.geom,4326))).filter(Declaratif.id_constat_d==idc).all()
-    geojson=json.loads(dataGeom[0][1])
+    dataGeom = DB.session.query(Declaratif,func.ST_AsGeoJson(func.ST_Transform(Declaratif.geom,4326))).filter(Declaratif.id_constat_d==idc).one()
+    dataApp=DB.session.query(Application.id_application).filter(Application.code_application=='GC').one()
+    dataUser=DB.session.query(AppUser.prenom_role,AppUser.nom_role).filter(AppUser.id_role==id_role).filter(AppUser.id_application==dataApp[0]).one()
+    geojson=json.loads(dataGeom[1])
     dico={}
+    dico['user']={}
+    dico['user']['nom']=dataUser.nom_role
+    dico['user']['prenom']=dataUser.prenom_role     
     dico['geometry']=geojson
     dico['properties']={}
-    dico['properties']['id_constat']=dataGeom[0][0].id_constat_d
-    dico['properties']['date_attaque']=dataGeom[0][0].date_attaque_d
-    dico['properties']['date_constat']=dataGeom[0][0].date_constat_d
-    dico['properties']['lieu_dit']=dataGeom[0][0].lieu_dit
-    dico['properties']['proprietaire']=dataGeom[0][0].proprietaire_d
-    dico['properties']['type_animaux']=dataGeom[0][0].type_animaux_d
+    dico['properties']['id_constat']=dataGeom[0].id_constat_d
+    dico['properties']['date_attaque']=dataGeom[0].date_attaque_d
+    dico['properties']['date_constat']=dataGeom[0].date_constat_d
+    dico['properties']['lieu_dit']=dataGeom[0].lieu_dit
+    dico['properties']['proprietaire']=dataGeom[0].proprietaire_d
+    dico['properties']['type_animaux']=dataGeom[0].type_animaux_d
     for da in dataAnimaux:
-        if da.id==dataGeom[0][0].type_animaux_d:
+        if da.id==dataGeom[0].type_animaux_d:
             dico['properties']['type_animaux_name']=da.nom    
-    dico['properties']['nb_victimes_mort']=dataGeom[0][0].nb_victimes_mort_d
-    dico['properties']['nb_victimes_blesse']=dataGeom[0][0].nb_victimes_blesse_d
-    dico['properties']['statut']=dataGeom[0][0].statut_d
+    dico['properties']['nb_victimes_mort']=dataGeom[0].nb_victimes_mort_d
+    dico['properties']['nb_victimes_blesse']=dataGeom[0].nb_victimes_blesse_d
+    dico['properties']['statut']=dataGeom[0].statut_d
     for ds in dataStatut:
-       if ds.id==dataGeom[0][0].statut_d:
-           dico['properties']['statut_name']=ds.nom    
+        if ds.id==dataGeom[0].statut_d:
+            dico['properties']['statut_name']=ds.nom    
     for dsec in dataSecteur:
-       if dsec.id_area == dataGeom[0][0].id_secteur_d:
-           dico['properties']['secteur']=dsec.area_name
-       if dsec.id_area == dataGeom[0][0].id_commune_d:
-           dico['properties']['commune']=dsec.area_name  
+        if dsec.id_area == dataGeom[0].id_secteur_d:
+            dico['properties']['secteur']=dsec.area_name
+        if dsec.id_area == dataGeom[0].id_commune_d:
+            dico['properties']['commune']=dsec.area_name
+    dico['properties']['departement']=dataGeom[0].departement_d        
+    if dataGeom[0].dans_coeur:
+        dico['properties']['localisation']="Dans le coeur"
+    elif dataGeom[0].dans_aa:
+        dico['properties']['localisation']="Dans l'aire d'adhésion"
+    else:
+        dico['properties']['localisation']="Hors du parc"         
     return render_template('dataDecla.html', title='Map',Decla=dico)

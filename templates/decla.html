@@ -42,6 +42,9 @@
 				Type d'animaux : {{ decla.properties.type_animaux_d }}<br>
 				Secteur : {{decla.properties.secteur_d}}<br>
 				Commune : {{decla.properties.commune_d}}<br>
+				Département : {{decla.properties.departement_d}}<br>
+				Localisation : {{decla.properties.localisation_d}}<br>
+				Créateur du constat: {{decla.user.prenom_d}} {{decla.user.nom_d}}<br>
 				Statut : {{ decla.properties.statut_d }}<br>
 				<p><a class="btn btn-primary" role="button" href="{{url_for('routes.updateDecla',idc=decla.properties.id_constat_d)}}">Modifier le constat</a></p>
 				<p><a class="btn btn-primary" role="button" href="{{url_for('routes.deleteDecla',idc=decla.properties.id_constat_d)}}">Supprimer le constat</a></p>
@@ -82,6 +85,10 @@
 				'statut_d': '{{ decla.properties.statut_d }}',
 				'secteur_d': '{{ decla.properties.secteur_d }}',
 				'commune_d': '{{ decla.properties.commune_d }}',
+				'departement_d': '{{ decla.properties.departement_d }}',
+				'localisation_d': '{{ decla.properties.localisation_d }}',
+				'prenom_d': '{{ decla.user.prenom_d }}',
+				'nom_d': '{{ decla.user.nom_d }}',
 				'geom':'{{decla.geometry | tojson}}',
 				},
 			{% endfor %}
@@ -110,6 +117,9 @@
 					"Type d'animaux : "+point.type_animaux_d+"<br>"+ 
 					"Secteur : "+point.secteur_d+"<br>"+ 
 					"Commune : "+point.commune_d+"<br>"+ 
+					"Département : "+point.departement_d+"<br>"+
+					"Localisation : "+point.localisation_d+"<br>"+
+					"Créateur du constat : "+point.nom_d+" "+point.prenom_d+"<br>"+
 					"Statut : "+point.statut_d+"<br>" 
 					) ;
 					

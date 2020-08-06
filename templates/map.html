@@ -44,6 +44,9 @@
 				Type d'animaux : {{ constats.properties.type_animaux }}<br>
 				Secteur : {{constats.properties.secteur}}<br>
 				Commune : {{constats.properties.commune}}<br>
+				Département : {{constats.properties.departement}}<br>
+				Localisation : {{constats.properties.localisation}}<br>
+				Créateur du constat : {{constats.user.prenom}} {{constats.user.prenom}}<br>
 				Statut : {{ constats.properties.statut }}<br>
 				Nombre de jours agent : {{constats.properties.nb_jour_agent}}<br>
 				<p><a class="btn btn-primary" role="button" href="{{url_for('routes.update',idc=constats.properties.id_constat)}}">Modifier le constat</a></p>
@@ -85,7 +88,11 @@
 				'statut': '{{ constats.properties.statut }}',
 				'secteur':'{{constats.properties.secteur}}',
 				'commune':'{{constats.properties.commune}}',
+				'departement':'{{constats.properties.departement}}',
+				'localisation':'{{constats.properties.localisation}}',
 				'nb_jour_agent': '{{ constats.properties.nb_jour_agent }}',
+				'prenom': '{{ constats.user.prenom }}',
+				'nom': '{{ constats.user.nom }}',
 				'geometry': '{{ constats.geometry | tojson}}'
 				},
 			{% endfor %}
@@ -112,10 +119,13 @@
 					"Nom du 2eme agent recenseur : "+point.nom_agent2+"<br>"+ 
 					"Propriétaire : "+point.proprietaire+"<br>"+ 
 					"Type d'animaux : "+point.type_animaux+"<br>"+ 
-					"Statut : "+point.statut+"<br>" +
-					"Nombre de jours agent : "+point.nb_jour_agent+"<br>"+
 					"Secteur : "+point.secteur+"<br>"+
-					"Commune : "+point.commune+"<br>"
+					"Commune : "+point.commune+"<br>"+
+					"Département : "+point.departement+"<br>"+
+					"Localisation : "+point.localisation+"<br>"+
+					"Créateur du constat : "+point.prneom+" "+point.nom+"<br>"+
+					"Statut : "+point.statut+"<br>" +
+					"Nombre de jours agent : "+point.nb_jour_agent+"<br>"			
 					) ;
 					
 				markersCluster.addLayer(markerC); 
