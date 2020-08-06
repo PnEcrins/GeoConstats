@@ -24,7 +24,13 @@ def login():
     return render_template('login.html',id_app=bonApp)
 
 @routes.route("/map")
-@check_auth(1,True)
+@check_auth(
+    2,
+    True,
+    redirect_on_expiration='/login',
+    redirect_on_invalid_token='/login',
+    redirect_on_insufficient_right='/noRight',
+    )
 def map(id_role):
     """
     Lance la "page d'acceuil" avec une carte + une liste avec toutes les données
@@ -100,7 +106,13 @@ def map(id_role):
     return render_template('map.html', title='Map', Constats=cnsts,form=form)
 
 @routes.route('/form',methods=['POST','GET'])
-@check_auth(2)
+@check_auth(
+    2,
+    True,
+    redirect_on_expiration='/login',
+    redirect_on_invalid_token='/login',
+    redirect_on_insufficient_right='/noRight',
+    )
 def form():
     """
     Lance la page de formulaire d'ajout de données
@@ -117,7 +129,13 @@ def form():
     return render_template('add.html', title="Add_to_database", form=form )
 
 @routes.route('/add', methods=['GET', 'POST'])
-@check_auth(2,True)
+@check_auth(
+    2,
+    True,
+    redirect_on_expiration='/login',
+    redirect_on_invalid_token='/login',
+    redirect_on_insufficient_right='/noRight',
+    )
 def add(id_role):
     """
     Réalise l'ajout de données dans la BD
@@ -153,9 +171,9 @@ def add(id_role):
 @check_auth(
     2,
     True,
-    # redirect_on_expiration=url_for('routes.login'),
-    # redirect_on_invalid_token=url_for('routes.login'),
-    # redirect_on_insufficient_right=render_template('pas_les_droits.html'),
+    redirect_on_expiration='/login',
+    redirect_on_invalid_token='/login',
+    redirect_on_insufficient_right='/noRight',
     )
 def update(idc, id_role):
     """
@@ -220,10 +238,16 @@ def update(idc, id_role):
         form.process()        
         return render_template('update.html', title='Map',form=form,Constats=dico)
     else:
-        return render_template('pas_les_droits.html')
+        return render_template('noRight.html')
 
 @routes.route('/updateDB',methods=['GET', 'POST'])
-@check_auth(2)
+@check_auth(
+    2,
+    True,
+    redirect_on_expiration='/login',
+    redirect_on_invalid_token='/login',
+    redirect_on_insufficient_right='/noRight',
+    )
 def updateDB():
     """
     Réalise les mises à jour dans la BD
@@ -253,7 +277,13 @@ def updateDB():
     return redirect(url_for('routes.map'))
     
 @routes.route('/delete/<idc>', methods=['GET', 'POST'])
-@check_auth(2,True)
+@check_auth(
+    2,
+    True,
+    redirect_on_expiration='/login',
+    redirect_on_invalid_token='/login',
+    redirect_on_insufficient_right='/noRight',
+    )
 def delete(idc,id_role):
     """
     Réalise la suppression d'un constat déclaratif
@@ -268,10 +298,16 @@ def delete(idc,id_role):
         DB.session.commit()
         return redirect(url_for('routes.map'))
     else:
-        return render_template('pas_les_droits.html')    
+        return render_template('noRight.html')    
 
 @routes.route('/download', methods=['GET', 'POST'])
-@check_auth(2,True)
+@check_auth(
+    2,
+    True,
+    redirect_on_expiration='/login',
+    redirect_on_invalid_token='/login',
+    redirect_on_insufficient_right='/noRight',
+    )
 def download(id_role):
     filter_query = request.args.to_dict()
     dataStatut=DB.session.query(bib_statut)
@@ -339,7 +375,13 @@ def download(id_role):
     return output
    
 @routes.route('/data/<idc>')
-@check_auth(2,True)
+@check_auth(
+    2,
+    True,
+    redirect_on_expiration='/login',
+    redirect_on_invalid_token='/login',
+    redirect_on_insufficient_right='/noRight',
+    )
 def data(idc,id_role):
     dataStatut=DB.session.query(bib_statut)
     dataAnimaux=DB.session.query(bib_type_animaux)
@@ -388,7 +430,13 @@ def data(idc,id_role):
     
     
 @routes.route('/decla')
-@check_auth(1,True)
+@check_auth(
+    2,
+    True,
+    redirect_on_expiration='/login',
+    redirect_on_invalid_token='/login',
+    redirect_on_insufficient_right='/noRight',
+    )
 def decla(id_role):
     """
     Lance la page de consultation des constats déclaratifs avec une carte + une liste avec toutes les données
@@ -461,17 +509,35 @@ def decla(id_role):
     return render_template('decla.html', title='Declaratif', Declaratifs=decla,form=form)
 
 @routes.route('/deleteDecla/<idc>',methods=['GET', 'POST'])
-@check_auth(2,True)
+@check_auth(
+    2,
+    True,
+    redirect_on_expiration='/login',
+    redirect_on_invalid_token='/login',
+    redirect_on_insufficient_right='/noRight',
+    )
 def deleteDecla(idc,id_role):
     """
     Réalise la suppression d'un constat déclaratif
     """
-    dataGeom = DB.session.query(Declaratif).filter(Declaratif.id_constat_d==idc).delete()
-    DB.session.commit()
-    return redirect(url_for('routes.decla'))
+    dataGeom = DB.session.query(Declaratif).filter(Declaratif.id_constat_d==idc).one()
+    dataApp=DB.session.query(Application.id_application).filter(Application.code_application=='GC').one()
+    nivDroit=DB.session.query(AppUser.id_droit_max).filter(AppUser.id_role==id_role).filter(AppUser.id_application==dataApp[0]).one()
+    if nivDroit[0]>2 or id_role==dataGeom[0][0].id_role:
+        dataGeom = DB.session.query(Declaratif).filter(Declaratif.id_constat_d==idc).delete()
+        DB.session.commit()
+        return redirect(url_for('routes.decla'))
+    else:
+        return render_template('noRight.html')     
 
 @routes.route ('/formDecla',methods=['GET', 'POST'])
-@check_auth(2)
+@check_auth(
+    2,
+    True,
+    redirect_on_expiration='/login',
+    redirect_on_invalid_token='/login',
+    redirect_on_insufficient_right='/noRight',
+    )
 def formDecla():
     """
     Lance la page de formulaire d'ajout de données
@@ -488,7 +554,13 @@ def formDecla():
     return render_template('addDecla.html', title="Add_to_database", form=form )
 
 @routes.route('/addDecla', methods=['GET', 'POST'])
-@check_auth(2)
+@check_auth(
+    2,
+    True,
+    redirect_on_expiration='/login',
+    redirect_on_invalid_token='/login',
+    redirect_on_insufficient_right='/noRight',
+    )
 def addDecla():
     """
     Réalise l'ajout de données dans la BD
@@ -518,7 +590,13 @@ def addDecla():
     return redirect(url_for('routes.decla'))
 
 @routes.route('/updateDecla/<idc>', methods=['GET', 'POST'])
-@check_auth(2,True)
+@check_auth(
+    2,
+    True,
+    redirect_on_expiration='/login',
+    redirect_on_invalid_token='/login',
+    redirect_on_insufficient_right='/noRight',
+    )
 def updateDecla(idc,id_role):
     """
     Lance la page de mise à jour d'une donnée
@@ -529,56 +607,66 @@ def updateDecla(idc,id_role):
     dataGeom = DB.session.query(Declaratif,func.ST_AsGeoJson(func.ST_Transform(Declaratif.geom,4326))).filter(Declaratif.id_constat_d==idc).all()
     dataApp=DB.session.query(Application.id_application).filter(Application.code_application=='GC').one()
     dataUser=DB.session.query(AppUser.prenom_role,AppUser.nom_role).filter(AppUser.id_role==id_role).filter(AppUser.id_application==dataApp[0]).one()
-    geojson=json.loads(dataGeom[0][1])
-    dico={}
-    dico['user']={}
-    dico['user']['nom']=dataUser.nom_role
-    dico['user']['prenom']=dataUser.prenom_role     
-    dico['geometry']=geojson
-    dico['properties']={}
-    dico['properties']['id_constat_d']=dataGeom[0][0].id_constat_d
-    dico['properties']['date_attaque_d']=dataGeom[0][0].date_attaque_d
-    dico['properties']['date_constat_d']=dataGeom[0][0].date_constat_d
-    dico['properties']['lieu_dit']=dataGeom[0][0].lieu_dit
-    dico['properties']['proprietaire_d']=dataGeom[0][0].proprietaire_d
-    dico['properties']['type_animaux_d']=dataGeom[0][0].type_animaux_d
-    for da in dataAnimaux:
-        if da.id==dataGeom[0][0].type_animaux_d:
-            dico['properties']['type_animaux_name']=da.nom  
-    dico['properties']['nb_victimes_mort_d']=dataGeom[0][0].nb_victimes_mort_d
-    dico['properties']['nb_victimes_blesse_d']=dataGeom[0][0].nb_victimes_blesse_d
-    dico['properties']['statut_d']=dataGeom[0][0].statut_d
-    for ds in dataStatut:
-        if ds.id==dataGeom[0][0].statut_d:
-            dico['properties']['statut_name']=ds.nom
-    for dsec in dataSecteur:
-        if dsec.id_area == dataGeom[0][0].id_secteur_d:
-            dico['properties']['secteur_d']=dsec.area_name
-        if dsec.id_area == dataGeom[0][0].id_commune_d:
-            dico['properties']['commune_d']=dsec.area_name
-    dico['properties']['departement_d']=dataGeom[0][0].departement_d        
-    if dataGeom[0][0].dans_coeur_d:
-        dico['properties']['localisation_d']="Dans le coeur"
-    elif dataGeom[0][0].dans_aa_d:
-        dico['properties']['localisation_d']="Dans l'aire d'adhésion"
+    nivDroit=DB.session.query(AppUser.id_droit_max).filter(AppUser.id_role==id_role).filter(AppUser.id_application==dataApp[0]).one()
+    if nivDroit[0]>2 or id_role==dataGeom[0][0].id_role:
+        geojson=json.loads(dataGeom[0][1])
+        dico={}
+        dico['user']={}
+        dico['user']['nom']=dataUser.nom_role
+        dico['user']['prenom']=dataUser.prenom_role     
+        dico['geometry']=geojson
+        dico['properties']={}
+        dico['properties']['id_constat_d']=dataGeom[0][0].id_constat_d
+        dico['properties']['date_attaque_d']=dataGeom[0][0].date_attaque_d
+        dico['properties']['date_constat_d']=dataGeom[0][0].date_constat_d
+        dico['properties']['lieu_dit']=dataGeom[0][0].lieu_dit
+        dico['properties']['proprietaire_d']=dataGeom[0][0].proprietaire_d
+        dico['properties']['type_animaux_d']=dataGeom[0][0].type_animaux_d
+        for da in dataAnimaux:
+            if da.id==dataGeom[0][0].type_animaux_d:
+                dico['properties']['type_animaux_name']=da.nom  
+        dico['properties']['nb_victimes_mort_d']=dataGeom[0][0].nb_victimes_mort_d
+        dico['properties']['nb_victimes_blesse_d']=dataGeom[0][0].nb_victimes_blesse_d
+        dico['properties']['statut_d']=dataGeom[0][0].statut_d
+        for ds in dataStatut:
+            if ds.id==dataGeom[0][0].statut_d:
+                dico['properties']['statut_name']=ds.nom
+        for dsec in dataSecteur:
+            if dsec.id_area == dataGeom[0][0].id_secteur_d:
+                dico['properties']['secteur_d']=dsec.area_name
+            if dsec.id_area == dataGeom[0][0].id_commune_d:
+                dico['properties']['commune_d']=dsec.area_name
+        dico['properties']['departement_d']=dataGeom[0][0].departement_d        
+        if dataGeom[0][0].dans_coeur_d:
+            dico['properties']['localisation_d']="Dans le coeur"
+        elif dataGeom[0][0].dans_aa_d:
+            dico['properties']['localisation_d']="Dans l'aire d'adhésion"
+        else:
+            dico['properties']['localisation_d']="Hors du parc"                 
+        form = DeclaForm()
+        form.statut_d.choices=[(0,"")]
+        dataStatut=DB.session.query(bib_statut)
+        for ds in dataStatut:
+            form.statut_d.choices+=[(ds.id,ds.nom)]
+        form.type_animaux_d.choices=[(0,"")]
+        dataAnimaux=DB.session.query(bib_type_animaux)
+        for da in dataAnimaux:
+            form.type_animaux_d.choices+=[(da.id,da.nom)]
+        form.type_animaux_d.default=dataGeom[0][0].type_animaux_d
+        form.statut_d.default=dataGeom[0][0].statut_d
+        form.process()
+        return render_template('updateDecla.html', title='Map',form=form,Declaratif=dico)
     else:
-        dico['properties']['localisation_d']="Hors du parc"                 
-    form = DeclaForm()
-    form.statut_d.choices=[(0,"")]
-    dataStatut=DB.session.query(bib_statut)
-    for ds in dataStatut:
-        form.statut_d.choices+=[(ds.id,ds.nom)]
-    form.type_animaux_d.choices=[(0,"")]
-    dataAnimaux=DB.session.query(bib_type_animaux)
-    for da in dataAnimaux:
-        form.type_animaux_d.choices+=[(da.id,da.nom)]
-    form.type_animaux_d.default=dataGeom[0][0].type_animaux_d
-    form.statut_d.default=dataGeom[0][0].statut_d
-    form.process()
-    return render_template('updateDecla.html', title='Map',form=form,Declaratif=dico)
+        return render_template('no_right.html')
 
 @routes.route('/updateDBDecla',methods=['GET', 'POST'])
-@check_auth(2)
+@check_auth(
+    2,
+    True,
+    redirect_on_expiration='/login',
+    redirect_on_invalid_token='/login',
+    redirect_on_insufficient_right='/noRight',
+    )
 def updateDBDecla():
     """
     Réalise les mises à jour dans la BD
@@ -605,7 +693,13 @@ def updateDBDecla():
     DB.session.commit()       
     return redirect(url_for('routes.decla'))    
 @routes.route('/downloadDecla', methods=['GET', 'POST'])
-@check_auth(2,True)
+@check_auth(
+    2,
+    True,
+    redirect_on_expiration='/login',
+    redirect_on_invalid_token='/login',
+    redirect_on_insufficient_right='/noRight',
+    )
 def downloadDecla(id_role):
     filter_query = request.args.to_dict()
     dataStatut=DB.session.query(bib_statut)
@@ -671,7 +765,13 @@ def downloadDecla(id_role):
     return output
 
 @routes.route('/dataDecla/<idc>')
-@check_auth(2,True)
+@check_auth(
+    2,
+    True,
+    redirect_on_expiration='/login',
+    redirect_on_invalid_token='/login',
+    redirect_on_insufficient_right='/noRight',
+    )
 def dataDecla(idc,id_role):
     dataStatut=DB.session.query(bib_statut)
     dataAnimaux=DB.session.query(bib_type_animaux)
@@ -714,3 +814,18 @@ def dataDecla(idc,id_role):
     else:
         dico['properties']['localisation']="Hors du parc"         
     return render_template('dataDecla.html', title='Map',Decla=dico)
+
+@routes.route('/noRight')
+def noRight(idc):
+    return render_template('noRight.html')
+
+@routes.route('/dashboard')
+@check_auth(
+    2,
+    True,
+    redirect_on_expiration='/login',
+    redirect_on_invalid_token='/login',
+    redirect_on_insufficient_right='/noRight',
+    )
+def dashboard:
+    return render_template('dashboard.html')
