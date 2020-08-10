@@ -27,7 +27,7 @@
         
 </form>
 <div class="col-md-4">
-    <table class="table table-bordered">
+    <table class="table table-bordered" id="departement">
         <thead class="thead-light">
             <tr>
                 <th scope="col">Nombre de constats</th>
@@ -63,6 +63,7 @@
             </tr>                
         </tbody>
     </table>
+    <a class="btn btn-primary" role="button" onclick="tab2Json()">Exporter le tableau</a>
 </div>
 <div class="col-md-9">
 <table class="table table-bordered">
@@ -103,6 +104,36 @@
 </table>
 </div>
 <script>
+var tab2Json = function(){
+var $table=$("#departement"),
+    rows = [],
+    header = [];
+console.log($table.find("thead tr th"))
+$table.find("thead tr th").each(function () {
+    header.push($(this).html());
+});
+
+$table.find("tbody tr").each(function () {
+    var row = {};
+
+    $(this).find("th").each(function (i) {
+        var key = header[i],
+            value = $(this).html();
+
+        row[key] = value;
+    });
+
+    $(this).find("td").each(function (i) {
+        var key = header[i],
+            value = $(this).html();
+
+        row[key] = value;
+    });
+
+    rows.push(row);
+});
+console.log($table)
+}
 const queryString = window.location.search;
 const urlParams = new URLSearchParams(queryString);
 const date = urlParams.get('date');

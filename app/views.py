@@ -1036,3 +1036,13 @@ def dashboard():
     dicoSec['total'].append(dicoTot)                           
     print(dicoDep)               
     return render_template('dashboard.html',title='Map', dataDep=dicoDep,dataSec=dicoSec,form=form)
+
+# @routes.route('/downloadDep')
+# @check_auth(
+#     2,
+#     True,
+#     redirect_on_expiration='/login',
+#     redirect_on_invalid_token='/login',
+#     redirect_on_insufficient_right='/noRight',
+#     )
+# def downloadTab(dict,id_role):
