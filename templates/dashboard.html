@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+{% block content %}
+<table class="table">
+    <thead>
+        <tr>
+            <th>Nombre de constats</th>
+            {% for constats in dataDep['constats'] %}
+            <th>{{constats['departement']}}</th>
+            {% endfor %}
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <th>
+                Constats
+            </th>
+            {% for constats in dataDep['constats'] %}
+            <td>{{constats['nombre']}}</td>
+            {% endfor %}            
+        </tr>
+        <tr>
+            <th>
+                Déclaratifs
+            </th>
+            {% for constats in dataDep['declaratifs'] %}
+            <td>{{constats['nombre']}}</td>
+            {% endfor %}            
+        </tr>
+        <tr>
+            <th>
+                Total
+            </th>
+            {% for constats in dataDep['total'] %}
+            <td>{{constats['nombre']}}</td>
+            {% endfor %}            
+        </tr>                
+    </tbody>
+</table>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Nombre de constats</th>
+            {% for constats in dataSec['constats'] %}
+            <th>{{constats['secteur']}}</th>
+            {% endfor %}
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <th>
+                Constats
+            </th>
+            {% for constats in dataSec['constats'] %}
+            <td>{{constats['nombre']}}</td>
+            {% endfor %}            
+        </tr>
+        <tr>
+            <th>
+                Déclaratifs
+            </th>
+            {% for constats in dataSec['declaratifs'] %}
+            <td>{{constats['nombre']}}</td>
+            {% endfor %}            
+        </tr>
+        <tr>
+            <th>
+                Total
+            </th>
+            {% for constats in dataSec['total'] %}
+            <td>{{constats['nombre']}}</td>
+            {% endfor %}            
+        </tr>                
+    </tbody>
+</table>
+
+
+<script>
+    var dataDepartement=JSON.parse('{{dataDep | tojson}}')
+    console.log(dataDepartement)
+</script>
+{% endblock %}

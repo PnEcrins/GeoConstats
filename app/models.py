@@ -58,5 +58,6 @@ class l_areas(DB.Model):
     __tablename__="l_areas"
     __table_args__={"schema":"ref_geo"}
     id_area=DB.Column(DB.Integer, primary_key=True,autoincrement=True)
+    id_type=DB.Column(DB.Integer)
     area_name=DB.Column(DB.String)
     area_code=DB.Column(DB.String)    
