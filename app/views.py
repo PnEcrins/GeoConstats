@@ -448,7 +448,7 @@ def decla(id_role):
     dataSecteur=DB.session.query(l_areas)
     dataAnnee=DB.session.query(func.distinct(extract('year',Declaratif.date_constat_d)).label("date")).order_by(extract('year',Declaratif.date_constat_d).desc())
     dataApp=DB.session.query(Application.id_application).filter(Application.code_application=='GC').one()
-    dataUser=DB.session.query(AppUser.prenom_role,AppUser.nom_role).filter(AppUser.id_role==id_role_d).filter(AppUser.id_application==dataApp[0]).one()
+    dataUser=DB.session.query(AppUser.prenom_role,AppUser.nom_role).filter(AppUser.id_role==id_role).filter(AppUser.id_application==dataApp[0]).one()
     query = DB.session.query(Declaratif,func.ST_AsGeoJson(func.ST_Transform(Declaratif.geom,4326)))
     
     form=FilterForm()
@@ -477,8 +477,8 @@ def decla(id_role):
         geojson=json.loads(d[1])
         dico={}
         dico['user']={}
-        dico['user']['nom']=dataUser.nom_role
-        dico['user']['prenom']=dataUser.prenom_role         
+        dico['user']['nom_d']=dataUser.nom_role
+        dico['user']['prenom_d']=dataUser.prenom_role         
         dico['geometry']=geojson
         dico['properties']={}
         dico['properties']['id_constat_d']=d[0].id_constat_d
@@ -584,8 +584,8 @@ def addDecla(id_role):
         nb_victimes_mort_d=data['nb_victimes_mort_d'],
         nb_victimes_blesse_d=data['nb_victimes_blesse_d'],
         statut_d=changeStatut,      
-        geom=from_shape(Point(json2154['coordinates'][0],json2154['coordinates'][1]),srid=2154)
-        id_role_d=id_role
+        geom=from_shape(Point(json2154['coordinates'][0],json2154['coordinates'][1]),srid=2154),
+        id_role=id_role
     )
     DB.session.add(decla)
     DB.session.commit()
@@ -830,57 +830,150 @@ def noRight(idc):
 #     redirect_on_insufficient_right='/noRight',
 #     )
 def dashboard():
+    #BLOC REQUETES
+    dataDC=DB.session.query(func.distinct(Constats.departement)).all()
+    dataDD=DB.session.query(func.distinct(Declaratif.departement_d)).all()
+    dataDep=[]
+    for ddc in dataDC:
+        dataDep.append(ddc[0])
+    for ddd in dataDD:
+        if ddd not in dataDC:
+            dataDep.append(ddd['departement'])
+
+    dataDepC=DB.session.query(Constats.departement,func.count(Constats.id_constat).label("nombre"))
+    dataDepD=DB.session.query(Declaratif.departement_d,func.count(Declaratif.id_constat_d).label("nombre"))
+    dataSecteur=DB.session.query(l_areas).filter(l_areas.id_type==30).all()
+    dataSecC=DB.session.query(Constats.id_secteur,func.count(Constats.id_constat).label("nombre"))
+    dataSecD=DB.session.query(Declaratif.id_secteur_d,func.count(Declaratif.id_constat_d).label("nombre"))
+    dataStatut=DB.session.query(bib_statut)
+    dataAnimaux=DB.session.query(bib_type_animaux)
+    dataAnneeC=DB.session.query(func.distinct(extract('year',Constats.date_constat)).label("date")).order_by(extract('year',Constats.date_constat).desc())
+    dataAnneeD=DB.session.query(func.distinct(extract('year',Declaratif.date_constat_d)).label("date")).order_by(extract('year',Declaratif.date_constat_d).desc())
+    #FORMULAIRE
+    dataAnnee=[]
+    for dac in dataAnneeC:
+        dataAnnee.append(dac[0])
+    for dad in dataAnneeD:
+        if dad not in dataAnneeC:
+            dataAnnee.append(dad[0])
+    dataAnnee.sort(reverse=True)
+    filter_query = request.args.to_dict()
+    form=FilterForm()
+    form.animaux.choices=[(0,"")]
+    for da in dataAnimaux:
+        form.animaux.choices+=[(da.id,da.nom)]    
+    form.statut.choices=[(0,"")]
+    for ds in dataStatut:
+        form.statut.choices+=[(ds.id,ds.nom)]
+    form.date.choices=[(0,"")]   
+    for dy in dataAnnee:
+        form.date.choices+=[(int(dy),int(dy))]       
+    if 'date' in filter_query:
+        if filter_query['date'] != "0":
+            dataDepC =  dataDepC.filter(extract('year',Constats.date_constat) == int(filter_query['date']))
+            dataDepD =  dataDepD.filter(extract('year',Declaratif.date_constat_d) == int(filter_query['date']))
+            dataSecC =  dataSecC.filter(extract('year',Constats.date_constat) == int(filter_query['date']))
+            dataSecD =  dataSecD.filter(extract('year',Declaratif.date_constat_d) == int(filter_query['date']))
+    if 'animaux' in filter_query:
+        if filter_query['animaux'] != "0":
+            dataDepC =  dataDepC.filter(Constats.type_animaux == filter_query['animaux'])
+            dataDepD =  dataDepD.filter(Declaratif.type_animaux_d == filter_query['animaux'])
+            dataSecC =  dataSecC.filter(Constats.type_animaux == filter_query['animaux'])
+            dataSecD =  dataSecD.filter(Declaratif.type_animaux_d == filter_query['animaux'])            
+    if 'statut' in filter_query:
+        if filter_query['statut'] != "0":
+            dataDepC =  dataDepC.filter(Constats.statut == filter_query['statut'])   
+            dataDepD =  dataDepD.filter(Declaratif.statut_d == filter_query['statut'])
+            dataSecC =  dataSecC.filter(Constats.statut == filter_query['statut'])   
+            dataSecD =  dataSecD.filter(Declaratif.statut_d == filter_query['statut'])            
+    dataDepC =  dataDepC.group_by(Constats.departement).all()     
+    dataDepD =  dataDepD.group_by(Declaratif.departement_d).all()
+    dataSecC =  dataSecC.group_by(Constats.id_secteur).all()    
+    dataSecD =  dataSecD.group_by(Declaratif.id_secteur_d).all() 
     #DEPARTEMENTS
     dicoDep={}
     dicoDep['total']=[]
     dicoDep['constats']=[]
     dicoDep['declaratifs']=[]
-    dataDepC=DB.session.query(Constats.departement,func.count(Constats.id_constat).label("nombre")).group_by(Constats.departement).all()
     listC=[]
-    for dc in dataDepC:#Donnees constat simple
-        dico={}
-        dico['nombre']=dc.nombre
-        dico['departement']=dc.departement
-        dicoDep['constats'].append(dico)
-        listC.append(dc.departement)
-    dataDepD=DB.session.query(Declaratif.departement_d,func.count(Declaratif.id_constat_d).label("nombre")).group_by(Declaratif.departement_d).all()
-    listD=[]
-    for dd in dataDepD:#Donnees decla simples
-        if dd.departement_d not in listC:#Departement avec au moins 1 decla mais 0 constat
-            dico={}
-            dico['nombre']=dd.nombre
-            dico['departement']=dd.departement_d
-            dicoDep['total'].append(dico)
-        dico={}
-        dico['nombre']=dd.nombre
-        dico['departement']=dd.departement_d
-        dicoDep['declaratifs'].append(dico)
-        listD.append(dd.departement_d)
-    for dc in dataDepC:#Donnees constats + decla
-        if dc.departement not in listD:#Departement avec au moins 1 constat mais 0 decla
-            dico['nombre']=dc.nombre
-            dico['departement']=dc.departement
-            dicoDep['total'].append(dico)
-        for dd in dataDepD:
-            if dc.departement==dd.departement_d:
+    totCst=0
+    totDec=0
+    for dep in dataDep:
+        for dc in dataDepC:#Donnees constat simple
+            if dep==dc.departement:
+                totCst+=dc.nombre
                 dico={}
-                dico['nombre']=dc.nombre+dd.nombre
+                dico['nombre']=dc.nombre
                 dico['departement']=dc.departement
-                dicoDep['total'].append(dico)
+                dicoDep['constats'].append(dico)
+                listC.append(dc.departement)
+        
+        listD=[]
+        for dd in dataDepD:#Donnees decla simples
+            if dep==dd.departement_d:
+                totDec+=dd.nombre
+                if dd.departement_d not in listC:#Departement avec au moins 1 decla mais 0 constat
+                    dico={}
+                    dico['nombre']=dd.nombre
+                    dico['departement']=dd.departement_d
+                    dicoDep['total'].append(dico)
+                    dicoVide={}
+                    dicoVide['nombre']=0
+                    dicoVide['departement']=dd.departement_d
+                    dicoDep['constats'].append(dicoVide)            
+                dico={}
+                dico['nombre']=dd.nombre
+                dico['departement']=dd.departement_d
+                dicoDep['declaratifs'].append(dico)
+                listD.append(dd.departement_d)
+        for dc in dataDepC:#Donnees constats + decla
+            if dep==dc.departement:
+                if dc.departement not in listD:#Departement avec au moins 1 constat mais 0 decla
+                    dico['nombre']=dc.nombre
+                    dico['departement']=dc.departement
+                    dicoDep['total'].append(dico)
+                    dicoVide={}
+                    dicoVide['nombre']=0
+                    dicoVide['departement']=dc.departement
+                    dicoDep['declaratifs'].append(dicoVide)            
+                for dd in dataDepD:
+                    if dc.departement==dd.departement_d:
+                        dico={}
+                        dico['nombre']=dc.nombre+dd.nombre
+                        dico['departement']=dc.departement
+                        dicoDep['total'].append(dico)
+        if dep not in listC and dep not in listD:
+            dicVide={}
+            dicVide['nombre']=0
+            dicVide['departement']=dep
+            dicoDep['declaratifs'].append(dicVide)
+            dicoDep['constats'].append(dicVide)
+            dicoDep['total'].append(dicVide)
+    dico={}
+    dico['departement']="Total"
+    dico['nombre']=totCst
+    dicoDep['constats'].append(dico)
+    dicoDec={}
+    dicoDec['departement']="Total"
+    dicoDec['nombre']=totDec
+    dicoDep['declaratifs'].append(dicoDec)
+    dicoTot={}
+    dicoTot['departement']="Total"
+    dicoTot['nombre']=totCst+totDec
+    dicoDep['total'].append(dicoTot)
     #SECTEURS
-    dataSecteur=DB.session.query(l_areas).filter(l_areas.id_type==30).all()
     dicoSec={}
     dicoSec['total']=[]
     dicoSec['constats']=[]
     dicoSec['declaratifs']=[]
-    dataSecC=DB.session.query(Constats.id_secteur,func.count(Constats.id_constat).label("nombre")).group_by(Constats.id_secteur).all()
     listC=[]
-    dataSecD=DB.session.query(Declaratif.id_secteur_d,func.count(Declaratif.id_constat_d).label("nombre")).group_by(Declaratif.id_secteur_d).all()
     listD=[]
-
+    totCst=0
+    totDec=0
     for dsec in dataSecteur:#On boucle d'abord sur les secteurs car ca permet d'ordonner le dictionnaire
         for dc in dataSecC:
             if dsec.id_area == dc.id_secteur:#Données de constat > 0
+                totCst+=dc.nombre
                 dico={}
                 dico['nombre']=dc.nombre
                 dico['secteur']=dsec.area_name 
@@ -888,12 +981,13 @@ def dashboard():
                 listC.append(dc.id_secteur) 
         for dd in dataSecD:#Données de decla > 0
             if dsec.id_area == dd.id_secteur_d:
+                totDec+=dd.nombre
                 dico={}
                 dico['nombre']=dd.nombre 
                 dico['secteur']=dsec.area_name 
                 dicoSec['declaratifs'].append(dico)
                 listD.append(dd.id_secteur_d)
-            elif dd.id_secteur_d not in listC: #Données de decla > 0 et de constat = 0
+            if dd.id_secteur_d not in listC: #Données de decla > 0 et de constat = 0
                 if dsec.id_area == dd.id_secteur_d:
                     dico={}
                     dico['nombre']=dd.nombre
@@ -903,6 +997,13 @@ def dashboard():
                     dicVide['nombre']=0
                     dicVide['secteur']=dsec.area_name
                     dicoSec['constats'].append(dicVide)                   
+        if dsec.id_area not in listC and dsec.id_area not in listD:#Département ayant au moins un constat ou un decla mais non affiché avec les filtres
+            dicVide={}
+            dicVide['nombre']=0
+            dicVide['secteur']=dsec.area_name
+            dicoSec['declaratifs'].append(dicVide)
+            dicoSec['constats'].append(dicVide)
+            dicoSec['total'].append(dicVide)
         for dc in dataSecC:
             if dc.id_secteur not in listD:#Données de constat > 0 et de decla = 0
                 if dsec.id_area == dc.id_secteur:
@@ -920,5 +1021,18 @@ def dashboard():
                         dico={}
                         dico['nombre']=dc.nombre+dd.nombre
                         dico['secteur']=dsec.area_name
-                        dicoSec['total'].append(dico)                        
-    return render_template('dashboard.html',title='Map', dataDep=dicoDep,dataSec=dicoSec)
+                        dicoSec['total'].append(dico)  
+    dico={}
+    dico['secteur']="Total"
+    dico['nombre']=totCst
+    dicoSec['constats'].append(dico)
+    dicoDec={}
+    dicoDec['secteur']="Total"
+    dicoDec['nombre']=totDec
+    dicoSec['declaratifs'].append(dicoDec)
+    dicoTot={}
+    dicoTot['secteur']="Total"
+    dicoTot['nombre']=totCst+totDec
+    dicoSec['total'].append(dicoTot)                           
+    print(dicoDep)               
+    return render_template('dashboard.html',title='Map', dataDep=dicoDep,dataSec=dicoSec,form=form)

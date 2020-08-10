@@ -1,53 +1,81 @@
 {% extends "base.html" %}
 {% block content %}
-<table class="table">
-    <thead>
+<h3>Filtres sur les constats</h3>
+<form method="GET" novalidate>
+    <div class="form-group">
+        Type d'animaux <br>
+        {{ form.animaux(size=1) }}
+        {% for error in form.animaux.errors %}
+        <span style="color: red;">[{{ error }}]</span>
+        {% endfor %}
+    </div>		
+    <div class="form-group">
+        Année du constat <br>
+        {{ form.date(size=1) }}
+        {% for error in form.date.errors %}
+        <span style="color: red;">[{{ error }}]</span>
+        {% endfor %}
+    </div>
+    <div class="form-group">
+        Statut du constat <br>
+        {{ form.statut(size=1) }}
+        {% for error in form.statut.errors %}
+        <span style="color: red;">[{{ error }}]</span>
+        {% endfor %}
+    </div>
+    <div class="form-group"><button id="subform" type="submit" formaction="{{url_for('routes.dashboard')}}" class="btn btn-primary">Filtrer les données</button></div>
+        
+</form>
+<div class="col-md-4">
+    <table class="table table-bordered">
+        <thead class="thead-light">
+            <tr>
+                <th scope="col">Nombre de constats</th>
+                {% for constats in dataDep['total'] %}
+                <th scope="col">{{constats['departement']}}</th>
+                {% endfor %}
+            </tr>
+        </thead>
+        <tbody>
+            <tr scope="row">
+                <th>
+                    Constats
+                </th>
+                {% for constats in dataDep['constats'] %}
+                <td>{{constats['nombre']}}</td>
+                {% endfor %}            
+            </tr>
+            <tr scope="row">
+                <th>
+                    Déclaratifs
+                </th>
+                {% for constats in dataDep['declaratifs'] %}
+                <td>{{constats['nombre']}}</td>
+                {% endfor %}            
+            </tr>
+            <tr scope="row">
+                <th>
+                    Total
+                </th>
+                {% for constats in dataDep['total'] %}
+                <td>{{constats['nombre']}}</td>
+                {% endfor %}            
+            </tr>                
+        </tbody>
+    </table>
+</div>
+<div class="col-md-9">
+<table class="table table-bordered">
+    <thead class="thead-light">
         <tr>
             <th>Nombre de constats</th>
-            {% for constats in dataDep['constats'] %}
-            <th>{{constats['departement']}}</th>
-            {% endfor %}
-        </tr>
-    </thead>
-    <tbody>
-        <tr>
-            <th>
-                Constats
-            </th>
-            {% for constats in dataDep['constats'] %}
-            <td>{{constats['nombre']}}</td>
-            {% endfor %}            
-        </tr>
-        <tr>
-            <th>
-                Déclaratifs
-            </th>
-            {% for constats in dataDep['declaratifs'] %}
-            <td>{{constats['nombre']}}</td>
-            {% endfor %}            
-        </tr>
-        <tr>
-            <th>
-                Total
-            </th>
-            {% for constats in dataDep['total'] %}
-            <td>{{constats['nombre']}}</td>
-            {% endfor %}            
-        </tr>                
-    </tbody>
-</table>
-
-<table class="table">
-    <thead>
-        <tr>
-            <th>Nombre de constats</th>
-            {% for constats in dataSec['constats'] %}
+            {% for constats in dataSec['total'] %}
             <th>{{constats['secteur']}}</th>
             {% endfor %}
         </tr>
     </thead>
     <tbody>
-        <tr>
+        <tr scope="row">
             <th>
                 Constats
             </th>
@@ -55,7 +83,7 @@
             <td>{{constats['nombre']}}</td>
             {% endfor %}            
         </tr>
-        <tr>
+        <tr scope="row">
             <th>
                 Déclaratifs
             </th>
@@ -63,7 +91,7 @@
             <td>{{constats['nombre']}}</td>
             {% endfor %}            
         </tr>
-        <tr>
+        <tr scope="row">
             <th>
                 Total
             </th>
@@ -73,10 +101,22 @@
         </tr>                
     </tbody>
 </table>
-
-
+</div>
 <script>
-    var dataDepartement=JSON.parse('{{dataDep | tojson}}')
-    console.log(dataDepartement)
+const queryString = window.location.search;
+const urlParams = new URLSearchParams(queryString);
+const date = urlParams.get('date');
+if(date != null){
+    document.getElementById("date").value=date;
+}
+const animaux = urlParams.get('animaux');
+if(animaux != null){
+    document.getElementById("animaux").value=animaux;
+}
+const statut = urlParams.get('statut');
+if(statut != null){
+    document.getElementById("statut").value=statut;
+}		
+
 </script>
 {% endblock %}

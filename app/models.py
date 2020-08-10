@@ -41,7 +41,7 @@ class Declaratif(DB.Model):
     departement_d=DB.Column(DB.String)
     dans_coeur_d=DB.Column(DB.Boolean)
     dans_aa_d=DB.Column(DB.Boolean)
-    id_role_d=DB.Column(DB.Integer)
+    id_role=DB.Column(DB.Integer)
     geom=DB.Column(Geometry("GEOMETRY",2154))    
 
 class bib_statut(DB.Model):   
