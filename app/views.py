@@ -19,7 +19,6 @@ routes = Blueprint('routes',__name__)
 def login():
     dataApp=DB.session.query(Application.id_application).filter(Application.code_application=='GC').one()
     if dataApp:
-        print(dataApp[0])
         bonApp=dataApp[0]
     return render_template('login.html',id_app=bonApp)
 
@@ -46,7 +45,6 @@ def map(id_role):
     dataUser=DB.session.query(AppUser.prenom_role,AppUser.nom_role).filter(AppUser.id_role==id_role).filter(AppUser.id_application==dataApp[0]).one()
     dataAnnee=DB.session.query(func.distinct(extract('year',Constats.date_constat)).label("date")).order_by(extract('year',Constats.date_constat).desc())
     query = DB.session.query(Constats,func.ST_AsGeoJson(func.ST_Transform(Constats.the_geom_point,4326)))
-    print(dataUser)
     form=FilterForm()
     form.animaux.choices=[(0,"")]
     for da in dataAnimaux:
@@ -850,7 +848,6 @@ def dashboard(id_role):
     for ddd in dataDD:
         if ddd not in dataDC:
             dataDep.append(ddd['departement'])
-
     dataDepC=DB.session.query(Constats.departement,func.count(Constats.id_constat).label("nombre"))
     dataDepD=DB.session.query(Declaratif.departement_d,func.count(Declaratif.id_constat_d).label("nombre"))
     dataSecteur=DB.session.query(l_areas).filter(l_areas.id_type==30).all()
@@ -1110,7 +1107,6 @@ def dashboard(id_role):
     #Totaux par type d'animaux
     cpto=0
     for o in dicoAni['Ovins']:
-        print(o)
         cpto+=o['nombre']
     dico={}
     dico['secteur']='total'

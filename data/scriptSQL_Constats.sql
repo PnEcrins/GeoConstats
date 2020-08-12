@@ -18,7 +18,7 @@ CREATE TABLE constats_loups.bib_statut
   CONSTRAINT statutpkey PRIMARY KEY (id)
 );
 
---Fonctions pour les triggers de maj des secteurs et communes
+--Fonctions pour les triggers de maj des données issues de la geometrie
 
 CREATE OR REPLACE FUNCTION constats_loups.update_com_sec()
   RETURNS trigger AS
@@ -42,8 +42,7 @@ END;
 $BODY$
   LANGUAGE plpgsql VOLATILE
   COST 100;
-ALTER FUNCTION constats_loups.update_com_sec()
-  OWNER TO raph;
+ALTER FUNCTION constats_loups.update_com_sec();
 
 
 CREATE OR REPLACE FUNCTION constats_loups.update_com_sec_d()
@@ -68,8 +67,6 @@ END;
 $BODY$
   LANGUAGE plpgsql VOLATILE
   COST 100;
-ALTER FUNCTION constats_loups.update_com_sec_d()
-  OWNER TO raph;
 
 -- table t_constats
 
