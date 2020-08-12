@@ -2,7 +2,7 @@
 
 {% block content %}
 <center><h1>Constat {{Constats.properties.id_constat}}</h1></center>
-<div id="map" style="height: 92vh;"></div>
+<div id="map"></div>
 <div class="leftMap">
     <form action="{{url_for('routes.updateDB')}}" method="post">
             {{ form.hidden_tag() }}
