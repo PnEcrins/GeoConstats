@@ -42,7 +42,6 @@ END;
 $BODY$
   LANGUAGE plpgsql VOLATILE
   COST 100;
-ALTER FUNCTION constats_loups.update_com_sec();
 
 
 CREATE OR REPLACE FUNCTION constats_loups.update_com_sec_d()
