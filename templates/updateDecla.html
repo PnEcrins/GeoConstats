@@ -1,8 +1,8 @@
 {% extends "base.html" %}
 
 {% block content %}
-<center><h1>Constat {{Declaratif.properties.id_constat_d}}</h1></center>
-<div id="map" style="height: 92vh;"></div>
+<center><h1>Constat déclaratif {{Declaratif.properties.id_constat_d}}</h1></center>
+<div id="map"></div>
 <div class="leftMap">
     <form action="{{url_for('routes.updateDBDecla')}}" method="post" novalidate>
             {{ form.hidden_tag() }}
@@ -35,7 +35,7 @@
 				Lieu dit du constat :
 			</div>
 			<div class="mr-1 col-4">			
-				{{ form.lieu_dit(size=18,value=Declaratif.properties.lieu_dit) }}
+				{{ form.lieu_dit(size=18,value=Declaratif.properties.lieu_dit,placeholder="Lieu") }}
 				{% for error in form.lieu_dit.errors %}
 				<span style="color: red;">[{{ error }}]</span>
 				{% endfor %}
@@ -47,7 +47,7 @@
 				Propriétaire :
 			</div>
 			<div class="mr-1 col-4">			
-				{{ form.proprietaire_d(size=18,value=Declaratif.properties.proprietaire_d) }}
+				{{ form.proprietaire_d(size=18,value=Declaratif.properties.proprietaire_d,placeholder="Prénom Nom") }}
 				{% for error in form.proprietaire_d.errors %}
 				<span style="color: red;">[{{ error }}]</span>
 				{% endfor %}
@@ -123,11 +123,11 @@
 		'commune_d': '{{ Declaratif.properties.commune_d }}',
 		'departement_d': '{{ Declaratif.properties.departement_d }}',
 		'localisation_d': '{{ Declaratif.properties.localisation_d }}',
-		'nom_d':'{{ Constats.user.nom_d }}',
-		'prenom_d':'{{ Constats.user.prenom_d }}',
+		'nom_d':'{{ Declaratif.user.nom_d }}',
+		'prenom_d':'{{ Declaratif.user.prenom_d }}',
 		'geometry':'{{Declaratif.geometry | tojson}}'
 	}
-	 var map = L.map('map').setView([JSON.parse(constatFilter.geometry).coordinates[1],JSON.parse(constatFilter.geometry).coordinates[0]], 14);
+	var map = L.map('map').setView([JSON.parse(constatFilter.geometry).coordinates[1],JSON.parse(constatFilter.geometry).coordinates[0]], 14);
     L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
         attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
     }).addTo(map);		

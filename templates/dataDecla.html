@@ -1,8 +1,8 @@
 {% extends "base.html" %}
 
 {% block content %}
-<center><h1>Constat {{Decla.properties.id_constat}}</h1></center>
-<div id="map" style="height: 92vh;">
+<center><h1>Constat déclaratif {{Decla.properties.id_constat}}</h1></center>
+<div id="map">
 </div>
 	<div class="leftMap">
 		<div style="vertical-align:middle;"id="textConstat">
@@ -45,6 +45,7 @@
 		'geometry': '{{ Decla.geometry | tojson}}'
 	};    
 	var map = L.map('map').setView([JSON.parse(constatFilter.geometry).coordinates[1],JSON.parse(constatFilter.geometry).coordinates[0]], 12);
+	L.control.scale().addTo(map);
     var osm=L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
         attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
     }).addTo(map);	
@@ -65,19 +66,16 @@
 		"Localisation : "+constatFilter.localisation+"<br>"+
 		"Créateur du constat : "+constatFilter.prenom+" "+constatFilter.nom+"<br>"+
 		"Statut : "+constatFilter.statut+"<br>" 
-	,{autoClose:false}) .openPopup();
-
-	
+	,{autoClose:false}).openPopup();
 	var marker=L.marker([JSON.parse(constatFilter.geometry).coordinates[1],JSON.parse(constatFilter.geometry).coordinates[0]]) 
 	.addTo(map);
-	
 	var printer = L.easyPrint({
-      		tileLayer: osm,
-      		sizeModes: ['A4Landscape'],
-      		filename: 'constat {{Decla.properties.date_constat}}',
-      		exportOnly: true,
-      		hideClasses:['leaflet-control-zoom']
-		}).addTo(map);
-	
+      	tileLayer: osm,
+      	sizeModes: ['A4Landscape'],
+      	filename: 'constat {{Decla.properties.date_constat}}',
+      	exportOnly: true,
+		hideControlContainer:false,
+      	hideClasses:['leaflet-control-zoom leaflet-bar leaflet-control']
+	}).addTo(map);
 </script>
 {% endblock %}

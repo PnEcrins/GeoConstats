@@ -3,6 +3,13 @@
 <h3>Filtres sur les constats</h3>
 <form method="GET" novalidate>
     <div class="form-group">
+        Année du constat <br>
+        {{ form.date(size=1) }}
+        {% for error in form.date.errors %}
+        <span style="color: red;">[{{ error }}]</span>
+        {% endfor %}
+    </div>    
+    <div class="form-group">
         Type d'animaux <br>
         {{ form.animaux(size=1) }}
         {% for error in form.animaux.errors %}
@@ -10,23 +17,17 @@
         {% endfor %}
     </div>		
     <div class="form-group">
-        Année du constat <br>
-        {{ form.date(size=1) }}
-        {% for error in form.date.errors %}
-        <span style="color: red;">[{{ error }}]</span>
-        {% endfor %}
-    </div>
-    <div class="form-group">
         Statut du constat <br>
         {{ form.statut(size=1) }}
         {% for error in form.statut.errors %}
         <span style="color: red;">[{{ error }}]</span>
         {% endfor %}
     </div>
-    <div class="form-group"><button id="subform" type="submit" formaction="{{url_for('routes.dashboard')}}" class="btn btn-primary">Filtrer les données</button></div>
+    <div class="form-group "><button id="subform" type="submit" class="btn btn-primary">Filtrer les données</button></div>
         
 </form>
 <div class="col-md-4">
+    <h2>Nombre de constats par département</h2>
     <table class="table table-bordered" id="departement">
         <thead class="thead-light">
             <tr>
@@ -63,10 +64,11 @@
             </tr>                
         </tbody>
     </table>
-    <a class="btn btn-primary" role="button" onclick="tab2Json()">Exporter le tableau</a>
-</div>
+    <a class="btn btn-primary text-white" role="button" onclick="exportTableToCSV('departement')">Exporter le tableau</a>
+</div><br>
 <div class="col-md-9">
-<table class="table table-bordered">
+    <h2>Nombre de constats par secteur</h2>
+<table class="table table-bordered" id="secteur">
     <thead class="thead-light">
         <tr>
             <th>Nombre de constats</th>
@@ -102,38 +104,110 @@
         </tr>                
     </tbody>
 </table>
+<a class="btn btn-primary text-white" role="button" onclick="exportTableToCSV('secteur')">Exporter le tableau</a>
+</div>
+<div class="col-md-9">
+    <h2>Nombre d'animaux morts par secteur</h2>
+<table class="table table-bordered" id="animaux">
+    <thead class="thead-light">
+        <tr>
+            <th>Nombre de constats</th>
+            {% for constats in dataAni['total'] %}
+            <th>{{constats['secteur']}}</th>
+            {% endfor %}
+        </tr>
+    </thead>
+    <tbody>
+        <tr scope="row">
+            <th>
+                Ovins
+            </th>
+            {% for constats in dataAni['Ovins'] %}
+            <td>{{constats['nombre']}}</td>
+            {% endfor %}            
+        </tr>        
+        <tr scope="row">
+            <th>
+                Bovins
+            </th>
+            {% for constats in dataAni['Bovins'] %}
+            <td>{{constats['nombre']}}</td>
+            {% endfor %}            
+        </tr>
+        <tr scope="row">
+            <th>
+                Caprins
+            </th>
+            {% for constats in dataAni['Caprins'] %}
+            <td>{{constats['nombre']}}</td>
+            {% endfor %}            
+        </tr>
+        <tr scope="row">
+            <th>
+                Total
+            </th>
+            {% for constats in dataAni['total'] %}
+            <td>{{constats['nombre']}}</td>
+            {% endfor %}            
+        </tr>                
+    </tbody>
+</table>
+<a class="btn btn-primary text-white" role="button" onclick="exportTableToCSV('animaux')">Exporter le tableau</a>
 </div>
 <script>
-var tab2Json = function(){
-var $table=$("#departement"),
-    rows = [],
-    header = [];
-console.log($table.find("thead tr th"))
-$table.find("thead tr th").each(function () {
-    header.push($(this).html());
-});
+function downloadCSV(csv, filename) {
+    var csvFile;
+    var downloadLink;
 
-$table.find("tbody tr").each(function () {
-    var row = {};
+    // CSV file
+    csvFile = new Blob([csv], {type: "text/csv"});
 
-    $(this).find("th").each(function (i) {
-        var key = header[i],
-            value = $(this).html();
+    // Download link
+    downloadLink = document.createElement("a");
 
-        row[key] = value;
-    });
+    // File name
+    downloadLink.download = filename;
 
-    $(this).find("td").each(function (i) {
-        var key = header[i],
-            value = $(this).html();
+    // Create a link to the file
+    downloadLink.href = window.URL.createObjectURL(csvFile);
 
-        row[key] = value;
-    });
+    // Hide download link
+    downloadLink.style.display = "none";
 
-    rows.push(row);
-});
-console.log($table)
+    // Add the link to DOM
+    document.body.appendChild(downloadLink);
+
+    // Click download link
+    downloadLink.click();
 }
+
+function exportTableToCSV(tab) {
+    var csv = [];
+    var header = document.querySelectorAll("#"+tab+" thead tr");
+    var rows = document.querySelectorAll("#"+tab+" tbody tr");
+
+    for (var i = 0; i < header.length; i++) {
+        var row = [], cols = header[i].querySelectorAll("th");
+        
+        for (var j = 0; j < cols.length; j++) 
+            row.push(cols[j].innerText);
+        
+        csv.push(row.join(","));        
+    }
+
+    for (var i = 0; i < rows.length; i++) {
+        var row = [], cols = rows[i].querySelectorAll("td, th");
+        
+        for (var j = 0; j < cols.length; j++) 
+            row.push(cols[j].innerText);
+        
+        csv.push(row.join(","));        
+    }
+
+    // Download CSV file
+    downloadCSV(csv.join("\n"), tab+".csv");
+}
+
 const queryString = window.location.search;
 const urlParams = new URLSearchParams(queryString);
 const date = urlParams.get('date');

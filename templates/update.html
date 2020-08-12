@@ -24,7 +24,7 @@
 		<br>
 		<div class="form-group">
 				Nom du premier agent <br>			
-				{{ form.nom_agent1(size=18,value=Constats.properties.nom_agent1) }}
+				{{ form.nom_agent1(size=18,value=Constats.properties.nom_agent1,placeholder="Prénom Nom") }}
 				{% for error in form.nom_agent1.errors %}
 				<span style="color: red;">[{{ error }}]</span>
 				{% endfor %}
@@ -32,7 +32,7 @@
 		<br>
 		<div class="form-group">
 				Nom du deuxième agent <br>		
-				{{ form.nom_agent2(size=18,value=Constats.properties.nom_agent2) }}
+				{{ form.nom_agent2(size=18,value=Constats.properties.nom_agent2,placeholder="Prénom Nom") }}
 				{% for error in form.nom_agent2.errors %}
 				<span style="color: red;">[{{ error }}]</span>
 				{% endfor %}
@@ -40,7 +40,7 @@
 		<br>
 		<div class="form-group">
 				Propriétaire <br>			
-				{{ form.proprietaire(size=18,value=Constats.properties.proprietaire) }}
+				{{ form.proprietaire(size=18,value=Constats.properties.proprietaire,placeholder="Prénom Nom") }}
 				{% for error in form.proprietaire.errors %}
 				<span style="color: red;">[{{ error }}]</span>
 				{% endfor %}

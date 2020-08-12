@@ -23,14 +23,14 @@
 	
         <div class="form-group">
             Lieu dit du constat<br>
-            {{ form.lieu_dit(size=18,value="lieu") }}
+            {{ form.lieu_dit(size=18,placeholder="lieu") }}
             {% for error in form.lieu_dit.errors %}
             <span style="color: red;">[{{ error }}]</span>
             {% endfor %}
         </div>
         <div class="form-group">
             Propriétaire<br>
-            {{ form.proprietaire_d(size=18,value='Prénom Nom') }}
+            {{ form.proprietaire_d(size=18,placeholder='Prénom Nom') }}
             {% for error in form.proprietaire_d.errors %}
             <span style="color: red;">[{{ error }}]</span>
             {% endfor %}

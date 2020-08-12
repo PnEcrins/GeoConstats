@@ -5,19 +5,19 @@
 		<h3>Filtres sur les constats</h3>
 		<form method="GET" novalidate>
 			<div class="form-group">
+				Année du constat <br>
+				{{ form.date(size=1) }}
+				{% for error in form.date.errors %}
+				<span style="color: red;">[{{ error }}]</span>
+				{% endfor %}
+			</div>			
+			<div class="form-group">
 				Type d'animaux <br>
 				{{ form.animaux(size=1) }}
 				{% for error in form.animaux.errors %}
 				<span style="color: red;">[{{ error }}]</span>
 				{% endfor %}
 			</div>		
-			<div class="form-group">
-				Année du constat <br>
-				{{ form.date(size=1) }}
-				{% for error in form.date.errors %}
-				<span style="color: red;">[{{ error }}]</span>
-				{% endfor %}
-			</div>
 			<div class="form-group">
 				Statut du constat <br>
 				{{ form.statut(size=1) }}
@@ -46,11 +46,11 @@
 				Commune : {{constats.properties.commune}}<br>
 				Département : {{constats.properties.departement}}<br>
 				Localisation : {{constats.properties.localisation}}<br>
-				Créateur du constat : {{constats.user.prenom}} {{constats.user.prenom}}<br>
+				Créateur du constat : {{constats.user.prenom}} {{constats.user.nom}}<br>
 				Statut : {{ constats.properties.statut }}<br>
 				Nombre de jours agent : {{constats.properties.nb_jour_agent}}<br>
-				<p><a class="btn btn-primary" role="button" href="{{url_for('routes.update',idc=constats.properties.id_constat)}}">Modifier le constat</a></p>
-				<p><a class="btn btn-primary" role="button" href="{{url_for('routes.delete',idc=constats.properties.id_constat)}}">Supprimer le constat</a></p>			
+				<p><a class="btn btn-primary" role="button" href="{{url_for('routes.update',idc=constats.properties.id_constat)}}" id="update{{constats.properties.id_constat}}">Modifier le constat</a></p>
+				<p><a class="btn btn-primary" role="button" href="{{url_for('routes.delete',idc=constats.properties.id_constat)}}" id="delete{{constats.properties.id_constat}}">Supprimer le constat</a></p>			
 				<p><a class="btn btn-primary" role="button" href="{{url_for('routes.data',idc=constats.properties.id_constat)}}">Informations</a></p>
 			</div></center>
 			<br>
@@ -58,10 +58,6 @@
 		{%endfor%}
 	</div>
 	<div id="map"></div>
-	<br>
-    <button onclick="changeZoom()">
-        Vue sur le parc
-    </button>
     <script>
         // CONFIGURATION DE LA CARTE //
         var map = L.map('map').setView([44.8, 6.2], 10);
@@ -93,6 +89,7 @@
 				'nb_jour_agent': '{{ constats.properties.nb_jour_agent }}',
 				'prenom': '{{ constats.user.prenom }}',
 				'nom': '{{ constats.user.nom }}',
+				'right':'{{constats.user.right}}',
 				'geometry': '{{ constats.geometry | tojson}}'
 				},
 			{% endfor %}
@@ -109,6 +106,12 @@
 		});
 		map.addLayer(markersCluster);
         var addMarkers = function(point) {
+			console.log(point.right)
+			if(point.right == "False"){
+				document.getElementById("update"+point.id_constat).style.display= "none";
+				document.getElementById("delete"+point.id_constat).style.display= "none";
+				console.log('oheeee')
+			}
             var markerC=L.marker([JSON.parse(point.geometry).coordinates[1],JSON.parse(point.geometry).coordinates[0]]) 
 				.bindPopup("Constat numéro : "+point.id_constat+"<br>"+ 
 					"Date de l'attaque : "+point.date_attaque+"<br>"+ 

@@ -41,9 +41,12 @@ def map(id_role):
     dataAnimaux=DB.session.query(bib_type_animaux)
     dataSecteur=DB.session.query(l_areas)
     dataApp=DB.session.query(Application.id_application).filter(Application.code_application=='GC').one()
+    nivDroit=DB.session.query(AppUser.id_droit_max).filter(AppUser.id_role==id_role).filter(AppUser.id_application==dataApp[0]).one()
+    listUser=DB.session.query(AppUser.prenom_role,AppUser.nom_role,AppUser.id_role).filter(AppUser.id_application==dataApp[0]).all()
     dataUser=DB.session.query(AppUser.prenom_role,AppUser.nom_role).filter(AppUser.id_role==id_role).filter(AppUser.id_application==dataApp[0]).one()
     dataAnnee=DB.session.query(func.distinct(extract('year',Constats.date_constat)).label("date")).order_by(extract('year',Constats.date_constat).desc())
     query = DB.session.query(Constats,func.ST_AsGeoJson(func.ST_Transform(Constats.the_geom_point,4326)))
+    print(dataUser)
     form=FilterForm()
     form.animaux.choices=[(0,"")]
     for da in dataAnimaux:
@@ -63,7 +66,7 @@ def map(id_role):
     if 'statut' in filter_query:
         if filter_query['statut'] != "0":
             query = query.filter(Constats.statut == filter_query['statut'])   
-    dataGeom =  query.order_by(Constats.id_constat).all()  
+    dataGeom =  query.order_by(Constats.date_attaque.desc()).all()  
 
 
     cnsts=[]
@@ -73,8 +76,11 @@ def map(id_role):
         dico['geometry']=geojson
         dico['properties']={}
         dico['user']={}
-        dico['user']['nom']=dataUser.nom_role
-        dico['user']['prenom']=dataUser.prenom_role        
+        for u in listUser:
+            if u.id_role == d[0].id_role:
+                dico['user']['nom']=u.nom_role
+                dico['user']['prenom']=u.prenom_role
+        dico['user']['right']=nivDroit[0]>2 or id_role==d[0].id_role        
         dico['properties']['id_constat']=d[0].id_constat
         dico['properties']['date_attaque']=d[0].date_attaque
         dico['properties']['date_constat']=d[0].date_constat
@@ -148,7 +154,7 @@ def add(id_role):
         changeAnimaux=None
     changeStatut=data['statut']
     if data['statut']=="0":
-        changeStatut=1        
+        changeStatut=None        
     constats = Constats(
         date_attaque=data['date_attaque'],
         date_constat=data['date_constat'],
@@ -260,7 +266,7 @@ def updateDB(id_role):
         changeAnimaux=None
     changeStatut=data['statut']
     if data['statut']=="0":
-        changeStatut=1
+        changeStatut=None
     cst=DB.session.query(Constats).filter(Constats.id_constat==data['id_constat']).one()
     cst.date_attaque=data['date_attaque']
     cst.date_constat=data['date_constat']
@@ -449,6 +455,8 @@ def decla(id_role):
     dataAnnee=DB.session.query(func.distinct(extract('year',Declaratif.date_constat_d)).label("date")).order_by(extract('year',Declaratif.date_constat_d).desc())
     dataApp=DB.session.query(Application.id_application).filter(Application.code_application=='GC').one()
     dataUser=DB.session.query(AppUser.prenom_role,AppUser.nom_role).filter(AppUser.id_role==id_role).filter(AppUser.id_application==dataApp[0]).one()
+    nivDroit=DB.session.query(AppUser.id_droit_max).filter(AppUser.id_role==id_role).filter(AppUser.id_application==dataApp[0]).one()
+    listUser=DB.session.query(AppUser.prenom_role,AppUser.nom_role,AppUser.id_role).filter(AppUser.id_application==dataApp[0]).all()
     query = DB.session.query(Declaratif,func.ST_AsGeoJson(func.ST_Transform(Declaratif.geom,4326)))
     
     form=FilterForm()
@@ -470,15 +478,18 @@ def decla(id_role):
     if 'statut' in filter_query:
         if filter_query['statut'] != "0":
             query = query.filter(Declaratif.statut_d == filter_query['statut'])       
-    dataGeom=query.order_by(Declaratif.id_constat_d).all()
+    dataGeom=query.order_by(Declaratif.date_attaque_d.desc()).all()
  
     decla=[]
     for d in dataGeom:
         geojson=json.loads(d[1])
         dico={}
         dico['user']={}
-        dico['user']['nom_d']=dataUser.nom_role
-        dico['user']['prenom_d']=dataUser.prenom_role         
+        for u in listUser:
+            if u.id_role == d[0].id_role:
+                dico['user']['nom_d']=u.nom_role
+                dico['user']['prenom_d']=u.prenom_role
+        dico['user']['right']=nivDroit[0]>2 or id_role==d[0].id_role              
         dico['geometry']=geojson
         dico['properties']={}
         dico['properties']['id_constat_d']=d[0].id_constat_d
@@ -574,7 +585,7 @@ def addDecla(id_role):
         changeAnimaux=None
     changeStatut=data['statut_d']
     if data['statut_d']=="0":
-        changeStatut=1    
+        changeStatut=None    
     decla=Declaratif(
         date_attaque_d=data['date_attaque_d'],
         date_constat_d=data['date_constat_d'],
@@ -681,7 +692,7 @@ def updateDBDecla(id_role):
         changeAnimaux=None
     changeStatut=data['statut_d']
     if data['statut_d']=="0":
-        changeStatut=1    
+        changeStatut=None    
     cst=DB.session.query(Declaratif).filter(Declaratif.id_constat_d==data['id_constat_d']).one()
     cst.date_attaque_d=data['date_attaque_d']
     cst.date_constat_d=data['date_constat_d']
@@ -809,9 +820,9 @@ def dataDecla(idc,id_role):
         if dsec.id_area == dataGeom[0].id_commune_d:
             dico['properties']['commune']=dsec.area_name
     dico['properties']['departement']=dataGeom[0].departement_d        
-    if dataGeom[0].dans_coeur:
+    if dataGeom[0].dans_coeur_d:
         dico['properties']['localisation']="Dans le coeur"
-    elif dataGeom[0].dans_aa:
+    elif dataGeom[0].dans_aa_d:
         dico['properties']['localisation']="Dans l'aire d'adhésion"
     else:
         dico['properties']['localisation']="Hors du parc"         
@@ -822,14 +833,14 @@ def noRight(idc):
     return render_template('noRight.html')
 
 @routes.route('/dashboard')
-# @check_auth(
-#     2,
-#     True,
-#     redirect_on_expiration='/login',
-#     redirect_on_invalid_token='/login',
-#     redirect_on_insufficient_right='/noRight',
-#     )
-def dashboard():
+@check_auth(
+    2,
+    True,
+    redirect_on_expiration='/login',
+    redirect_on_invalid_token='/login',
+    redirect_on_insufficient_right='/noRight',
+    )
+def dashboard(id_role):
     #BLOC REQUETES
     dataDC=DB.session.query(func.distinct(Constats.departement)).all()
     dataDD=DB.session.query(func.distinct(Declaratif.departement_d)).all()
@@ -849,15 +860,24 @@ def dashboard():
     dataAnimaux=DB.session.query(bib_type_animaux)
     dataAnneeC=DB.session.query(func.distinct(extract('year',Constats.date_constat)).label("date")).order_by(extract('year',Constats.date_constat).desc())
     dataAnneeD=DB.session.query(func.distinct(extract('year',Declaratif.date_constat_d)).label("date")).order_by(extract('year',Declaratif.date_constat_d).desc())
+    dataAniC=DB.session.query(Constats.id_secteur,Constats.type_animaux,func.sum(Constats.nb_victimes_mort).label("nombre"))
+    dataAniD=DB.session.query(Declaratif.id_secteur_d,Declaratif.type_animaux_d,func.sum(Declaratif.nb_victimes_mort_d).label("nombre"))
     #FORMULAIRE
+    filter_query = request.args.to_dict()
     dataAnnee=[]
     for dac in dataAnneeC:
         dataAnnee.append(dac[0])
     for dad in dataAnneeD:
         if dad not in dataAnneeC:
-            dataAnnee.append(dad[0])
-    dataAnnee.sort(reverse=True)
-    filter_query = request.args.to_dict()
+                dataDC=DB.session.query(func.distinct(Constats.departement)).all()
+    dataDD=DB.session.query(func.distinct(Declaratif.departement_d)).all()
+    dataDep=[]
+    for ddc in dataDC:
+        dataDep.append(ddc[0])
+    for ddd in dataDD:
+        if ddd not in dataDC:
+            dataDep.append(ddd['departement'])
+
     form=FilterForm()
     form.animaux.choices=[(0,"")]
     for da in dataAnimaux:
@@ -874,22 +894,30 @@ def dashboard():
             dataDepD =  dataDepD.filter(extract('year',Declaratif.date_constat_d) == int(filter_query['date']))
             dataSecC =  dataSecC.filter(extract('year',Constats.date_constat) == int(filter_query['date']))
             dataSecD =  dataSecD.filter(extract('year',Declaratif.date_constat_d) == int(filter_query['date']))
+            dataAniC =  dataAniC.filter(extract('year',Constats.date_constat) == int(filter_query['date']))
+            dataAniD =  dataAniD.filter(extract('year',Declaratif.date_constat_d) == int(filter_query['date']))            
     if 'animaux' in filter_query:
         if filter_query['animaux'] != "0":
             dataDepC =  dataDepC.filter(Constats.type_animaux == filter_query['animaux'])
             dataDepD =  dataDepD.filter(Declaratif.type_animaux_d == filter_query['animaux'])
             dataSecC =  dataSecC.filter(Constats.type_animaux == filter_query['animaux'])
-            dataSecD =  dataSecD.filter(Declaratif.type_animaux_d == filter_query['animaux'])            
+            dataSecD =  dataSecD.filter(Declaratif.type_animaux_d == filter_query['animaux']) 
+            dataAniC =  dataAniC.filter(Constats.type_animaux == filter_query['animaux'])
+            dataAniD =  dataAniD.filter(Declaratif.type_animaux_d == filter_query['animaux'])                       
     if 'statut' in filter_query:
         if filter_query['statut'] != "0":
             dataDepC =  dataDepC.filter(Constats.statut == filter_query['statut'])   
             dataDepD =  dataDepD.filter(Declaratif.statut_d == filter_query['statut'])
             dataSecC =  dataSecC.filter(Constats.statut == filter_query['statut'])   
-            dataSecD =  dataSecD.filter(Declaratif.statut_d == filter_query['statut'])            
+            dataSecD =  dataSecD.filter(Declaratif.statut_d == filter_query['statut']) 
+            dataAniC =  dataAniC.filter(Constats.statut == filter_query['statut'])   
+            dataAniD =  dataAniD.filter(Declaratif.statut_d == filter_query['statut'])                        
     dataDepC =  dataDepC.group_by(Constats.departement).all()     
     dataDepD =  dataDepD.group_by(Declaratif.departement_d).all()
     dataSecC =  dataSecC.group_by(Constats.id_secteur).all()    
     dataSecD =  dataSecD.group_by(Declaratif.id_secteur_d).all() 
+    dataAniC =  dataAniC.group_by(Constats.id_secteur,Constats.type_animaux).order_by(Constats.id_secteur,Constats.type_animaux).all()    
+    dataAniD =  dataAniD.group_by(Declaratif.id_secteur_d,Declaratif.type_animaux_d).order_by(Declaratif.id_secteur_d,Declaratif.type_animaux_d).all()     
     #DEPARTEMENTS
     dicoDep={}
     dicoDep['total']=[]
@@ -907,7 +935,6 @@ def dashboard():
                 dico['departement']=dc.departement
                 dicoDep['constats'].append(dico)
                 listC.append(dc.departement)
-        
         listD=[]
         for dd in dataDepD:#Donnees decla simples
             if dep==dd.departement_d:
@@ -987,16 +1014,15 @@ def dashboard():
                 dico['secteur']=dsec.area_name 
                 dicoSec['declaratifs'].append(dico)
                 listD.append(dd.id_secteur_d)
-            if dd.id_secteur_d not in listC: #Données de decla > 0 et de constat = 0
-                if dsec.id_area == dd.id_secteur_d:
-                    dico={}
-                    dico['nombre']=dd.nombre
-                    dico['secteur']=dsec.area_name
-                    dicoSec['total'].append(dico)
-                    dicVide={}
-                    dicVide['nombre']=0
-                    dicVide['secteur']=dsec.area_name
-                    dicoSec['constats'].append(dicVide)                   
+            if dd.id_secteur_d not in listC and dsec.id_area == dd.id_secteur_d: #Données de decla > 0 et de constat = 0
+                dico={}
+                dico['nombre']=dd.nombre
+                dico['secteur']=dsec.area_name
+                dicoSec['total'].append(dico)
+                dicVide={}
+                dicVide['nombre']=0
+                dicVide['secteur']=dsec.area_name
+                dicoSec['constats'].append(dicVide)                   
         if dsec.id_area not in listC and dsec.id_area not in listD:#Département ayant au moins un constat ou un decla mais non affiché avec les filtres
             dicVide={}
             dicVide['nombre']=0
@@ -1022,7 +1048,7 @@ def dashboard():
                         dico['nombre']=dc.nombre+dd.nombre
                         dico['secteur']=dsec.area_name
                         dicoSec['total'].append(dico)  
-    dico={}
+    dico={}#Total de constat et de decla
     dico['secteur']="Total"
     dico['nombre']=totCst
     dicoSec['constats'].append(dico)
@@ -1033,16 +1059,84 @@ def dashboard():
     dicoTot={}
     dicoTot['secteur']="Total"
     dicoTot['nombre']=totCst+totDec
-    dicoSec['total'].append(dicoTot)                           
-    print(dicoDep)               
-    return render_template('dashboard.html',title='Map', dataDep=dicoDep,dataSec=dicoSec,form=form)
-
-# @routes.route('/downloadDep')
-# @check_auth(
-#     2,
-#     True,
-#     redirect_on_expiration='/login',
-#     redirect_on_invalid_token='/login',
-#     redirect_on_insufficient_right='/noRight',
-#     )
-# def downloadTab(dict,id_role):
+    dicoSec['total'].append(dicoTot)   
+    #TYPE ANIMAUX   
+    dicoAni={}
+    listC=[]
+    listD=[]
+    totCst=0
+    totDec=0
+    for da in dataAnimaux:
+        dicoAni[da.nom]=[]
+    dicoAni['total']=[]
+    for dsec in dataSecteur:
+        for dc in dataAniC:
+            for da in dataAnimaux:
+                if dsec.id_area == dc.id_secteur and da.id == dc.type_animaux:#On veut une liste avec les couples secteur animaux pour les constats                
+                    listC.append([dsec.id_area,da.id])
+        for dd in dataAniD:
+            for da in dataAnimaux:
+                if dsec.id_area == dd.id_secteur_d and da.id == dd.type_animaux_d:#On veut une liste avec les couples secteur animaux pour les declas
+                    listD.append([dsec.id_area,da.id])
+                    if [dsec.id_area,da.id] not in listC:    #Secteur et type d'animaux avc au moins 1 decla mais 0 constat
+                        dico={}
+                        dico['nombre']=dd.nombre
+                        dico['secteur']=dsec.area_name
+                        dicoAni[da.nom].append(dico)                     
+        for dc in dataAniC:
+            for da in dataAnimaux:
+                if dsec.id_area == dc.id_secteur and da.id == dc.type_animaux and [dsec.id_area,da.id] not in listD: #Secteur et type d'animaux avc au moins 1 constat mais 0 decla
+                    dico={}
+                    dico['nombre']=dc.nombre
+                    dico['secteur']=dsec.area_name
+                    dicoAni[da.nom].append(dico)
+        for da in dataAnimaux:
+            if [dsec.id_area,da.id] not in listD and [dsec.id_area,da.id] not in listC:#0 constat et 0 decla
+                    dico={}
+                    dico['nombre']=0
+                    dico['secteur']=dsec.area_name
+                    dicoAni[da.nom].append(dico) 
+        for dc in dataAniC:
+            for dd in dataAniD:#Au moins 1 constat et 1 decla
+                if [dc.id_secteur,dc.type_animaux] in listC and [dd.id_secteur_d,dd.type_animaux_d] in listD and dd.id_secteur_d==dc.id_secteur and dc.type_animaux== dd.type_animaux_d and dsec.id_area==dc.id_secteur:
+                    dico={}
+                    dico['nombre']=dd.nombre+dc.nombre
+                    for dsec in dataSecteur:
+                        if dsec.id_area==dc.id_secteur:
+                            dico['secteur']=dsec.area_name
+                    for da in dataAnimaux:
+                        if da.id==dc.type_animaux:
+                            dicoAni[da.nom].append(dico)                 
+    #Totaux par type d'animaux
+    cpto=0
+    for o in dicoAni['Ovins']:
+        print(o)
+        cpto+=o['nombre']
+    dico={}
+    dico['secteur']='total'
+    dico['nombre']=cpto
+    dicoAni['Ovins'].append(dico)
+    cptb=0
+    for b in dicoAni['Bovins']:
+        cptb+=b['nombre']
+    dico={}
+    dico['secteur']='total'
+    dico['nombre']=cptb
+    dicoAni['Bovins'].append(dico)    
+    cptc=0
+    for c in dicoAni['Caprins']:
+        cptc+=c['nombre']    
+    dico={}
+    dico['secteur']='total'
+    dico['nombre']=cptc
+    dicoAni['Caprins'].append(dico)    
+    for o in dicoAni['Ovins']:#Total par secteur
+        for b in dicoAni['Bovins']:
+            if o['secteur'] == b['secteur']:
+                for c in dicoAni['Caprins']:
+                    if b['secteur'] == c['secteur']:
+                        dico={}
+                        dico['secteur']=o['secteur']
+                        dico['nombre']=o['nombre']+b['nombre']+c['nombre']
+                        dicoAni['total'].append(dico)
+    return render_template('dashboard.html',title='Map', dataDep=dicoDep,dataSec=dicoSec,dataAni=dicoAni,form=form)

@@ -48,6 +48,7 @@
 		'geometry': '{{ Constats.geometry | tojson}}'
 	};    
 	var map = L.map('map').setView([JSON.parse(constatFilter.geometry).coordinates[1],JSON.parse(constatFilter.geometry).coordinates[0]], 12);
+	L.control.scale().addTo(map);
     var osm=L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
         attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
     }).addTo(map);	
@@ -79,7 +80,7 @@
       		tileLayer: osm,
       		sizeModes: ['A4Landscape'],
       		filename: 'constat {{Constats.properties.date_constat}}',
-      		exportOnly: true,
+      		exportOnly: false,
       		hideClasses:['leaflet-control-zoom']
 		}).addTo(map);
 	
