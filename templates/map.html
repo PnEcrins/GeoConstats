@@ -7,24 +7,19 @@
 			<div class="form-group">
 				Année du constat <br>
 				{{ form.date(size=1) }}
-				{% for error in form.date.errors %}
-				<span style="color: red;">[{{ error }}]</span>
-				{% endfor %}
 			</div>			
 			<div class="form-group">
 				Type d'animaux <br>
 				{{ form.animaux(size=1) }}
-				{% for error in form.animaux.errors %}
-				<span style="color: red;">[{{ error }}]</span>
-				{% endfor %}
 			</div>		
 			<div class="form-group">
 				Statut du constat <br>
 				{{ form.statut(size=1) }}
-				{% for error in form.statut.errors %}
-				<span style="color: red;">[{{ error }}]</span>
-				{% endfor %}
 			</div>
+			<div class="form-group">
+				Localisation du constat <br>
+				{{ form.localisation(size=1) }}
+			</div>			
 			<div class="form-group"><button id="subform" type="submit" formaction="{{url_for('routes.map')}}" class="btn btn-primary">Filtrer les données</button></div>
 			<div class="form-group"><button type="submit" formaction="{{url_for('routes.download')}}" class="btn btn-secondary">Télécharger les données</button></div>
 			
@@ -134,7 +129,7 @@
 				markersCluster.addLayer(markerC); 
         };
         jsonData.forEach(addMarkers);
-
+		//CONSERVER LES DONNEES SAISIES DANS LE FORMULAIRE DE FILTRAGE
 		const queryString = window.location.search;
 		const urlParams = new URLSearchParams(queryString);
 		const date = urlParams.get('date');
@@ -149,6 +144,9 @@
 		if(statut != null){
 			document.getElementById("statut").value=statut;
 		}		
-
+		const localisation = urlParams.get('localisation');
+		if(localisation != null){
+			document.getElementById("localisation").value=localisation;
+		}
 	</script>
 {% endblock %}

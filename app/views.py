@@ -65,6 +65,13 @@ def map(id_role):
     if 'statut' in filter_query:
         if filter_query['statut'] != "0":
             query = query.filter(Constats.statut == filter_query['statut'])   
+    if 'localisation' in filter_query:
+        if filter_query['localisation'] == "1":
+            query =  query.filter(Constats.dans_coeur==True)   
+        elif filter_query['localisation'] == "2":  
+            query =  query.filter(Constats.dans_aa == True)
+        elif filter_query['localisation'] == "3":  
+            query =  query.filter(Constats.dans_aa == False and Constats.dans_coeur == False)                
     dataGeom =  query.order_by(Constats.date_attaque.desc()).all()  
 
     #TRAITEMENT DONNEES
@@ -482,7 +489,14 @@ def decla(id_role):
             query = query.filter(Declaratif.type_animaux_d == filter_query['animaux'])
     if 'statut' in filter_query:
         if filter_query['statut'] != "0":
-            query = query.filter(Declaratif.statut_d == filter_query['statut'])       
+            query = query.filter(Declaratif.statut_d == filter_query['statut'])  
+    if 'localisation' in filter_query:
+        if filter_query['localisation'] == "1":
+            query =  query.filter(Declaratif.dans_coeur_d==True)   
+        elif filter_query['localisation'] == "2":  
+            query =  query.filter(Declaratif.dans_aa_d == True)
+        elif filter_query['localisation'] == "3":  
+            query =  query.filter(Declaratif.dans_aa_d == False and Declaratif.dans_coeur_d == False)              
     dataGeom=query.order_by(Declaratif.date_attaque_d.desc()).all()
     #TRAITEMENT DONNEES
     decla=[]
@@ -927,7 +941,29 @@ def dashboard(id_role):
             dataSecC =  dataSecC.filter(Constats.statut == filter_query['statut'])   
             dataSecD =  dataSecD.filter(Declaratif.statut_d == filter_query['statut']) 
             dataAniC =  dataAniC.filter(Constats.statut == filter_query['statut'])   
-            dataAniD =  dataAniD.filter(Declaratif.statut_d == filter_query['statut'])                        
+            dataAniD =  dataAniD.filter(Declaratif.statut_d == filter_query['statut'])
+    if 'localisation' in filter_query:
+        if filter_query['localisation'] == "1":
+            dataDepC =  dataDepC.filter(Constats.dans_coeur==True)   
+            dataDepD =  dataDepD.filter(Declaratif.dans_coeur_d == True)
+            dataSecC =  dataSecC.filter(Constats.dans_coeur==True)   
+            dataSecD =  dataSecD.filter(Declaratif.dans_coeur_d == True) 
+            dataAniC =  dataAniC.filter(Constats.dans_coeur==True)   
+            dataAniD =  dataAniD.filter(Declaratif.dans_coeur_d == True)
+        elif filter_query['localisation'] == "2":
+            dataDepC =  dataDepC.filter(Constats.dans_aa==True)   
+            dataDepD =  dataDepD.filter(Declaratif.dans_aa_d == True)
+            dataSecC =  dataSecC.filter(Constats.dans_aa==True)   
+            dataSecD =  dataSecD.filter(Declaratif.dans_aa_d == True) 
+            dataAniC =  dataAniC.filter(Constats.dans_aa==True)   
+            dataAniD =  dataAniD.filter(Declaratif.dans_aa_d == True)  
+        elif filter_query['localisation'] == "3":
+            dataDepC =  dataDepC.filter(Constats.dans_aa==False and Constats.dans_coeur==False)   
+            dataDepD =  dataDepD.filter(Declaratif.dans_aa_d == False and Declaratif.dans_coeur_d == False)
+            dataSecC =  dataSecC.filter(Constats.dans_aa==False and Constats.dans_coeur==False)   
+            dataSecD =  dataSecD.filter(Declaratif.dans_aa_d == False and Declaratif.dans_coeur_d == False) 
+            dataAniC =  dataAniC.filter(Constats.dans_aa==False and Constats.dans_coeur==False)   
+            dataAniD =  dataAniD.filter(Declaratif.dans_aa_d == False and Declaratif.dans_coeur_d == False)                                                              
     dataDepC =  dataDepC.group_by(Constats.departement).all()     
     dataDepD =  dataDepD.group_by(Declaratif.departement_d).all()
     dataSecC =  dataSecC.group_by(Constats.id_secteur).all()    

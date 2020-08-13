@@ -32,3 +32,4 @@ class FilterForm(FlaskForm):
     date=SelectField('Année du constat')
     animaux=SelectField("Type d'animaux victimes",choices=[])
     statut=SelectField("Statut du constat",choices=[])
+    localisation=SelectField("Localisation du constat",choices=[(0,""),(1,"Coeur du parc"),(2,"Dans l'aire d'adhésion"),(3,"Hors du parc")])

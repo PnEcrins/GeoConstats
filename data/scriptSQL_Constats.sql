@@ -120,8 +120,8 @@ on constats_loups.t_constats for each row execute procedure constats_loups.updat
 CREATE TABLE constats_loups.t_constats_declaratifs
 (
   id_constat_d serial NOT NULL,
-  date_attaque_d date,
-  date_constat_d date,
+  date_attaque_d date NOT NULL,
+  date_constat_d date NOT NULL,
   lieu_dit character varying,
   proprietaire_d character varying,
   type_animaux_d integer,
