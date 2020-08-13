@@ -44,7 +44,34 @@
 - Dans le dossier contenant les fichiers téléchargés, éditer le fichier ``config.py.sample`` et le renommer ``config.py``. Vous trouverez les paramètres de connexion à la base de données. Remplir ces paramètres en fonction de vos valeurs.
 - Enregistrer les modifications.
 
-#### 2.4. Lancement
+### 2.4. Lancement de l'application
+
+- Ouvrir le fichier ``geoconstats_supervisor.conf`` et remplacer ``<MY_APP_PATH>`` par le chemin de la racine de l'application
+- Copier ce fichier dans la conf supervisor: ``sudo cp geoconstats_supervisor.conf /etc/supervisor/conf.d``
+- Relancer le supervisor `` sudo supervisorctl reread`` `` sudo supervisorctl reload``
+
+#### 2.5. Réalisation de la configuration apache
+
+- Créer un nouveau site: ``sudo nano /etc/apache2/sites-available/geoconstats.conf``
+- Coller la configuration suivante:
+
+::
+    
+    <Location /geoconstats >
+      ProxyPass http://127.0.0.1:5000
+      ProxyPassReverse http://127.0.0.1:5000
+    </Location>
+
+- Lancer les commandes suivantes:
+
+::
+    
+    sudo a2enmod proxy
+    sudo a2enmod proxy_http
+    sudo a2ensite geoconstats
+
+
+#### 2.5. Lancement en mode dev
 
 - De retour dans la console dans le dossier GeoConstats, activer le virtualenv avec la ligne de commande ``source env/bin/activate``
 - A ce moment, on rentre dans l'environnement de travail.
