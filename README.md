@@ -55,7 +55,6 @@
 - Créer un nouveau site: ``sudo nano /etc/apache2/sites-available/geoconstats.conf``
 - Coller la configuration suivante:
 
-::
     
     <Location /geoconstats >
       ProxyPass http://127.0.0.1:5000
@@ -64,7 +63,6 @@
 
 - Lancer les commandes suivantes:
 
-::
     
     sudo a2enmod proxy
     sudo a2enmod proxy_http
