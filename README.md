@@ -41,7 +41,7 @@
 
 ### 2.3. Mise en relation de la base de données avec l'application
 
-- Dans le dossier contenant les fichiers téléchargés, éditer le fichier ``config.py.sample`` et le renommer ``config.py``. Vous trouverez les paramètres de connexion à la base de données. Remplir ces paramètres en fonction de vos valeurs.
+- Dans le dossier contenant les fichiers téléchargés, éditer le fichier ``config.py.sample`` et le renommer ``config.py``. Remplir les paramètres de connexion à la base de données et l'url de l'application. Remplir ces paramètres en fonction de vos valeurs.
 - Enregistrer les modifications.
 
 ### 2.4. Lancement de l'application
