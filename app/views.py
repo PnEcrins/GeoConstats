@@ -34,7 +34,7 @@ def map(id_role):
     """
     Lance la "page d'acceuil" avec une carte + une liste avec toutes les données
     """
-    #Recuperation des filtres et requete sur la table constats
+    #REQUETES
     filter_query = request.args.to_dict()
     dataStatut=DB.session.query(bib_statut)
     dataAnimaux=DB.session.query(bib_type_animaux)
@@ -45,6 +45,7 @@ def map(id_role):
     dataUser=DB.session.query(AppUser.prenom_role,AppUser.nom_role).filter(AppUser.id_role==id_role).filter(AppUser.id_application==dataApp[0]).one()
     dataAnnee=DB.session.query(func.distinct(extract('year',Constats.date_constat)).label("date")).order_by(extract('year',Constats.date_constat).desc())
     query = DB.session.query(Constats,func.ST_AsGeoJson(func.ST_Transform(Constats.the_geom_point,4326)))
+    #FORMULAIRE DE FILTRAGE
     form=FilterForm()
     form.animaux.choices=[(0,"")]
     for da in dataAnimaux:
@@ -66,7 +67,7 @@ def map(id_role):
             query = query.filter(Constats.statut == filter_query['statut'])   
     dataGeom =  query.order_by(Constats.date_attaque.desc()).all()  
 
-
+    #TRAITEMENT DONNEES
     cnsts=[]
     for d in dataGeom:
         geojson=json.loads(d[1])
@@ -121,6 +122,7 @@ def form(id_role):
     """
     Lance la page de formulaire d'ajout de données
     """
+    #FORMULAIRE
     form = ConstatForm()
     form.statut.choices=[(0,"")]
     dataStatut=DB.session.query(bib_statut)
@@ -144,6 +146,7 @@ def add(id_role):
     """
     Réalise l'ajout de données dans la BD
     """
+    #TRAITEMENT FORMULAIRE
     data = request.form 
     p2154=DB.session.query(func.ST_AsGeoJson(func.ST_Transform(func.ST_SetSRID(func.ST_Point(float(data['geomlng']),float(data['geomlat'])),4326),2154)))
     json2154=json.loads(p2154[0][0])
@@ -183,7 +186,7 @@ def update(idc, id_role):
     """
     Lance la page de mise à jour d'une donnée
     """
-    
+    #REQUETES
     dataStatut=DB.session.query(bib_statut)
     dataAnimaux=DB.session.query(bib_type_animaux)
     dataSecteur=DB.session.query(l_areas)
@@ -191,6 +194,7 @@ def update(idc, id_role):
     dataApp=DB.session.query(Application.id_application).filter(Application.code_application=='GC').one()
     nivDroit=DB.session.query(AppUser.id_droit_max).filter(AppUser.id_role==id_role).filter(AppUser.id_application==dataApp[0]).one()
     dataUser=DB.session.query(AppUser.prenom_role,AppUser.nom_role).filter(AppUser.id_role==id_role).filter(AppUser.id_application==dataApp[0]).one()
+    #TRAITEMENT DONNEES
     if nivDroit[0]>2 or id_role==dataGeom[0][0].id_role:
         geojson=json.loads(dataGeom[0][1])
         dico={}
@@ -227,7 +231,8 @@ def update(idc, id_role):
         elif dataGeom[0][0].dans_aa:
             dico['properties']['localisation']="Dans l'aire d'adhésion"
         else:
-            dico['properties']['localisation']="Hors du parc"              
+            dico['properties']['localisation']="Hors du parc"
+        #FORMULAIRE              
         form = ConstatForm()
         form.statut.choices=[(0,"")]
         dataStatut=DB.session.query(bib_statut)
@@ -256,6 +261,7 @@ def updateDB(id_role):
     """
     Réalise les mises à jour dans la BD
     """
+    #TRAITEMENT FORMULAIRE
     data=request.form
     p2154=DB.session.query(func.ST_AsGeoJson(func.ST_Transform(func.ST_SetSRID(func.ST_Point(float(data['geomlng']),float(data['geomlat'])),4326),2154)))
     json2154=json.loads(p2154[0][0])    
@@ -277,7 +283,6 @@ def updateDB(id_role):
     cst.statut=changeStatut
     cst.nb_jour_agent=data['nb_jour_agent']
     cst.the_geom_point=from_shape(Point(json2154['coordinates'][0],json2154['coordinates'][1]),srid=2154)
-    #Demander pour la gestion des updates par les admins
     DB.session.commit()       
     return redirect(url_for('routes.map'))
     
@@ -293,11 +298,10 @@ def delete(idc,id_role):
     """
     Réalise la suppression d'un constat déclaratif
     """
-    #Meme topo que pour l'update
+    #REQUETES
     dataGeom = DB.session.query(Constats).filter(Constats.id_constat==idc).one()
     dataApp=DB.session.query(Application.id_application).filter(Application.code_application=='GC').one()
     nivDroit=DB.session.query(AppUser.id_droit_max).filter(AppUser.id_role==id_role).filter(AppUser.id_application==dataApp[0]).one()
-
     if nivDroit[0]>2 or id_role==dataGeom[0][0].id_role:
         dataGeom = DB.session.query(Constats).filter(Constats.id_constat==idc).delete()
         DB.session.commit()
@@ -314,6 +318,7 @@ def delete(idc,id_role):
     redirect_on_insufficient_right='/noRight',
     )
 def download(id_role):
+    #REQUETES
     filter_query = request.args.to_dict()
     dataStatut=DB.session.query(bib_statut)
     dataAnimaux=DB.session.query(bib_type_animaux)
@@ -321,7 +326,7 @@ def download(id_role):
     dataApp=DB.session.query(Application.id_application).filter(Application.code_application=='GC').one()
     dataUser=DB.session.query(AppUser.prenom_role,AppUser.nom_role).filter(AppUser.id_role==id_role).filter(AppUser.id_application==dataApp[0]).one()
     query = DB.session.query(Constats,func.ST_AsGeoJson(func.ST_Transform(Constats.the_geom_point,4326)))
-    
+    #FORMULAIRE
     if 'date' in filter_query:
         if filter_query['date'] != "0":
             query = query.filter(extract('year',Constats.date_constat) == int(filter_query['date']))
@@ -332,7 +337,7 @@ def download(id_role):
         if filter_query['statut'] != "0":
             query = query.filter(Constats.statut == filter_query['statut'])   
     dataGeom =  query.order_by(Constats.id_constat).all()  
-    
+    #TRAITEMENT DONNEES
     cnsts=[]
     for d in dataGeom:
         geojson=json.loads(d[1])
@@ -369,7 +374,8 @@ def download(id_role):
         dico['createur']=dataUser.prenom_role+" "+dataUser.nom_role                               
         dico['x']=geojson['coordinates'][1]
         dico['y']=geojson['coordinates'][0]
-        cnsts.append(dico)       
+        cnsts.append(dico)
+    #TELECHARGEMENT FICHIER       
     si = io.StringIO()
     cw = csv.DictWriter(si,fieldnames=dico.keys())
     cw.writeheader()
@@ -388,12 +394,14 @@ def download(id_role):
     redirect_on_insufficient_right='/noRight',
     )
 def data(idc,id_role):
+    #REQUETES
     dataStatut=DB.session.query(bib_statut)
     dataAnimaux=DB.session.query(bib_type_animaux)
     dataSecteur=DB.session.query(l_areas)
     dataGeom = DB.session.query(Constats,func.ST_AsGeoJson(func.ST_Transform(Constats.the_geom_point,4326))).filter(Constats.id_constat==idc).all()
     dataApp=DB.session.query(Application.id_application).filter(Application.code_application=='GC').one()
     dataUser=DB.session.query(AppUser.prenom_role,AppUser.nom_role).filter(AppUser.id_role==id_role).filter(AppUser.id_application==dataApp[0]).one()
+    #TRAITEMENT DONNEES
     geojson=json.loads(dataGeom[0][1])
     dico={}
     dico['user']={}
@@ -431,9 +439,7 @@ def data(idc,id_role):
     else:
         dico['properties']['localisation']="Hors du parc"       
     return render_template('data.html', title='Map',Constats=dico)
-    
-    
-    
+
 @routes.route('/decla')
 @check_auth(
     2,
@@ -446,6 +452,7 @@ def decla(id_role):
     """
     Lance la page de consultation des constats déclaratifs avec une carte + une liste avec toutes les données
     """    
+    #REQUETES
     filter_query = request.args.to_dict()
     dataStatut=DB.session.query(bib_statut)
     dataAnimaux=DB.session.query(bib_type_animaux)
@@ -456,7 +463,7 @@ def decla(id_role):
     nivDroit=DB.session.query(AppUser.id_droit_max).filter(AppUser.id_role==id_role).filter(AppUser.id_application==dataApp[0]).one()
     listUser=DB.session.query(AppUser.prenom_role,AppUser.nom_role,AppUser.id_role).filter(AppUser.id_application==dataApp[0]).all()
     query = DB.session.query(Declaratif,func.ST_AsGeoJson(func.ST_Transform(Declaratif.geom,4326)))
-    
+    #FORMULAIRE
     form=FilterForm()
     form.animaux.choices=[(0,"")]
     for da in dataAnimaux:
@@ -477,7 +484,7 @@ def decla(id_role):
         if filter_query['statut'] != "0":
             query = query.filter(Declaratif.statut_d == filter_query['statut'])       
     dataGeom=query.order_by(Declaratif.date_attaque_d.desc()).all()
- 
+    #TRAITEMENT DONNEES
     decla=[]
     for d in dataGeom:
         geojson=json.loads(d[1])
@@ -530,6 +537,7 @@ def deleteDecla(idc,id_role):
     """
     Réalise la suppression d'un constat déclaratif
     """
+    #REQUETES
     dataGeom = DB.session.query(Declaratif).filter(Declaratif.id_constat_d==idc).one()
     dataApp=DB.session.query(Application.id_application).filter(Application.code_application=='GC').one()
     nivDroit=DB.session.query(AppUser.id_droit_max).filter(AppUser.id_role==id_role).filter(AppUser.id_application==dataApp[0]).one()
@@ -552,6 +560,7 @@ def formDecla(id_role):
     """
     Lance la page de formulaire d'ajout de données
     """
+    #FORMULAIRE
     form = DeclaForm()
     form.statut_d.choices=[(0,"")]
     dataStatut=DB.session.query(bib_statut)
@@ -575,8 +584,10 @@ def addDecla(id_role):
     """
     Réalise l'ajout de données dans la BD
     """
+    #REQUETES
     data=request.form
     p2154=DB.session.query(func.ST_AsGeoJson(func.ST_Transform(func.ST_SetSRID(func.ST_Point(data['geomlng'],data['geomlat']),4326),2154)))
+    #TRAITEMENT FORMULAIRE
     json2154=json.loads(p2154[0][0])    
     changeAnimaux=data['type_animaux_d']
     if data['type_animaux_d']=="0":
@@ -612,6 +623,7 @@ def updateDecla(idc,id_role):
     """
     Lance la page de mise à jour d'une donnée
     """
+    #REQUETES
     dataStatut=DB.session.query(bib_statut)
     dataAnimaux=DB.session.query(bib_type_animaux)
     dataSecteur=DB.session.query(l_areas)
@@ -619,6 +631,7 @@ def updateDecla(idc,id_role):
     dataApp=DB.session.query(Application.id_application).filter(Application.code_application=='GC').one()
     dataUser=DB.session.query(AppUser.prenom_role,AppUser.nom_role).filter(AppUser.id_role==id_role).filter(AppUser.id_application==dataApp[0]).one()
     nivDroit=DB.session.query(AppUser.id_droit_max).filter(AppUser.id_role==id_role).filter(AppUser.id_application==dataApp[0]).one()
+    #TRAITEMENT DONNEES
     if nivDroit[0]>2 or id_role==dataGeom[0][0].id_role:
         geojson=json.loads(dataGeom[0][1])
         dico={}
@@ -682,8 +695,10 @@ def updateDBDecla(id_role):
     """
     Réalise les mises à jour dans la BD
     """
+    #REQUETES
     data=request.form
     p2154=DB.session.query(func.ST_AsGeoJson(func.ST_Transform(func.ST_SetSRID(func.ST_Point(data['geomlng'],data['geomlat']),4326),2154)))
+    #TRAITEMENT FORMULAIRE
     json2154=json.loads(p2154[0][0])
     changeAnimaux=data['type_animaux_d']
     if data['type_animaux_d']=="0":
@@ -712,6 +727,7 @@ def updateDBDecla(id_role):
     redirect_on_insufficient_right='/noRight',
     )
 def downloadDecla(id_role):
+    #REQUETES
     filter_query = request.args.to_dict()
     dataStatut=DB.session.query(bib_statut)
     dataAnimaux=DB.session.query(bib_type_animaux)
@@ -719,7 +735,7 @@ def downloadDecla(id_role):
     dataApp=DB.session.query(Application.id_application).filter(Application.code_application=='GC').one()
     dataUser=DB.session.query(AppUser.prenom_role,AppUser.nom_role).filter(AppUser.id_role==id_role).filter(AppUser.id_application==dataApp[0]).one()
     query = DB.session.query(Declaratif,func.ST_AsGeoJson(func.ST_Transform(Declaratif.geom,4326)))
-    
+    #FORMULAIRE
     if 'date' in filter_query:
         if filter_query['date'] != "0":
             query = query.filter(extract('year',Declaratif.date_constat_d) == int(filter_query['date']))
@@ -730,7 +746,7 @@ def downloadDecla(id_role):
         if filter_query['statut'] != "0":
             query = query.filter(Declaratif.statut_d == filter_query['statut'])   
     dataGeom =  query.order_by(Declaratif.id_constat_d).all()  
-    
+    #TRAITEMENT DONNEES
     cnsts=[]
     for d in dataGeom:
         geojson=json.loads(d[1])
@@ -765,7 +781,8 @@ def downloadDecla(id_role):
         dico['createur']=dataUser.prenom_role+" "+dataUser.nom_role                   
         dico['x']=geojson['coordinates'][1]
         dico['y']=geojson['coordinates'][0]
-        cnsts.append(dico)       
+        cnsts.append(dico)     
+    #TELECHARGEMENT  
     si = io.StringIO()
     cw = csv.DictWriter(si,fieldnames=dico.keys())
     cw.writeheader()
@@ -784,12 +801,14 @@ def downloadDecla(id_role):
     redirect_on_insufficient_right='/noRight',
     )
 def dataDecla(idc,id_role):
+    #REQUETES
     dataStatut=DB.session.query(bib_statut)
     dataAnimaux=DB.session.query(bib_type_animaux)
     dataSecteur=DB.session.query(l_areas)
     dataGeom = DB.session.query(Declaratif,func.ST_AsGeoJson(func.ST_Transform(Declaratif.geom,4326))).filter(Declaratif.id_constat_d==idc).one()
     dataApp=DB.session.query(Application.id_application).filter(Application.code_application=='GC').one()
     dataUser=DB.session.query(AppUser.prenom_role,AppUser.nom_role).filter(AppUser.id_role==id_role).filter(AppUser.id_application==dataApp[0]).one()
+    #TRAITEMENT DONNEES
     geojson=json.loads(dataGeom[1])
     dico={}
     dico['user']={}
@@ -839,7 +858,7 @@ def noRight(idc):
     redirect_on_insufficient_right='/noRight',
     )
 def dashboard(id_role):
-    #BLOC REQUETES
+    #REQUETES
     dataDC=DB.session.query(func.distinct(Constats.departement)).all()
     dataDD=DB.session.query(func.distinct(Declaratif.departement_d)).all()
     dataDep=[]

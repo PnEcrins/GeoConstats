@@ -19,3 +19,28 @@ ref_geo_release=2.4.1
 usershub_release=2.1.2
 
 srid_local=2154
+
+############################
+### Application settings ###
+############################
+
+# URL de l'application
+url_application=http://mon_url.fr
+
+
+#######################
+### Python settings ###
+#######################
+
+# Note : n'est compatible qu'avec python3
+python_path=/usr/bin/python3
+
+#########################
+### Gunicorn settings ###
+#########################
+
+app_name=geoconstats
+venv_dir=venv
+gun_num_workers=4
+gun_host=0.0.0.0
+gun_port=5001
