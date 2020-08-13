@@ -1,13 +1,14 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, BooleanField, IntegerField, DateField, SubmitField, SelectField, HiddenField, FloatField
+from wtforms import StringField, BooleanField, IntegerField, SubmitField, SelectField, HiddenField, FloatField
+from wtforms.fields.html5 import DateField
 from app.models import Constats,Declaratif, bib_statut, bib_type_animaux
 from .env import DB
 from wtforms.validators import DataRequired
 from datetime import date
     
 class ConstatForm(FlaskForm):
-    date_attaque = DateField('date_attaque', format='%Y/%m/%d',default=date.today)
-    date_constat = DateField('date_constat', format='%Y/%m/%d',default=date.today)
+    date_attaque = DateField('date_attaque', format='%d/%m/%Y',default=date.today)
+    date_constat = DateField('date_constat', format='%d/%m/%Y',default=date.today)
     nom_agent1 = StringField('nom_agent1')
     nom_agent2 = StringField('nom_agent2')
     proprietaire = StringField('proprietaire')
@@ -18,8 +19,8 @@ class ConstatForm(FlaskForm):
     nb_jour_agent=FloatField('nb_jour_agent')
     submit = SubmitField('Confirmer le constat')
 class DeclaForm(FlaskForm):
-    date_attaque_d = DateField('date_attaque_d', format='%Y/%m/%d',default=date.today)
-    date_constat_d = DateField('date_constat_d', format='%Y/%m/%d',default=date.today)
+    date_attaque_d = DateField('date_attaque_d', format='%d/%m/%Y',default=date.today)
+    date_constat_d = DateField('date_constat_d', format='%d/%m/%Y',default=date.today)
     lieu_dit=StringField('lieu_dit')
     proprietaire_d = StringField('proprietaire')
     type_animaux_d = SelectField('type_animaux',choices=[])

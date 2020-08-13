@@ -8,81 +8,50 @@
             {{ form.hidden_tag() }}
 			<div class="form-group">
 				Date de l'attaque <br>
-				{{ form.date_attaque(size=18,value=Constats.properties.date_attaque) }}
-				{% for error in form.date_attaque.errors %}
-				<span style="color: red;">[{{ error }}]</span>
-				{% endfor %}
-		</div>
+				{{ form.date_attaque(size=18,value=Constats.properties.date_attaque, placeholder='dd/mm/aaaa',required='required') }}
 		<br>
 		<div class="form-group">
 				Date du constat <br>
-				{{ form.date_constat(size=18,value=Constats.properties.date_constat) }}
-				{% for error in form.date_constat.errors %}
-				<span style="color: red;">[{{ error }}]</span>
-				{% endfor %}
+				{{ form.date_constat(size=18,value=Constats.properties.date_constat, placeholder='dd/mm/aaaa',required='required') }}
 		</div>
 		<br>
 		<div class="form-group">
 				Nom du premier agent <br>			
 				{{ form.nom_agent1(size=18,value=Constats.properties.nom_agent1,placeholder="Prénom Nom") }}
-				{% for error in form.nom_agent1.errors %}
-				<span style="color: red;">[{{ error }}]</span>
-				{% endfor %}
 		</div>
 		<br>
 		<div class="form-group">
 				Nom du deuxième agent <br>		
 				{{ form.nom_agent2(size=18,value=Constats.properties.nom_agent2,placeholder="Prénom Nom") }}
-				{% for error in form.nom_agent2.errors %}
-				<span style="color: red;">[{{ error }}]</span>
-				{% endfor %}
 		</div>
 		<br>
 		<div class="form-group">
 				Propriétaire <br>			
 				{{ form.proprietaire(size=18,value=Constats.properties.proprietaire,placeholder="Prénom Nom") }}
-				{% for error in form.proprietaire.errors %}
-				<span style="color: red;">[{{ error }}]</span>
-				{% endfor %}
 		</div>
 		<br>
 		<div class="form-group">
 				Type d'animaux <br>	
 				{{ form.type_animaux(size=3,value=Constats.properties.type_animaux) }}
-				{% for error in form.type_animaux.errors %}
-				<span style="color: red;">[{{ error }}]</span>
-				{% endfor %}
 		</div>
 		<br>
 		<div class="form-group">
 				Nombre de morts <br>		
 				{{ form.nb_victimes_mort(size=18,value=Constats.properties.nb_victimes_mort) }}
-				{% for error in form.nb_victimes_mort.errors %}
-				<span style="color: red;">[{{ error }}]</span>
-				{% endfor %}
 		</div>
 		<br>
 		<div class="form-group">
 				Nombre de blessés<br>		
 				{{ form.nb_victimes_blesse(size=18, value=Constats.properties.nb_victimes_blesse) }}
-				{% for error in form.nb_victimes_blesse.errors %}
-				<span style="color: red;">[{{ error }}]</span>
-				{% endfor %}
 		</div>
 		<br>
 		<div class="form-group">
 				Statut du constat <br>	
 				{{ form.statut(size=3, value=Constats.properties.statut) }}
-				{% for error in form.statut.errors %}
-				<span style="color: red;">[{{ error }}]</span>
-				{% endfor %}
 		</div>
         <div class="form-group">
             Nombre de jours agent <br>
             {{ form.nb_jour_agent(size=18,value=Constats.properties.nb_jour_agent) }}
-            {% for error in form.nb_jour_agent.errors %}
-            <span style="color: red;">[{{ error }}]</span>					
-				{% endfor %}
 		</div>
 		<input type="hidden"  type="text" name="id_constat" id="id_constat">
 		<input type="hidden"  type="text" name="geomlat" id="geomlat">

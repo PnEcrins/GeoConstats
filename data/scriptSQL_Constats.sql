@@ -73,8 +73,8 @@ $BODY$
 CREATE TABLE constats_loups.t_constats
 (
   id_constat serial NOT NULL,
-  date_attaque date,
-  date_constat date,
+  date_attaque date NOT NULL,
+  date_constat date NOT NULL,
   nom_agent1 character varying,
   nom_agent2 character varying,
   proprietaire character varying,

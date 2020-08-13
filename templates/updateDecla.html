@@ -6,100 +6,45 @@
 <div class="leftMap">
     <form action="{{url_for('routes.updateDBDecla')}}" method="post" novalidate>
             {{ form.hidden_tag() }}
-		<div class="row">	
-			<div class="col-7">
-				Date de l'attaque :
-			</div>
-			<div class="mr-1 col-4">
-				{{ form.date_attaque_d(size=18,value=Declaratif.properties.date_attaque_d) }}
-				{% for error in form.date_attaque_d.errors %}
-				<span style="color: red;">[{{ error }}]</span>
-				{% endfor %}
-			</div>
+		<div>	
+		
+			Date de l'attaque <br>
+			{{ form.date_attaque_d(size=18,value=Declaratif.properties.date_attaque_d) }}
 		</div>
 		<br>
-		<div class="row">		
-			<div class="col-7">
-				Date du constat :
-			</div>
-			<div class="mr-1 col-4">
-				{{ form.date_constat_d(size=18,value=Declaratif.properties.date_constat_d) }}
-				{% for error in form.date_constat_d.errors %}
-				<span style="color: red;">[{{ error }}]</span>
-				{% endfor %}
-			</div>		
+		<div>		
+			Date du constat <br>
+			{{ form.date_constat_d(size=18,value=Declaratif.properties.date_constat_d) }}		
 		</div>
 		<br>
-		<div class="row">	
-			<div class="col-7">
-				Lieu dit du constat :
-			</div>
-			<div class="mr-1 col-4">			
-				{{ form.lieu_dit(size=18,value=Declaratif.properties.lieu_dit,placeholder="Lieu") }}
-				{% for error in form.lieu_dit.errors %}
-				<span style="color: red;">[{{ error }}]</span>
-				{% endfor %}
-			</div>
+		<div>	
+			Lieu dit du constat <br>			
+			{{ form.lieu_dit(size=18,value=Declaratif.properties.lieu_dit,placeholder="Lieu") }}
 		</div>
 		<br>
-		<div class="row">		
-			<div class="col-7">
-				Propriétaire :
-			</div>
-			<div class="mr-1 col-4">			
-				{{ form.proprietaire_d(size=18,value=Declaratif.properties.proprietaire_d,placeholder="Prénom Nom") }}
-				{% for error in form.proprietaire_d.errors %}
-				<span style="color: red;">[{{ error }}]</span>
-				{% endfor %}
-			</div>
+		<div>		
+			Propriétaire <br>		
+			{{ form.proprietaire_d(size=18,value=Declaratif.properties.proprietaire_d,placeholder="Prénom Nom") }}
 		</div>
 		<br>
-		<div class="row">		
-			<div class="col-7">
-				Type d'animaux :
-			</div>
-			<div class="mr-1 col-4">			
-				{{ form.type_animaux_d(size=3,value=Declaratif.properties.type_animaux_d) }}
-				{% for error in form.type_animaux_d.errors %}
-				<span style="color: red;">[{{ error }}]</span>
-				{% endfor %}
-			</div>	
+		<div>		
+			Type d'animaux <br>			
+			{{ form.type_animaux_d(size=3,value=Declaratif.properties.type_animaux_d) }}	
 		</div>
 		<br>
-		<div class="row">		
-			<div class="col-7">
-				Nombre de morts :
-			</div>
-			<div class="mr-1 col-4">			
-				{{ form.nb_victimes_mort_d(size=18,value=Declaratif.properties.nb_victimes_mort_d) }}
-				{% for error in form.nb_victimes_mort_d.errors %}
-				<span style="color: red;">[{{ error }}]</span>
-				{% endfor %}
-			</div>
+		<div>		
+			Nombre de morts <br>			
+			{{ form.nb_victimes_mort_d(size=18,value=Declaratif.properties.nb_victimes_mort_d) }}
 		</div>
 		<br>
-		<div class="row">		
-			<div class="col-7">
-				Nombre de blessés :
-			</div>
-			<div class="mr-1 col-4">			
-				{{ form.nb_victimes_blesse_d(size=18, value=Declaratif.properties.nb_victimes_blesse_d) }}
-				{% for error in form.nb_victimes_blesse_d.errors %}
-				<span style="color: red;">[{{ error }}]</span>
-				{% endfor %}
-			</div>
+		<div>		
+			Nombre de blessés <br>		
+			{{ form.nb_victimes_blesse_d(size=18, value=Declaratif.properties.nb_victimes_blesse_d) }}
 		</div>
 		<br>
-		<div class="row">		
-			<div class="col-7">
-				Statut du constat :
-			</div>
-			<div class="mr-1 col-4">			
-				{{ form.statut_d(size=3, value=Declaratif.properties.statut_d) }}
-				{% for error in form.statut_d.errors %}
-				<span style="color: red;">[{{ error }}]</span>
-				{% endfor %}
-			</div>
+		<div>		
+			Statut du constat <br>		
+			{{ form.statut_d(size=3, value=Declaratif.properties.statut_d) }}
 		</div>
 		<br>		
         <center><button type="submit" class="btn btn-primary">Modifier le constat</button></center>
