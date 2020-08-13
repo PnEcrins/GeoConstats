@@ -4,4 +4,4 @@ COOKIE_AUTORENEW=True
 
 SQLALCHEMY_DATABASE_URI = 'postgresql://user:password@localhost:5432/database'
 
-URL_APPLICATION = '<MY_URL'>
+URL_APPLICATION = '<MY_URL>'
