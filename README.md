@@ -35,18 +35,17 @@
 - Dans le terminal, placez-vous dans le dossier GeoConstats ``cd GeoConstats`` et exécuter la commande suivante : ``virtualenv -p /usr/bin/python3 env``.
 
 ### 2.2. Préparation de la base de données
-- Copier le fichier ``settings.ini.sample`` et le nommer ``settings.ini``
-- Editer le fichier ``settings.ini`` avec les informations de la base de données.
+- Copier le fichier ``settings.ini.sample`` et le nommer ``settings.ini`` avec la ligne de commande ``cp settings.ini.sample settings.ini``
+- Editer le fichier ``settings.ini`` avec les informations de la base de données avec la ligne de commande `` nano settings.ini``. Une fois les informations saisies, enregistrer le fichier en appuyant sur ctrl + o puis entrer puis crtl + x.
 - Dans le terminal, executer la ligne de commande ``./install_db.sh``.
 
 ### 2.3. Mise en relation de la base de données avec l'application
 
-- Dans le dossier contenant les fichiers téléchargés, éditer le fichier ``config.py.sample`` et le renommer ``config.py``. Remplir les paramètres de connexion à la base de données et l'url de l'application. Remplir ces paramètres en fonction de vos valeurs.
-- Enregistrer les modifications.
+- Dans le dossier contenant les fichiers téléchargés, copier ``config.py.sample`` et le renommer ``config.py`` avec la ligne ``cp config.py.sample config.py``. Remplir les paramètres de connexion à la base de données et l'url de l'application. Remplir ces paramètres en fonction de vos valeurs. Enregistrer avec ctrl + o puis entrer puis quitter le fichier avec ctrl + x.
 
 ### 2.4. Lancement de l'application
 
-- Ouvrir le fichier ``geoconstats_supervisor.conf`` et remplacer ``<MY_APP_PATH>`` par le chemin de la racine de l'application
+- Ouvrir le fichier ``geoconstats_supervisor.conf`` avec la ligne de commande `` nano geoconstats_supervisor.conf``et remplacer ``<MY_APP_PATH>`` par le chemin de la racine de l'application
 - Copier ce fichier dans la conf supervisor: ``sudo cp geoconstats_supervisor.conf /etc/supervisor/conf.d``
 - Relancer le supervisor `` sudo supervisorctl reread`` `` sudo supervisorctl reload``
 
@@ -64,9 +63,9 @@
 - Lancer les commandes suivantes:
 
     
-    sudo a2enmod proxy
-    sudo a2enmod proxy_http
-    sudo a2ensite geoconstats
+    ``sudo a2enmod proxy``
+    ``sudo a2enmod proxy_http``
+   `` sudo a2ensite geoconstats``
 
 
 #### 2.5. Lancement en mode dev
