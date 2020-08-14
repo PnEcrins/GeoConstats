@@ -32,9 +32,10 @@ def init_app():
         app = app_globals['app']
     else:
         app = Flask(__name__)
-    app.wsgi_app = ReverseProxied(app.wsgi_app, script_name='http://localhost:5000')
+    app.config.from_object('config')
+    app.wsgi_app = ReverseProxied(app.wsgi_app, script_name=app.config['URL_APPLICATION'])
     with app.app_context():
-        app.config.from_object('config')
+        
         DB.init_app(app)
         DB.app = app
         app.config['DB'] = DB
