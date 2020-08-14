@@ -40,7 +40,7 @@ python_path=/usr/bin/python3
 #########################
 
 app_name=geoconstats
-venv_dir=venv
+venv_dir=env
 gun_num_workers=4
 gun_host=0.0.0.0
-gun_port=5001
+gun_port=5000
