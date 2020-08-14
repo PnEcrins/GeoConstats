@@ -81,8 +81,8 @@
 		'geometry': '{{ Constats.geometry | tojson}}'
 	};
     var map = L.map('map').setView([JSON.parse(constatFilter.geometry).coordinates[1],JSON.parse(constatFilter.geometry).coordinates[0]], 14);
-    L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
-        attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+    L.tileLayer('https://a.tile.opentopomap.org/{z}/{x}/{y}.png', {
+	    attribution: 'Map data: &copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors, SRTM | Map style: &copy; <a href="https://opentopomap.org">OpenTopoMap</a> (CC-BY-SA)'
     }).addTo(map);		
 	    document.getElementById("id_constat").value = {{Constats.properties.id_constat}};	
 		document.getElementById("geomlat").value = JSON.parse(constatFilter.geometry).coordinates[1];
