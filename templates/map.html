@@ -2,8 +2,8 @@
 {% block content %}
 	<center><h1>Constats dans le Parc national des Ecrins</h1></center>
 	<div id="liste" class="leftMap">
-		<h3>Filtres sur les constats</h3>
-		<form method="GET" novalidate>
+		<center><button data-toggle="collapse" name="filtre" data-target="#filter" class="btn btn-primary">Filtres sur les constats</button></center><br>
+		<form method="GET" novalidate class="collapse" id="filter">
 			<div class="form-group">
 				Année du constat <br>
 				{{ form.date(size=1) }}
@@ -19,7 +19,15 @@
 			<div class="form-group">
 				Localisation du constat <br>
 				{{ form.localisation(size=1) }}
-			</div>			
+			</div>		
+			<div class="form-group">
+				Secteur du constat <br>
+				{{ form.secteur(size=1) }}
+			</div>	
+			<div class="form-group">
+				Commune du constat <br>
+				{{ form.commune(size=1) }}
+			</div>								
 			<div class="form-group"><button id="subform" type="submit" formaction="{{url_for('routes.map')}}" class="btn btn-primary">Filtrer les données</button></div>
 			<div class="form-group"><button type="submit" formaction="{{url_for('routes.download')}}" class="btn btn-secondary">Télécharger les données</button></div>
 			
@@ -148,5 +156,13 @@
 		if(localisation != null){
 			document.getElementById("localisation").value=localisation;
 		}
+		const secteur = urlParams.get('secteur');
+		if(secteur != null){
+			document.getElementById("secteur").value=secteur;
+		}
+		const commune = urlParams.get('commune');
+		if(commune != null){
+			document.getElementById("commune").value=commune;
+		}				
 	</script>
 {% endblock %}

@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% block content %}
-<h3>Filtres sur les constats</h3>
-<form method="GET" novalidate>
+<button data-toggle="collapse" name="filtre" data-target="#filter" class="btn btn-primary ml-3">Filtres sur les constats déclaratifs</button><br>
+<form method="GET" novalidate class="collapse" id="filter">
     <div class="form-group">
         Année du constat <br>
         {{ form.date(size=1) }}
@@ -17,7 +17,7 @@
     <div class="form-group">
         Localisation du constat <br>
         {{ form.localisation(size=1) }}
-    </div>
+    </div>   
     <div class="form-group "><button id="subform" type="submit" class="btn btn-primary">Filtrer les données</button></div>
         
 </form>
@@ -218,8 +218,8 @@ if(statut != null){
     document.getElementById("statut").value=statut;
 }		
 const localisation = urlParams.get('localisation');
-		if(localisation != null){
-			document.getElementById("localisation").value=localisation;
-		}
+if(localisation != null){
+	document.getElementById("localisation").value=localisation;
+}
 </script>
 {% endblock %}
