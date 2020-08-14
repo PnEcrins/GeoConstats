@@ -15,4 +15,4 @@ source bin/activate
 export PYTHONPATH=$FLASKDIR:$PYTHONPATH
 
 # Start your unicorn
-exec gunicorn server:app --error-log $FLASKDIR/log/geoconstats_erros.log --pid="${app_name}.pid" -w "${gun_num_workers}"  -b "${gun_host}:${gun_port}"  -n "${app_name}"
+exec gunicorn run:app --error-log $FLASKDIR/log/geoconstats_errors.log --pid="${app_name}.pid" -w "${gun_num_workers}"  -b "${gun_host}:${gun_port}"  -n "${app_name}"
