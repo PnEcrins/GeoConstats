@@ -1,11 +1,11 @@
 {% extends "base.html" %}
 
 {% block content %}
-<center><h1>Constat {{Constats.properties.id_constat}}</h1></center>
-<div id="map">
-</div>
+<div id="bloc">
+	<div id="map"></div>
 	<div class="leftMap">
-		<div style="vertical-align:middle;"id="textConstat">
+		<center><h1>Constat {{Constats.properties.id_constat}}</h1></center>
+		<div style="padding-left:10px;" id="textConstat">
 				Numéro : {{Constats.properties.id_constat}} <br>
 				Date de l'attaque : {{Constats.properties.date_attaque}} <br>
 				Date du constat : {{Constats.properties.date_constat}}<br>
@@ -22,8 +22,7 @@
 				Créateur du constat : {{Constats.user.prenom}} {{Constats.user.nom}}<br>
 				Statut : {{ Constats.properties.statut }}<br>
 				Nombre de jours agent : {{Constats.properties.nb_jour_agent}}<br>		
-			</div>
-    <br>
+		</div>
     </div>
 </div>
 

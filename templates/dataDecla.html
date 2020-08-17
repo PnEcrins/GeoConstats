@@ -1,11 +1,11 @@
 {% extends "base.html" %}
 
 {% block content %}
-<center><h1>Constat déclaratif {{Decla.properties.id_constat}}</h1></center>
-<div id="map">
-</div>
+<div id="bloc">
+	<div id="map"></div>
 	<div class="leftMap">
-		<div style="vertical-align:middle;"id="textConstat">
+		<center><h1>Constat déclaratif {{Decla.properties.id_constat}}</h1></center>
+		<div style="padding-left:10px;" id="textConstat">
 				Numéro : {{Decla.properties.id_constat}} <br>
 				Date de l'attaque : {{Decla.properties.date_attaque}} <br>
 				Date du constat : {{Decla.properties.date_constat}}<br>
@@ -20,8 +20,7 @@
 				Localisation : {{Decla.properties.localisation}}<br>
 				Créateur du constat : {{Decla.user.prenom}} {{Decla.user.nom}}<br>
 				Statut : {{ Decla.properties.statut }}<br>	
-			</div>
-    <br />
+		</div>
     </div>
 </div>
 
