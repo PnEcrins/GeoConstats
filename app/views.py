@@ -310,6 +310,7 @@ def updateDB(id_role):
     changeStatut=data['statut']
     if data['statut']=="0":
         changeStatut=None
+    nbMort=0
     if isinstance(data['nb_victimes_mort'],int):
         nbMort=data['nb_victimes_mort']
     nbBlesse=0  
@@ -684,7 +685,7 @@ def addDecla(id_role):
     changeStatut=data['statut_d']
     if data['statut_d']=="0":
         changeStatut=None
-    nbmort=0
+    nbMort=0
     if isinstance(data['nb_victimes_mort_d'],int):
         nbMort=data['nb_victimes_mort_d']
     nbBlesse=0  
@@ -801,7 +802,7 @@ def updateDBDecla(id_role):
     changeStatut=data['statut_d']
     if data['statut_d']=="0":
         changeStatut=None  
-    nbmort=0
+    nbMort=0
     if isinstance(data['nb_victimes_mort_d'],int):
         nbMort=data['nb_victimes_mort_d']
     nbBlesse=0  
