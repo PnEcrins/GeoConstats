@@ -6,6 +6,9 @@ settings.ini
 # C extensions
 *.so
 
+# IDE - VSCode
+.vscode/*
+
 # Distribution / packaging
 .Python
 build/
