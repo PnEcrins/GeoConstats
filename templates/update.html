@@ -1,10 +1,10 @@
 {% extends "base.html" %}
-
 {% block content %}
-<center><h1>Constat {{Constats.properties.id_constat}}</h1></center>
+<div id="bloc">
 <div id="map"></div>
 <div class="leftMap">
-    <form action="{{url_for('routes.updateDB')}}" method="post">
+    <center><h1>Modifier le constat {{Constats.properties.id_constat}}</h1></center>
+	<form action="{{url_for('routes.updateDB')}}" method="post">
             {{ form.hidden_tag() }}
 		<div class="form-group">
 				Date de l'attaque <br>
@@ -52,6 +52,7 @@
 		<br>		
 		<button type="submit" class="btn btn-primary">Modifier le constat</button>
     </form>
+</div>
 </div>
 <script>
 	var constatFilter={

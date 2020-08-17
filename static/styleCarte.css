@@ -2,14 +2,20 @@ html, body{
     height: 100%;
     width: 100%;
 }
+nav {
+	height: 10vh;
+}
+#bloc{
+	height:90vh;
+}
 #map{
 	width:70%;
-	height:87%;
+	height:100%;
 	float:right;
 }
 .leftMap{
 	width:30%;
-	height:87%;
+	height:100%;
 	float:left;
 	overflow-y:auto;
 	overflow-x:auto;

@@ -1,10 +1,10 @@
 {% extends "base.html" %}
-
 {% block content %}
-<center><h1>Ajouter un constat</h1></center>
+<div id="bloc">
 <div id="map"></div>
 <div class="leftMap">
-    <form action="{{url_for('routes.addDecla')}}" method="post" novalidate>
+    <center><h1>Ajouter un constat déclaratif</h1></center>
+	<form action="{{url_for('routes.addDecla')}}" method="post" novalidate>
             {{ form.hidden_tag() }}
         <div class="form-group">
             Date de l'attaque<br>
@@ -15,7 +15,7 @@
             {{ form.date_constat_d(size=18, placeholder='dd/mm/aaaa',required='required') }}
         </div>
         <div class="form-group">
-            Lieu dit du constat<br>
+            Lieu-dit du constat<br>
             {{ form.lieu_dit(size=18,placeholder="lieu") }}
         </div>
         <div class="form-group">
@@ -42,6 +42,7 @@
         <input type="hidden"  type="text" name="geomlng" id="geomlng">		
         <div><button id="subform" type="submit" class="btn btn-primary" disabled>Ajouter le constat</button></div>
     </form>
+</div>
 </div>
 <script>
     var map = L.map('map').setView([44.8, 6.2], 10);

@@ -1,8 +1,9 @@
 {% extends "base.html" %}
 {% block content %}
-	<center><h1>Constats déclaratifs dans le Parc national des Ecrins</h1></center>
+<div id="bloc">
 	<div id="liste" class="leftMap">
-		<center><button data-toggle="collapse" name="filtre" data-target="#filter" class="btn btn-primary">Filtres sur les constats déclaratifs</button></center><br>
+		<center><h1>Constats déclaratifs</h1></center>
+		<center><button data-toggle="collapse" name="filtre" data-target="#filter" class="btn btn-primary">Afficher les filtres</button></center><br>
 		<form method="GET" novalidate class="collapse" id="filter">
 			<div class="form-group">
 				Année du constat <br>
@@ -33,7 +34,7 @@
 		</form>
 		<center><h3 id="countCsts">Liste des constats déclaratifs</h3></center>
 		{% for decla in Declaratifs %}
-			<center><button class="btn btn-light" data-toggle="collapse" name="dataBouton" data-target="#textDecla{{decla.properties.id_constat_d}}" style="margin:3px; display:list-item block;">{{decla.properties.date_constat_d}} {{decla.properties.type_animaux_d}}</button></center>
+			<center><button class="btn btn-light" data-toggle="collapse" name="dataBouton" data-target="#textDecla{{decla.properties.id_constat_d}}" style="margin:3px; display:list-item block;">{{decla.properties.date_constat_d}} - {{decla.properties.type_animaux_d}}</button></center>
 			<center><div style="vertical-align:middle;"id="textDecla{{decla.properties.id_constat_d}}" class="collapse bg-light">
 				Numéro : {{decla.properties.id_constat_d}} <br>
 				Date de l'attaque : {{decla.properties.date_attaque_d}} <br>
@@ -58,6 +59,7 @@
 		{%endfor%}
 	</div>
 	<div id="map"></div>
+</div>
 	<br>
     <script> 
         // CONFIGURATION DE LA CARTE //

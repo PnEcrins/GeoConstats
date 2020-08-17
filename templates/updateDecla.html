@@ -1,41 +1,41 @@
 {% extends "base.html" %}
 
 {% block content %}
-<center><h1>Constat déclaratif {{Declaratif.properties.id_constat_d}}</h1></center>
+<div id="bloc">
 <div id="map"></div>
 <div class="leftMap">
-    <form action="{{url_for('routes.updateDBDecla')}}" method="post" novalidate>
+    <center><h1>Modifier le constat déclaratif {{Declaratif.properties.id_constat_d}}</h1></center>
+	<form action="{{url_for('routes.updateDBDecla')}}" method="post" novalidate>
             {{ form.hidden_tag() }}
-		<div>	
-		
+		<div  class="form-group">	
 			Date de l'attaque <br>
 			{{ form.date_attaque_d(size=18,value=Declaratif.properties.date_attaque_d) }}
 		</div>
-		<div>		
+		<div class="form-group">		
 			Date du constat <br>
 			{{ form.date_constat_d(size=18,value=Declaratif.properties.date_constat_d) }}		
 		</div>
-		<div>	
-			Lieu dit du constat <br>			
+		<div class="form-group">	
+			Lieu-dit du constat <br>			
 			{{ form.lieu_dit(size=18,value=Declaratif.properties.lieu_dit,placeholder="Lieu") }}
 		</div>
-		<div>		
+		<div class="form-group">		
 			Propriétaire <br>		
 			{{ form.proprietaire_d(size=18,value=Declaratif.properties.proprietaire_d,placeholder="Prénom Nom") }}
 		</div>
-		<div>		
+		<div class="form-group">		
 			Type d'animaux <br>			
 			{{ form.type_animaux_d(size=1,value=Declaratif.properties.type_animaux_d) }}	
 		</div>
-		<div>		
+		<div class="form-group">		
 			Nombre de morts <br>			
 			{{ form.nb_victimes_mort_d(size=18,value=Declaratif.properties.nb_victimes_mort_d) }}
 		</div>
-		<div>		
+		<div class="form-group">		
 			Nombre de blessés <br>		
 			{{ form.nb_victimes_blesse_d(size=18, value=Declaratif.properties.nb_victimes_blesse_d) }}
 		</div>
-		<div>		
+		<div class="form-group">		
 			Statut du constat <br>		
 			{{ form.statut_d(size=1, value=Declaratif.properties.statut_d) }}
 		</div>		
@@ -44,6 +44,7 @@
 		<input type="hidden"  type="text" name="geomlat" id="geomlat">
         <input type="hidden"  type="text" name="geomlng" id="geomlng">		
     </form>
+</div>
 </div>
 <script>
 	var constatFilter={

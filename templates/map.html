@@ -1,7 +1,8 @@
 {% extends "base.html" %}
 {% block content %}
-	<center><h1>Constats dans le Parc national des Ecrins</h1></center>
+<div id="bloc">
 	<div id="liste" class="leftMap">
+		<center><h1>Constats</h1></center>
 		<center><button data-toggle="collapse" name="filtre" data-target="#filter" class="btn btn-success">Afficher les filtres</button></center><br>
 		<form method="GET" novalidate class="collapse" id="filter">
 			<div class="form-group">
@@ -34,7 +35,7 @@
 		</form>
 		<center><h3 id="countCsts">Liste des constats</h3></center>
 		{% for constats in Constats %}
-			<center><button class="btn btn-light" data-toggle="collapse" name="dataBouton" data-target="#textConstat{{constats.properties.id_constat}}" style="margin:3px; display:list-item block;" >{{constats.properties.date_attaque}} {{ constats.properties.type_animaux }}</button></center>
+			<center><button class="btn btn-light" data-toggle="collapse" name="dataBouton" data-target="#textConstat{{constats.properties.id_constat}}" style="margin:3px; display:list-item block;" >{{constats.properties.date_attaque}} - {{ constats.properties.type_animaux }}</button></center>
 			<center><div style="vertical-align:middle;"id="textConstat{{constats.properties.id_constat}}" class="collapse bg-light">
 				Numéro : {{constats.properties.id_constat}} <br>
 				Date de l'attaque : {{constats.properties.date_attaque}} <br>
@@ -61,6 +62,7 @@
 		{%endfor%}
 	</div>
 	<div id="map"></div>
+</div>
     <script>
         // CONFIGURATION DE LA CARTE //
         var map = L.map('map').setView([44.8, 6.2], 10);
