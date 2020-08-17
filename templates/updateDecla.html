@@ -11,42 +11,34 @@
 			Date de l'attaque <br>
 			{{ form.date_attaque_d(size=18,value=Declaratif.properties.date_attaque_d) }}
 		</div>
-		<br>
 		<div>		
 			Date du constat <br>
 			{{ form.date_constat_d(size=18,value=Declaratif.properties.date_constat_d) }}		
 		</div>
-		<br>
 		<div>	
 			Lieu dit du constat <br>			
 			{{ form.lieu_dit(size=18,value=Declaratif.properties.lieu_dit,placeholder="Lieu") }}
 		</div>
-		<br>
 		<div>		
 			Propriétaire <br>		
 			{{ form.proprietaire_d(size=18,value=Declaratif.properties.proprietaire_d,placeholder="Prénom Nom") }}
 		</div>
-		<br>
 		<div>		
 			Type d'animaux <br>			
-			{{ form.type_animaux_d(size=3,value=Declaratif.properties.type_animaux_d) }}	
+			{{ form.type_animaux_d(size=1,value=Declaratif.properties.type_animaux_d) }}	
 		</div>
-		<br>
 		<div>		
 			Nombre de morts <br>			
 			{{ form.nb_victimes_mort_d(size=18,value=Declaratif.properties.nb_victimes_mort_d) }}
 		</div>
-		<br>
 		<div>		
 			Nombre de blessés <br>		
 			{{ form.nb_victimes_blesse_d(size=18, value=Declaratif.properties.nb_victimes_blesse_d) }}
 		</div>
-		<br>
 		<div>		
 			Statut du constat <br>		
-			{{ form.statut_d(size=3, value=Declaratif.properties.statut_d) }}
-		</div>
-		<br>		
+			{{ form.statut_d(size=1, value=Declaratif.properties.statut_d) }}
+		</div>		
         <center><button type="submit" class="btn btn-primary">Modifier le constat</button></center>
 		<input type="hidden"  type="text" name="id_constat_d" id="id_constat_d">
 		<input type="hidden"  type="text" name="geomlat" id="geomlat">

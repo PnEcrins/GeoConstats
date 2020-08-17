@@ -6,48 +6,41 @@
 <div class="leftMap">
     <form action="{{url_for('routes.updateDB')}}" method="post">
             {{ form.hidden_tag() }}
-			<div class="form-group">
+		<div class="form-group">
 				Date de l'attaque <br>
 				{{ form.date_attaque(size=18,value=Constats.properties.date_attaque, placeholder='dd/mm/aaaa',required='required') }}
-		<br>
+		</div>
 		<div class="form-group">
 				Date du constat <br>
 				{{ form.date_constat(size=18,value=Constats.properties.date_constat, placeholder='dd/mm/aaaa',required='required') }}
 		</div>
-		<br>
 		<div class="form-group">
 				Nom du premier agent <br>			
 				{{ form.nom_agent1(size=18,value=Constats.properties.nom_agent1,placeholder="Prénom Nom") }}
 		</div>
-		<br>
 		<div class="form-group">
 				Nom du deuxième agent <br>		
 				{{ form.nom_agent2(size=18,value=Constats.properties.nom_agent2,placeholder="Prénom Nom") }}
 		</div>
-		<br>
 		<div class="form-group">
 				Propriétaire <br>			
 				{{ form.proprietaire(size=18,value=Constats.properties.proprietaire,placeholder="Prénom Nom") }}
 		</div>
-		<br>
 		<div class="form-group">
 				Type d'animaux <br>	
-				{{ form.type_animaux(size=3,value=Constats.properties.type_animaux) }}
+				{{ form.type_animaux(size=1,value=Constats.properties.type_animaux) }}
 		</div>
-		<br>
 		<div class="form-group">
 				Nombre de morts <br>		
 				{{ form.nb_victimes_mort(size=18,value=Constats.properties.nb_victimes_mort) }}
 		</div>
-		<br>
 		<div class="form-group">
 				Nombre de blessés<br>		
 				{{ form.nb_victimes_blesse(size=18, value=Constats.properties.nb_victimes_blesse) }}
 		</div>
-		<br>
 		<div class="form-group">
 				Statut du constat <br>	
-				{{ form.statut(size=3, value=Constats.properties.statut) }}
+				{{ form.statut(size=1, value=Constats.properties.statut) }}
 		</div>
         <div class="form-group">
             Nombre de jours agent <br>
