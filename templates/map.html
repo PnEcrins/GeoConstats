@@ -39,8 +39,19 @@
 				<button class="btn btn-light" data-toggle="collapse" name="dataBouton" data-target="#textConstat{{constats.properties.id_constat}}" style="margin:3px; display:list-item block;" >
 				{{constats.properties.date_attaque}} - {{ constats.properties.type_animaux }}
 				</button>
+				<a title="Supprimer le constat" href="{{url_for('routes.delete',idc=constats.properties.id_constat)}}" id="delete{{constats.properties.id_constat}}">
+					<i class="fas fa-trash float-right" style="margin:3px;"></i>
+				</a> 
+				<a title="Modifier le constat" href="{{url_for('routes.update',idc=constats.properties.id_constat)}}" id="update{{constats.properties.id_constat}}">
+					<i class="far fa-edit float-right" style="margin:3px;"></i>
+				</a> 
+				<a title="Afficher le constat" href="{{url_for('routes.data',idc=constats.properties.id_constat)}}">
+					<i class="fas fa-info-circle float-right" style="margin:3px;"></i>
+				</a>
 			</center>
-			<center><div style="vertical-align:middle;"id="textConstat{{constats.properties.id_constat}}" class="collapse bg-light">
+			<center>
+			<small>
+				<div id="textConstat{{constats.properties.id_constat}}" class="collapse bg-light">
 				Numéro : {{constats.properties.id_constat}} <br>
 				Date de l'attaque : {{constats.properties.date_attaque}} <br>
 				Date du constat : {{constats.properties.date_constat}}<br>
@@ -57,10 +68,14 @@
 				Créateur du constat : {{constats.user.prenom}} {{constats.user.nom}}<br>
 				Statut : {{ constats.properties.statut }}<br>
 				Nombre de jours agent : {{constats.properties.nb_jour_agent}}<br>
+				<!--
 				<p><a class="btn btn-primary" role="button" href="{{url_for('routes.update',idc=constats.properties.id_constat)}}" id="update{{constats.properties.id_constat}}">Modifier le constat</a></p>
 				<p><a class="btn btn-primary" role="button" href="{{url_for('routes.delete',idc=constats.properties.id_constat)}}" id="delete{{constats.properties.id_constat}}">Supprimer le constat</a></p>			
 				<p><a class="btn btn-primary" role="button" href="{{url_for('routes.data',idc=constats.properties.id_constat)}}">Informations</a></p>
-			</div></center>
+				-->
+				</div>
+			</small>
+			</center>
 			<br>
 
 		{%endfor%}
@@ -115,11 +130,9 @@
 		});
 		map.addLayer(markersCluster);
         var addMarkers = function(point) {
-			console.log(point.right)
 			if(point.right == "False"){
 				document.getElementById("update"+point.id_constat).style.display= "none";
 				document.getElementById("delete"+point.id_constat).style.display= "none";
-				console.log('oheeee')
 			}
             var markerC=L.marker([JSON.parse(point.geometry).coordinates[1],JSON.parse(point.geometry).coordinates[0]]) 
 				.bindPopup("Constat numéro : "+point.id_constat+"<br>"+ 

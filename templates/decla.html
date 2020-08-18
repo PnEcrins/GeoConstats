@@ -3,7 +3,7 @@
 <div id="bloc">
 	<div id="liste" class="leftMap">
 		<center><h1>Constats déclaratifs</h1></center>
-		<center><button data-toggle="collapse" name="filtre" data-target="#filter" class="btn btn-primary">Afficher les filtres</button></center><br>
+		<center><button data-toggle="collapse" name="filtre" data-target="#filter" class="btn btn-success">Afficher les filtres</button></center><br>
 		<form method="GET" novalidate class="collapse" id="filter">
 			<div class="form-group">
 				Année du constat <br>
@@ -34,8 +34,14 @@
 		</form>
 		<center><h3 id="countCsts">Liste des constats déclaratifs</h3></center>
 		{% for decla in Declaratifs %}
-			<center><button class="btn btn-light" data-toggle="collapse" name="dataBouton" data-target="#textDecla{{decla.properties.id_constat_d}}" style="margin:3px; display:list-item block;">{{decla.properties.date_constat_d}} - {{decla.properties.type_animaux_d}}</button></center>
-			<center><div style="vertical-align:middle;"id="textDecla{{decla.properties.id_constat_d}}" class="collapse bg-light">
+			<center>
+				<button class="btn btn-light" data-toggle="collapse" name="dataBouton" data-target="#textDecla{{decla.properties.id_constat_d}}" style="margin:3px; display:list-item block;">
+				{{decla.properties.date_constat_d}} - {{decla.properties.type_animaux_d}}
+				</button>
+			</center>
+			<center>
+			<small>
+			<div id="textDecla{{decla.properties.id_constat_d}}" class="collapse bg-light">
 				Numéro : {{decla.properties.id_constat_d}} <br>
 				Date de l'attaque : {{decla.properties.date_attaque_d}} <br>
 				Date du constat : {{decla.properties.date_constat_d}}<br>
@@ -53,7 +59,9 @@
 				<p><a class="btn btn-primary" role="button" href="{{url_for('routes.updateDecla',idc=decla.properties.id_constat_d)}}" id="update{{decla.properties.id_constat_d}}">Modifier le constat</a></p>
 				<p><a class="btn btn-primary" role="button" href="{{url_for('routes.deleteDecla',idc=decla.properties.id_constat_d)}}" id="delete{{decla.properties.id_constat_d}}">Supprimer le constat</a></p>
 				<p><a class="btn btn-primary" role="button" href="{{url_for('routes.dataDecla',idc=decla.properties.id_constat_d)}}">Informations</a></p>
-			</div></center>
+			</div>
+			</small>
+			</center>
 			<br>
 
 		{%endfor%}
