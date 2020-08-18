@@ -35,7 +35,11 @@
 		</form>
 		<center><h3 id="countCsts">Liste des constats</h3></center>
 		{% for constats in Constats %}
-			<center><button class="btn btn-light" data-toggle="collapse" name="dataBouton" data-target="#textConstat{{constats.properties.id_constat}}" style="margin:3px; display:list-item block;" >{{constats.properties.date_attaque}} - {{ constats.properties.type_animaux }}</button></center>
+			<center>
+				<button class="btn btn-light" data-toggle="collapse" name="dataBouton" data-target="#textConstat{{constats.properties.id_constat}}" style="margin:3px; display:list-item block;" >
+				{{constats.properties.date_attaque}} - {{ constats.properties.type_animaux }}
+				</button>
+			</center>
 			<center><div style="vertical-align:middle;"id="textConstat{{constats.properties.id_constat}}" class="collapse bg-light">
 				Numéro : {{constats.properties.id_constat}} <br>
 				Date de l'attaque : {{constats.properties.date_attaque}} <br>
