@@ -1,5 +1,17 @@
 # GeoConstats
 
+Application web permettant d'inventorier les constats de prédation d'un territoire.
+
+![GeoConstats - Aperçu](./docs/GeoConstats-0.1.0.png)
+
+- Base de données : PostgreSQL / PostGIS
+- Langage : Python
+- Framework Python : Flask
+- CSS : Bootstrap
+- Javascript : Jquery + Leaflet
+
+# Installation
+
 ## 1. Préparation de l'environnement de travail
 
 - Dans le terminal, executer la ligne de commande ``sudo apt-get install libpq-dev``. Executer ensuite la ligne de commande ``sudo apt-get install python-virtualenv``.
@@ -7,9 +19,10 @@
 - Dans le terminal, placez-vous dans le dossier GeoConstats ``cd GeoConstats`` et exécuter la commande suivante : ``virtualenv -p /usr/bin/python3 env``.
 
 ## 2. Préparation de la base de données
+
 - Copier le fichier ``settings.ini.sample`` et le nommer ``settings.ini`` avec la ligne de commande ``cp settings.ini.sample settings.ini``
-- Editer le fichier ``settings.ini`` avec les informations de la base de données avec la ligne de commande `` nano settings.ini``. Une fois les informations saisies, enregistrer le fichier en appuyant sur ctrl + o puis entrer puis crtl + x.
-- Dans le terminal, executer la ligne de commande ``./install_db.sh``.
+- Editer le fichier ``settings.ini`` avec les informations de la base de données avec la ligne de commande ``nano settings.ini``. Une fois les informations saisies, enregistrer le fichier en appuyant sur ctrl + o puis entrer puis crtl + x.
+- Dans le terminal, exécuter la ligne de commande ``./install_db.sh``.
 
 ## 3. Mise en relation de la base de données avec l'application
 
@@ -17,28 +30,29 @@
 
 ## 4. Lancement de l'application
 
-- Ouvrir le fichier ``geoconstats_supervisor.conf`` avec la ligne de commande `` nano geoconstats_supervisor.conf``et remplacer ``<MY_APP_PATH>`` par le chemin de la racine de l'application
-- Copier ce fichier dans la conf supervisor: ``sudo cp geoconstats_supervisor.conf /etc/supervisor/conf.d``
-- Relancer le supervisor `` sudo supervisorctl reread`` `` sudo supervisorctl reload``
+- Ouvrir le fichier ``geoconstats_supervisor.conf`` avec la ligne de commande ``nano geoconstats_supervisor.conf`` et remplacer ``<MY_APP_PATH>`` par le chemin de la racine de l'application
+- Copier ce fichier dans la conf supervisor : ``sudo cp geoconstats_supervisor.conf /etc/supervisor/conf.d``
+- Relancer le supervisor ``sudo supervisorctl reread`` ou ``sudo supervisorctl reload``
 
-## 5. Réalisation de la configuration apache
+## 5. Configuration Apache
 
-- Créer un nouveau site: ``sudo nano /etc/apache2/sites-available/geoconstats.conf``
-- Coller la configuration suivante:
+- Créer un nouveau site : ``sudo nano /etc/apache2/sites-available/geoconstats.conf``
+- Coller la configuration suivante :
 
-    
-    <Location /geoconstats >
-      ProxyPass http://127.0.0.1:5000
-      ProxyPassReverse http://127.0.0.1:5000
-    </Location>
+```
+<Location /geoconstats >
+   ProxyPass http://127.0.0.1:5000
+   ProxyPassReverse http://127.0.0.1:5000
+</Location>
+```
 
-- Lancer les commandes suivantes:
+- Lancer les commandes suivantes :
 
-    
-    ``sudo a2enmod proxy``
-    ``sudo a2enmod proxy_http``
-   `` sudo a2ensite geoconstats``
-
+```
+  sudo a2enmod proxy
+  sudo a2enmod proxy_http
+  sudo a2ensite geoconstats
+```
 
 ## 6. Lancement en mode dev
 
