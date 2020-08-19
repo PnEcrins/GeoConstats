@@ -38,6 +38,15 @@
 				<button class="btn btn-light" data-toggle="collapse" name="dataBouton" data-target="#textDecla{{decla.properties.id_constat_d}}" style="margin:3px; display:list-item block;">
 				{{decla.properties.date_constat_d}} - {{decla.properties.type_animaux_d}}
 				</button>
+				<a title="Supprimer le constat" href="{{url_for('routes.deleteDecla',idc=decla.properties.id_constat_d)}}" id="delete{{decla.properties.id_constat_d}}">
+					<i class="fas fa-trash float-right" style="margin:3px;"></i>
+				</a>
+				<a title="Modifier le constat" href="{{url_for('routes.updateDecla',idc=decla.properties.id_constat_d)}}" id="update{{decla.properties.id_constat_d}}">
+					<i class="far fa-edit float-right" style="margin:3px;"></i>
+				</a>
+				<a title="Afficher le constat" href="{{url_for('routes.dataDecla',idc=decla.properties.id_constat_d)}}">
+					<i class="fas fa-info-circle float-right" style="margin:3px;"></i>
+				</a>
 			</center>
 			<center>
 			<small>
@@ -56,9 +65,6 @@
 				Localisation : {{decla.properties.localisation_d}}<br>
 				Créateur du constat: {{decla.user.prenom_d}} {{decla.user.nom_d}}<br>
 				Statut : {{ decla.properties.statut_d }}<br>
-				<p><a class="btn btn-primary" role="button" href="{{url_for('routes.updateDecla',idc=decla.properties.id_constat_d)}}" id="update{{decla.properties.id_constat_d}}">Modifier le constat</a></p>
-				<p><a class="btn btn-primary" role="button" href="{{url_for('routes.deleteDecla',idc=decla.properties.id_constat_d)}}" id="delete{{decla.properties.id_constat_d}}">Supprimer le constat</a></p>
-				<p><a class="btn btn-primary" role="button" href="{{url_for('routes.dataDecla',idc=decla.properties.id_constat_d)}}">Informations</a></p>
 			</div>
 			</small>
 			</center>
