@@ -3,21 +3,43 @@ from wtforms import StringField, BooleanField, IntegerField, SubmitField, Select
 from wtforms.fields.html5 import DateField
 from app.models import Constats,Declaratif, bib_statut, bib_type_animaux
 from .env import DB
-from wtforms.validators import DataRequired
+from wtforms.validators import DataRequired, InputRequired
 from datetime import date
-    
+from wtforms.ext.sqlalchemy.fields import QuerySelectField
+
+
+
+
+def get_animals_type():
+    return  DB.session.query(bib_type_animaux).all()
+def get_statuts():
+    return  DB.session.query(bib_statut).all()
+
+
 class ConstatForm(FlaskForm):
-    date_attaque = DateField('date_attaque', format='%d/%m/%Y',default=date.today)
-    date_constat = DateField('date_constat', format='%d/%m/%Y',default=date.today)
+    date_attaque = DateField(
+        'date_attaque', [InputRequired()], format='%Y-%m-%d',
+    )
+    date_constat = DateField('date_constat', format='%Y-%m-%d',default=date.today)
     nom_agent1 = StringField('nom_agent1')
     nom_agent2 = StringField('nom_agent2')
     proprietaire = StringField('proprietaire')
-    type_animaux = SelectField('type_animaux',choices=[])
+    # type_animaux = SelectField('type_animaux',choices=[])
+    type_animaux = QuerySelectField(
+        'type_animaux',
+        query_factory=get_animals_type,
+        get_label="nom"
+    )
     nb_victimes_mort = IntegerField('nb_victimes_mort')
     nb_victimes_blesse = IntegerField('nb_victimes_blesse')
-    statut = SelectField('situation',choices=[])
+    statut = QuerySelectField(
+        'situation',
+        query_factory=get_statuts,
+        get_label="nom"
+    )
     nb_jour_agent=FloatField('nb_jour_agent')
     submit = SubmitField('Confirmer le constat')
+
 class DeclaForm(FlaskForm):
     date_attaque_d = DateField('date_attaque_d', format='%d/%m/%Y',default=date.today)
     date_constat_d = DateField('date_constat_d', format='%d/%m/%Y',default=date.today)

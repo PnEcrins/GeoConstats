@@ -2,8 +2,16 @@
 {% block content %}
 <div id="bloc">
 	<div id="liste" class="leftMap">
-		<center><h1>Constats</h1></center>
-		<center><button data-toggle="collapse" name="filtre" data-target="#filter" class="btn btn-success">Afficher les filtres</button></center><br>
+		<h1>Constats</h1>
+		<button data-toggle="collapse" name="filtre" data-target="#filter" class="btn btn-primary">
+			<i class="fa fa-filter" aria-hidden="true"></i>			
+			Filtrer
+		</button>
+		 <a class="btn btn-success" href="{{ url_for('routes.form') }}"> 
+			<i class="fa fa-plus" aria-hidden="true"></i>
+			Ajouter un constat
+		</a>
+		<br>
 		<form method="GET" novalidate class="collapse" id="filter">
 			<div class="form-group">
 				Année du constat <br>
@@ -33,52 +41,71 @@
 			<div class="form-group"><button type="submit" formaction="{{url_for('routes.download')}}" class="btn btn-secondary">Télécharger les données</button></div>
 			
 		</form>
-		<center><h3 id="countCsts">Liste des constats</h3></center>
+		<br>
+		<table class="table table-striped table-hover">
+			<thead>
+				<tr>
+					<th>Date attaque</th>
+					<th>Type d'animaux</th>
+					<th></th>
+					<th></th>
+					<th></th>
+				</th>
+			</thead>
+			<tbody>
+				
 		{% for constats in Constats %}
-			<center>
-				<button class="btn btn-light" data-toggle="collapse" name="dataBouton" data-target="#textConstat{{constats.properties.id_constat}}" style="margin:3px; display:list-item block;" >
-				{{constats.properties.date_attaque}} - {{ constats.properties.type_animaux }}
-				</button>
+		<tr class="clickable" data-toggle="collapse" name="dataBouton" data-target="#textConstat{{constats.properties.id_constat}}">
+			<td>
+				<span  >
+					{{constats.properties.date_attaque}}
+				</span>
+				<!-- <button class="btn btn-light" data-toggle="collapse" name="dataBouton" data-target="#textConstat{{constats.properties.id_constat}}" style="margin:3px; display:list-item block;" >
+				
+				</button> -->
+			</td>
+			<td> {{ constats.properties.type_animaux }}</td>
+			<td>
 				<a title="Supprimer le constat" href="{{url_for('routes.delete',idc=constats.properties.id_constat)}}" id="delete{{constats.properties.id_constat}}">
 					<i class="fas fa-trash float-right" style="margin:3px;"></i>
 				</a> 
+			</td>
+			<td>
 				<a title="Modifier le constat" href="{{url_for('routes.update',idc=constats.properties.id_constat)}}" id="update{{constats.properties.id_constat}}">
 					<i class="far fa-edit float-right" style="margin:3px;"></i>
 				</a> 
+			</td>
+			<td>
 				<a title="Afficher le constat" href="{{url_for('routes.data',idc=constats.properties.id_constat)}}">
 					<i class="fas fa-info-circle float-right" style="margin:3px;"></i>
 				</a>
-			</center>
-			<center>
-			<small>
-				<div id="textConstat{{constats.properties.id_constat}}" class="collapse bg-light">
-				Numéro : {{constats.properties.id_constat}} <br>
-				Date de l'attaque : {{constats.properties.date_attaque}} <br>
-				Date du constat : {{constats.properties.date_constat}}<br>
-				Nombre de victimes (morts) : {{ constats.properties.nb_victimes_mort }}<br>
-				Nombre de victimes (blessés) : {{ constats.properties.nb_victimes_blesse }}<br>
-				Nom du 1er agent recenseur : {{ constats.properties.nom_agent1 }}<br>
-				Nom du 2ème agent recenseur : {{ constats.properties.nom_agent2 }}<br>
-				Propriétaire : {{ constats.properties.proprietaire }}<br>
-				Type d'animaux : {{ constats.properties.type_animaux }}<br>
-				Secteur : {{constats.properties.secteur}}<br>
-				Commune : {{constats.properties.commune}}<br>
-				Département : {{constats.properties.departement}}<br>
-				Localisation : {{constats.properties.localisation}}<br>
-				Créateur du constat : {{constats.user.prenom}} {{constats.user.nom}}<br>
-				Statut : {{ constats.properties.statut }}<br>
-				Nombre de jours agent : {{constats.properties.nb_jour_agent}}<br>
-				<!--
-				<p><a class="btn btn-primary" role="button" href="{{url_for('routes.update',idc=constats.properties.id_constat)}}" id="update{{constats.properties.id_constat}}">Modifier le constat</a></p>
-				<p><a class="btn btn-primary" role="button" href="{{url_for('routes.delete',idc=constats.properties.id_constat)}}" id="delete{{constats.properties.id_constat}}">Supprimer le constat</a></p>			
-				<p><a class="btn btn-primary" role="button" href="{{url_for('routes.data',idc=constats.properties.id_constat)}}">Informations</a></p>
-				-->
+			</td>
+
+			<td colspan="3">
+				<div class="collapse" id="textConstat{{constats.properties.id_constat}}" >
+					Numéro : {{constats.properties.id_constat}} <br>
+					Date de l'attaque : {{constats.properties.date_attaque}} <br>
+					Date du constat : {{constats.properties.date_constat}}<br>
+					Nombre de victimes (morts) : {{ constats.properties.nb_victimes_mort }}<br>
+					Nombre de victimes (blessés) : {{ constats.properties.nb_victimes_blesse }}<br>
+					Nom du 1er agent recenseur : {{ constats.properties.nom_agent1 }}<br>
+					Nom du 2ème agent recenseur : {{ constats.properties.nom_agent2 }}<br>
+					Propriétaire : {{ constats.properties.proprietaire }}<br>
+					Type d'animaux : {{ constats.properties.type_animaux }}<br>
+					Secteur : {{constats.properties.secteur}}<br>
+					Commune : {{constats.properties.commune}}<br>
+					Département : {{constats.properties.departement}}<br>
+					Localisation : {{constats.properties.localisation}}<br>
+					Créateur du constat : {{constats.user.prenom}} {{constats.user.nom}}<br>
+					Statut : {{ constats.properties.statut }}<br>
+					Nombre de jours agent : {{constats.properties.nb_jour_agent}}<br>
 				</div>
-			</small>
-			</center>
-			<br>
+			</td>
+		</tr>
 
 		{%endfor%}
+		</tbody>
+	</table>
 	</div>
 	<div id="map"></div>
 </div>

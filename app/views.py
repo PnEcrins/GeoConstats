@@ -1,4 +1,6 @@
-from flask import Blueprint, render_template, redirect, url_for, request, make_response
+from flask import Blueprint, render_template, session, redirect, url_for, request, make_response
+from flask.helpers import flash
+from werkzeug.datastructures import MultiDict
 from .env import DB
 from app.models import Constats,Declaratif,bib_statut, bib_type_animaux, l_areas
 from app.forms import ConstatForm, DeclaForm, FilterForm
@@ -153,18 +155,12 @@ def form(id_role):
     Lance la page de formulaire d'ajout de données
     """
     #FORMULAIRE
-    form = ConstatForm()
-    form.statut.choices=[(0,"")]
-    dataStatut=DB.session.query(bib_statut)
-    for ds in dataStatut:
-        form.statut.choices+=[(ds.id,ds.nom)]
-    form.type_animaux.choices=[(0,"")]
-    dataAnimaux=DB.session.query(bib_type_animaux)
-    for da in dataAnimaux:
-        form.type_animaux.choices+=[(da.id,da.nom)]    
+    form_data = session.get("form_data", None)
+    print('LAAA', form_data)
+    form = ConstatForm(MultiDict(form_data))
     return render_template('add.html', title="Add_to_database", form=form )
 
-@routes.route('/add', methods=['GET', 'POST'])
+@routes.route('/add', methods=['POST'])
 @check_auth(
     2,
     True,
@@ -177,6 +173,16 @@ def add(id_role):
     Réalise l'ajout de données dans la BD
     """
     #TRAITEMENT FORMULAIRE
+    from .forms import ConstatForm
+    form = ConstatForm(request.form)
+    valid = form.validate()
+    if not valid:
+        print("LAAAA", form.errors)
+        session["form_data"] = request.form
+        flash(form.errors)
+        return redirect(
+            url_for("routes.form")
+        )
     data = request.form 
     p2154=DB.session.query(func.ST_AsGeoJson(func.ST_Transform(func.ST_SetSRID(func.ST_Point(float(data['geomlng']),float(data['geomlat'])),4326),2154)))
     json2154=json.loads(p2154[0][0])
@@ -207,10 +213,11 @@ def add(id_role):
         statut=changeStatut,
         nb_jour_agent=nbJour,
         the_geom_point=from_shape(Point(json2154['coordinates'][0],json2154['coordinates'][1]),srid=2154),
-        id_role=id_role
+        id_role=1
     )    
     DB.session.add(constats)
     DB.session.commit()
+    session.pop("form_data")
     return redirect(url_for('routes.map'))
 
 @routes.route('/update/<idc>', methods=['GET', 'POST'])
@@ -820,6 +827,7 @@ def updateDBDecla(id_role):
     cst.geom=from_shape(Point(json2154['coordinates'][0],json2154['coordinates'][1]),srid=2154)
     DB.session.commit()       
     return redirect(url_for('routes.decla'))    
+    
 @routes.route('/downloadDecla', methods=['GET', 'POST'])
 @check_auth(
     2,

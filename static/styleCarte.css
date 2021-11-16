@@ -1,52 +1,57 @@
-html, body{
-    height: 100%;
-    width: 100%;
+html,
+body {
+  height: 100%;
+  width: 100%;
 }
 nav {
-	height: 10vh;
+  height: 10vh;
 }
-#bloc{
-	height:90vh;
+#bloc {
+  height: 90vh;
 }
-#map{
-	width:70%;
-	height:100%;
-	float:right;
+#map {
+  width: 70%;
+  height: 100%;
+  float: right;
 }
-.leftMap{
-	width:30%;
-	height:100%;
-	float:left;
-	overflow-y:auto;
-	overflow-x:auto;
+.leftMap {
+  width: 30%;
+  height: 100%;
+  float: left;
+  overflow-y: auto;
+  overflow-x: auto;
 }
-.selectConstat{
-	vertical-align:top;
+.selectConstat {
+  vertical-align: top;
 }
-button{
-	button-align:right;
+button {
+  button-align: right;
 }
-#liste button[name="dataBouton"]{
-	width:95%;
+#liste button[name="dataBouton"] {
+  width: 95%;
 }
 .mycluster {
-    height: 40px;
-    width: 40px;
-    border-radius: 50%;
-    background-color: #3498db;
-    color: white;
-    text-align: center;
-    font-size: 20px;    
-    line-height: 40px;
-    margin-top: -20px;
-    margin-left: -20px;
+  height: 40px;
+  width: 40px;
+  border-radius: 50%;
+  background-color: #3498db;
+  color: white;
+  text-align: center;
+  font-size: 20px;
+  line-height: 40px;
+  margin-top: -20px;
+  margin-left: -20px;
 }
-nav{
-	width:100%;
+nav {
+  width: 100%;
 }
-form{
-	margin: 2%;
+form {
+  margin: 2%;
 }
-#avecForm{
-	margin: 2%;
+#avecForm {
+  margin: 2%;
+}
+
+.clickable {
+  cursor: pointer;
 }
