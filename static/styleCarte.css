@@ -55,3 +55,7 @@ form {
 .clickable {
   cursor: pointer;
 }
+
+label {
+  margin-bottom: 0px !important;
+}

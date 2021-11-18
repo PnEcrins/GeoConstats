@@ -13,6 +13,7 @@ import io
 import csv
 from pypnusershub.db.models import Application,AppUser
 from pypnusershub.routes import check_auth
+from .forms import ConstatForm
 
 routes = Blueprint('routes',__name__)
 
@@ -156,8 +157,10 @@ def form(id_role):
     """
     #FORMULAIRE
     form_data = session.get("form_data", None)
-    print('LAAA', form_data)
     form = ConstatForm(MultiDict(form_data))
+    if form_data:
+        form.validate()
+    print("errors", dir(form.date_attaque))
     return render_template('add.html', title="Add_to_database", form=form )
 
 @routes.route('/add', methods=['POST'])
@@ -173,51 +176,51 @@ def add(id_role):
     Réalise l'ajout de données dans la BD
     """
     #TRAITEMENT FORMULAIRE
-    from .forms import ConstatForm
+
     form = ConstatForm(request.form)
     valid = form.validate()
     if not valid:
-        print("LAAAA", form.errors)
+        print("NOT VALIIIID")
+        print(form.errors)
         session["form_data"] = request.form
-        flash(form.errors)
         return redirect(
             url_for("routes.form")
         )
     data = request.form 
-    p2154=DB.session.query(func.ST_AsGeoJson(func.ST_Transform(func.ST_SetSRID(func.ST_Point(float(data['geomlng']),float(data['geomlat'])),4326),2154)))
+    p2154=DB.session.query(
+        func.ST_AsGeoJson(
+            func.ST_Transform(
+                func.ST_SetSRID(
+                    func.ST_Point(float(data['geomlng']),float(data['geomlat'])),
+                    4326
+                ),
+            2154)
+            )
+        )
     json2154=json.loads(p2154[0][0])
-    changeAnimaux=data['type_animaux']
-    if data['type_animaux']=="0":
-        changeAnimaux=None
-    changeStatut=data['statut']
-    if data['statut']=="0":
-        changeStatut=None 
-    nbMort=0  
-    if isinstance(data['nb_victimes_mort'],int):
-        nbMort=data['nb_victimes_mort']
-    nbBlesse=0  
-    if isinstance(data['nb_victimes_blesse'],int):
-        nbBlesse=data['nb_victimes_blesse'] 
-    nbJour=0
-    if isinstance(data['nb_jour_agent'],float) or isinstance(data['nb_jour_agent'],int):
-        nbJour=data['nb_jour_agent']                
+
+    # if isinstance(data['nb_jour_agent'],float) or isinstance(data['nb_jour_agent'],int):
+    #     nbJour=data['nb_jour_agent']  
+    print('LAAAA', dir(form.statut.data))              
+    print('LAAAA', form.statut.data.id)              
     constats = Constats(
-        date_attaque=data['date_attaque'],
-        date_constat=data['date_constat'],
-        nom_agent1=data['nom_agent1'],
-        nom_agent2=data['nom_agent2'],
-        proprietaire=data['proprietaire'],
-        type_animaux=changeAnimaux,
-        nb_victimes_mort=nbMort,
-        nb_victimes_blesse=nbBlesse,
-        statut=changeStatut,
-        nb_jour_agent=nbJour,
+        date_attaque=form.date_attaque.data,
+        date_constat=form.date_constat.data,
+        nom_agent1=form.nom_agent1.data,
+        nom_agent2=form.nom_agent2.data,
+        proprietaire=form.proprietaire.data,
+        type_animaux=form.type_animaux.data.id,
+        nb_victimes_mort=form.nb_victimes_mort.data,
+        nb_victimes_blesse=form.nb_victimes_blesse.data,
+        statut=form.statut.data.id,
+        nb_jour_agent=form.nb_jour_agent.data,
         the_geom_point=from_shape(Point(json2154['coordinates'][0],json2154['coordinates'][1]),srid=2154),
-        id_role=1
-    )    
+        id_role=id_role
+    )
     DB.session.add(constats)
     DB.session.commit()
-    session.pop("form_data")
+    if "form_data" in session:
+        session.pop("form_data")
     return redirect(url_for('routes.map'))
 
 @routes.route('/update/<idc>', methods=['GET', 'POST'])

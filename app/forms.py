@@ -18,27 +18,36 @@ def get_statuts():
 
 class ConstatForm(FlaskForm):
     date_attaque = DateField(
-        'date_attaque', [InputRequired()], format='%Y-%m-%d',
+        'Date attaque', [InputRequired(message="Veuillez fournir une date")], format='%Y-%m-%d',
     )
-    date_constat = DateField('date_constat', format='%Y-%m-%d',default=date.today)
-    nom_agent1 = StringField('nom_agent1')
-    nom_agent2 = StringField('nom_agent2')
-    proprietaire = StringField('proprietaire')
-    # type_animaux = SelectField('type_animaux',choices=[])
+    date_constat = DateField(
+        'Date constat', 
+        [InputRequired(message="Veuillez fournir une date")], 
+        format='%Y-%m-%d',default=date.today,
+    )
+    nom_agent1 = StringField(
+        "Nom de l'agent 1",
+        [InputRequired(message="Veuillez fournir le nom d'au moin un agent")]
+    )
+    nom_agent2 = StringField("Nom de l'agent 2")
+    proprietaire = StringField(
+        'Propriétaire',
+        [InputRequired(message="Veuillez fournir le nom du propriétaire")]
+    )
     type_animaux = QuerySelectField(
-        'type_animaux',
+        "Type d'animaux",
         query_factory=get_animals_type,
         get_label="nom"
     )
-    nb_victimes_mort = IntegerField('nb_victimes_mort')
-    nb_victimes_blesse = IntegerField('nb_victimes_blesse')
+    nb_victimes_mort = IntegerField('Nb de victime(s) morte(s)', default=0)
+    nb_victimes_blesse = IntegerField('Nb de victime(s) blessée(s)', default=0)
     statut = QuerySelectField(
-        'situation',
+        "Situation",
         query_factory=get_statuts,
         get_label="nom"
     )
-    nb_jour_agent=FloatField('nb_jour_agent')
-    submit = SubmitField('Confirmer le constat')
+    nb_jour_agent=FloatField('Nb jour agent', default=0.0)
+    submit = SubmitField('Ajouter le constat', render_kw={"class":"btn btn-success"})
 
 class DeclaForm(FlaskForm):
     date_attaque_d = DateField('date_attaque_d', format='%d/%m/%Y',default=date.today)

@@ -1,71 +1,41 @@
 {% extends "base.html" %}
 
+{% macro render_field(field) -%}
+    <div class="form-group">
+        <small> <b> {{field.label}}</b> </small>
+        {% if form.errors and not field.validate(form)%}
+            {{field(class_="form-control form-control-sm is-invalid")}}
+            <div class="invalid-feedback mb-2">
+                {% for e in field.errors %}
+                <small>  {{e}}  </small>
+                {% endfor %}
+            </div>
+        {% else %} 
+            {{field(class_="form-control form-control-sm mb-2")}}
+        {% endif %}
+{%- endmacro %}
+
 {% block content %}
 <div id="bloc">
 <div id="map"></div>
 <div class="leftMap">
-
     <center><h1>Ajouter un constat</h1></center>
 	<form action="{{url_for('routes.add')}}" method="post" novalidate>
-        {% with messages = get_flashed_messages() %}
-        {% if messages %}
-        <ul class="alert alert-danger">
-            Les champs suivants sont requis ou incorrects
-            {% for message in messages %}
-                {% for field, reason in message.items() %}
-                    <li>{{ field }}</li>
-                {% endfor %}
-            {% endfor %}
-            </ul>
-        {% endif %}
-        {% endwith %}
-            {{ form.hidden_tag() }}
-        <div class="form-group">
-            Date de l'attaque *<br>
-            {{ form.date_attaque(
-                size=18, placeholder='dd/mm/aaaa',required='required', class_="form-control"
-                ) }}
-        </div>
-        <div class="form-group">
-            Date du constat <br>
-            {{ form.date_constat(size=18, placeholder='dd/mm/aaaa',required='required', class_="form-control") }}
-        </div>
-        <div class="form-group">
-            Nom du premier agent <br>
-            {{ form.nom_agent1(size=18, placeholder='Prénom Nom', class_="form-control") }}
-        </div>
-        <div class="form-group">
-            Nom du deuxième agent <br>
-            {{ form.nom_agent2(size=18,placeholder='Prénom Nom', class_="form-control") }}
-        </div>
-        <div class="form-group">
-            Propriétaire <br>
-            {{ form.proprietaire(size=18,placeholder='Prénom Nom', class_="form-control") }}
-        </div>
-        <div class="form-group">
-            Type d'animaux <br>
-            {{ form.type_animaux(size=1, class_="form-control") }}
-        </div>		
-        <div class="form-group">
-            Nombre de morts <br>
-            {{ form.nb_victimes_mort(size=18, value=0, class_="form-control") }}
-        </div>
-        <div class="form-group">
-            Nombre de blessés <br>
-            {{ form.nb_victimes_blesse(size=18, value=0, class_="form-control") }}
-        </div>			
-        <div class="form-group">
-            Statut du constat <br>
-            {{ form.statut(size=1, class_="form-control") }}
-        </div>			
-        <div class="form-group">
-            Nombre de jours agent <br>
-            {{ form.nb_jour_agent(size=18,value=0, class_="form-control") }}
-        </div>
-        
+        {{ form.hidden_tag() }}
+        {{render_field(form.date_attaque)}}
+        {{render_field(form.date_constat)}}
+        {{render_field(form.nom_agent1)}}
+        {{render_field(form.nom_agent2)}}
+        {{render_field(form.proprietaire)}}
+        {{render_field(form.type_animaux)}}
+        {{render_field(form.nb_victimes_mort)}}
+        {{render_field(form.nb_victimes_blesse)}}
+        {{render_field(form.statut)}}
+        {{render_field(form.nb_jour_agent)}}
+        <br>
+        <div><button id="subform" type="submit" class="btn btn-success" disabled>Ajouter le constat</button></div>
         <input type="hidden"  type="text" name="geomlat" id="geomlat">
         <input type="hidden"  type="text" name="geomlng" id="geomlng">
-        <div><button id="subform" type="submit" class="btn btn-primary" disabled>Ajouter le constat</button></div>
     </form>
 </div>
 </div>
