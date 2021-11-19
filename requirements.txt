@@ -9,7 +9,7 @@ Flask-WTF==0.14.2
 geoalchemy2==0.4.0
 GEOS==0.2.2
 itsdangerous==1.1.0
-Jinja2==2.10.1
+Jinja2==2.11.3
 Mako==1.0.12
 MarkupSafe==1.1.1
 marshmallow==3.13.0
