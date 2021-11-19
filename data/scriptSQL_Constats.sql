@@ -80,6 +80,8 @@ CREATE TABLE constats_loups.t_constats
   proprietaire character varying,
   nb_victimes_mort integer,
   nb_victimes_blesse integer,
+  nb_disparus integer,
+  nb_indemnises integer,
   statut integer,
   type_animaux integer,
   the_geom_point geometry(Point,2154),

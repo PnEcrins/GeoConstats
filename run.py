@@ -1,7 +1,5 @@
-from app.env import DB
+from app.env import DB, MA
 from flask import Flask, Blueprint
-
-DB=DB
 
 class ReverseProxied(object):
     def __init__(self, app, script_name=None, scheme=None, server=None):
@@ -39,6 +37,7 @@ def init_app():
         DB.init_app(app)
         DB.app = app
         app.config['DB'] = DB
+        MA.init_app(app)
         
         from pypnusershub import routes
         app.register_blueprint(routes.routes, url_prefix='/pypn/auth')    

@@ -4,47 +4,49 @@
 <div id="bloc">
 	<div id="map"></div>
 	<div class="leftMap">
-		<center><h1>Constat {{Constats.properties.id_constat}}</h1></center>
+		<center><h1>Constat {{constat.properties.id_constat}}</h1></center>
 		<div style="padding-left:10px;" id="textConstat">
-				Numéro : {{Constats.properties.id_constat}} <br>
-				Date de l'attaque : {{Constats.properties.date_attaque}} <br>
-				Date du constat : {{Constats.properties.date_constat}}<br>
-				Nombre de victimes (morts) : {{ Constats.properties.nb_victimes_mort }}<br>
-				Nombre de victimes (blessés) : {{ Constats.properties.nb_victimes_blesse }}<br>
-				Nom du 1er agent recenseur : {{ Constats.properties.nom_agent1 }}<br>
-				Nom du 2ème agent recenseur : {{ Constats.properties.nom_agent2 }}<br>
-				Propriétaire : {{ Constats.properties.proprietaire }}<br>
-				Type d'animaux : {{ Constats.properties.type_animaux }}<br>
-				Secteur : {{Constats.properties.secteur}}<br>
-				Commune : {{Constats.properties.commune}}<br>
-				Département : {{Constats.properties.departement}}<br>
-				Localisation : {{Constats.properties.localisation}}<br>
-				Créateur du constat : {{Constats.user.prenom}} {{Constats.user.nom}}<br>
-				Statut : {{ Constats.properties.statut }}<br>
-				Nombre de jours agent : {{Constats.properties.nb_jour_agent}}<br>		
+				<span class="attr">Numéro : </span> <span class="value"> {{constat.properties.id_constat}}</span>  <br>
+				<span class="attr">Date de l'attaque : </span>  <span class="value">{{constat.properties.date_attaque}}</span> <br>
+				<span class="attr"> Date du constat : </span><span class="value">{{constat.properties.date_constat}}</span><br>
+				<span class="attr">Nombre de victimes (morts) :</span> 
+					<span class="value">{{ constat.properties.nb_victimes_mort }}</span><br>
+				<span class="attr">Nombre de victimes (blessés) :</span> <span class="value">{{ constat.properties.nb_victimes_blesse }}</span><br>
+				<span class="attr">Nombre de disparu :</span> <span class="value">{{ constat.properties.nb_disparus }}</span><br>
+				<span class="attr">Nombre d'indemnisés : </span><span class="value">{{ constat.properties.nb_indemnises }}</span><br>
+				<span class="attr">Nom du 1er agent recenseur : </span><span class="value">{{ constat.properties.nom_agent1 }}</span><br>
+				<span class="attr">Nom du 2ème agent recenseur : </span><span class="value">{{ constat.properties.nom_agent2 }}</span><br>
+				<span class="attr">Propriétaire : </span><span class="value">{{ constat.properties.proprietaire }}</span><br>
+				<span class="attr">Type d'animaux : </span><span class="value">{{ constat.properties.type_animaux_rel.nom }}</span><br>
+				<span class="attr">Secteur : </span><span class="value">{{constat.properties.secteur.area_name}}</span><br>
+				<span class="attr">Commune : </span><span class="value">{{constat.properties.commune.area_name}}</span><br>
+				<span class="attr">Département : </span><span class="value">{{constat.properties.departement}}</span><br>
+				<span class="attr">Coeur de parc : </span><span class="value">{{constat.properties.dans_coeur}}</span><br>
+				<span class="attr">Aire d'adhesion: </span><span class="value">{{constat.properties.dans_aa}}</span><br>
+				<span class="attr">Créateur du constat : </span><span class="value">{{constat.properties.digitizer.nom_complet }}</span> <br>
+				<span class="attr">Statut : </span><span class="value">{{ constat.properties.statut_rel.nom }}</span><br>
+				<span class="attr">Nombre de jours agent : </span><span class="value">{{constat.properties.nb_jour_agent}}</span><br>		
 		</div>
     </div>
 </div>
 
 <script>
 	var constatFilter={
-		'id_constat':'{{Constats.properties.id_constat}}',
-		'date_attaque': '{{ Constats.properties.date_attaque }}',
-		'date_constat': '{{ Constats.properties.date_constat }}',
-		'nb_victimes_mort': '{{ Constats.properties.nb_victimes_mort }}',
-		'nb_victimes_blesse': '{{ Constats.properties.nb_victimes_blesse }}',
-		'nom_agent1': '{{ Constats.properties.nom_agent1 }}',
-		'nom_agent2': '{{ Constats.properties.nom_agent2 }}',
-		'proprietaire': '{{ Constats.properties.proprietaire }}',
-		'type_animaux': '{{ Constats.properties.type_animaux }}',
-		'statut': '{{ Constats.properties.statut }}',
-		'secteur': '{{ Constats.properties.secteur }}',
-		'commune': '{{ Constats.properties.commune }}',
-		'departement': '{{ Constats.properties.departement }}',
-		'localisation': '{{ Constats.properties.localisation }}',
-		'prenom': '{{ Constats.user.prenom }}',
-		'nom': '{{ Constats.user.nom }}',
-		'geometry': '{{ Constats.geometry | tojson}}'
+		'id_constat':'{{constat.properties.id_constat}}',
+		'date_attaque': '{{ constat.properties.date_attaque }}',
+		'date_constat': '{{ constat.properties.date_constat }}',
+		'nb_victimes_mort': '{{ constat.properties.nb_victimes_mort }}',
+		'nb_victimes_blesse': '{{ constat.properties.nb_victimes_blesse }}',
+		'nom_agent1': '{{ constat.properties.nom_agent1 }}',
+		'nom_agent2': '{{ constat.properties.nom_agent2 }}',
+		'proprietaire': '{{ constat.properties.proprietaire }}',
+		'type_animaux': '{{ constat.properties.type_animaux }}',
+		'statut': '{{ constat.properties.statut }}',
+		'secteur': '{{ constat.properties.secteur }}',
+		'commune': '{{ constat.properties.commune }}',
+		'departement': '{{ constat.properties.departement }}',
+		'localisation': '{{ constat.properties.localisation }}',
+		'geometry': '{{ constat.geometry | tojson}}'
 	};    
 	var map = L.map('map').setView([JSON.parse(constatFilter.geometry).coordinates[1],JSON.parse(constatFilter.geometry).coordinates[0]], 15);
 	L.control.scale().addTo(map);
@@ -52,29 +54,12 @@
 	    attribution: 'Map data: &copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors, SRTM | Map style: &copy; <a href="https://opentopomap.org">OpenTopoMap</a> (CC-BY-SA)'
     }).addTo(map);	
 
-	var marker=L.marker([JSON.parse(constatFilter.geometry).coordinates[1],JSON.parse(constatFilter.geometry).coordinates[0]]) 
-	.bindPopup("Constat numéro : "+constatFilter.id_constat+"<br>"+ 
-		"Date de l'attaque : "+constatFilter.date_attaque+"<br>"+ 
-	    "Date du constat : "+constatFilter.date_constat+"<br>"+ 
-		"Nombre de victimes (mort) : "+constatFilter.nb_victimes_mort+"<br>"+ 
-		"Nombre de victimes (blessé) : "+constatFilter.nb_victimes_blesse+"<br>"+ 
-		"Nom du 1er agent recenseur : "+constatFilter.nom_agent1+"<br>"+ 
-		"Nom du 2eme agent recenseur : "+constatFilter.nom_agent2+"<br>"+ 
-		"Propriétaire : "+constatFilter.proprietaire+"<br>"+ 
-		"Type d'animaux : "+constatFilter.type_animaux+"<br>"+ 
-		"Secteur : "+constatFilter.secteur+"<br>"+ 
-		"Commune : "+constatFilter.commune+"<br>"+
-		"Département : "+constatFilter.departement+"<br>"+
-		"Localisation : "+constatFilter.localisation+"<br>"+
-		"Créateur du constat : "+constatFilter.prenom+" "+constatFilter.nom+"<br>"+
-		"Statut : "+constatFilter.statut+"<br>" 
-		,{autoClose:false})
-	.addTo(map);
+	var marker=L.marker([JSON.parse(constatFilter.geometry).coordinates[1],JSON.parse(constatFilter.geometry).coordinates[0]]) .addTo(map);
 	
 	var printer = L.easyPrint({
       	tileLayer: osm,
       	sizeModes: ['A4Landscape'],
-      	filename: 'constat {{Constats.properties.date_constat}}',
+      	filename: 'constat {{constat.properties.date_constat}}',
       	exportOnly: true,
 		hideControlContainer:false
 	}).addTo(map);

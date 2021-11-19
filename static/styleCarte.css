@@ -59,3 +59,10 @@ form {
 label {
   margin-bottom: 0px !important;
 }
+
+span.attr {
+  font-weight: bold;
+}
+span.value {
+  color: #6c757d !important;
+}

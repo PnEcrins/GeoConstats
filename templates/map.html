@@ -15,27 +15,27 @@
 		<form method="GET" novalidate class="collapse" id="filter">
 			<div class="form-group">
 				Année du constat <br>
-				{{ form.date(size=1) }}
+				{{ form.date(size=1, class_="form-control") }}
 			</div>			
 			<div class="form-group">
 				Type d'animaux <br>
-				{{ form.animaux(size=1) }}
+				{{ form.animaux(size=1, class_="form-control") }}
 			</div>		
 			<div class="form-group">
 				Statut du constat <br>
-				{{ form.statut(size=1) }}
+				{{ form.statut(size=1, class_="form-control") }}
 			</div>
 			<div class="form-group">
 				Localisation du constat <br>
-				{{ form.localisation(size=1) }}
+				{{ form.localisation(size=1, class_="form-control") }}
 			</div>		
 			<div class="form-group">
 				Secteur du constat <br>
-				{{ form.secteur(size=1) }}
+				{{ form.secteur(size=1, class_="form-control") }}
 			</div>	
 			<div class="form-group">
 				Commune du constat <br>
-				{{ form.commune(size=1) }}
+				{{ form.commune(size=1, class_="form-control") }}
 			</div>								
 			<div class="form-group"><button id="subform" type="submit" formaction="{{url_for('routes.map')}}" class="btn btn-primary">Filtrer les données</button></div>
 			<div class="form-group"><button type="submit" formaction="{{url_for('routes.download')}}" class="btn btn-secondary">Télécharger les données</button></div>
@@ -54,51 +54,49 @@
 			</thead>
 			<tbody>
 				
-		{% for constats in Constats %}
-		<tr class="clickable" data-toggle="collapse" name="dataBouton" data-target="#textConstat{{constats.properties.id_constat}}">
+		{% for constat in constats %}
+		<tr class="clickable" data-toggle="collapse" name="dataBouton" data-target="#textConstat{{constat.properties.id_constat}}">
 			<td>
 				<span  >
-					{{constats.properties.date_attaque}}
+					{{constat.properties.date_attaque}}
 				</span>
-				<!-- <button class="btn btn-light" data-toggle="collapse" name="dataBouton" data-target="#textConstat{{constats.properties.id_constat}}" style="margin:3px; display:list-item block;" >
-				
-				</button> -->
+
 			</td>
-			<td> {{ constats.properties.type_animaux }}</td>
+			<td> {{ constat.properties.type_animaux_rel.nom }}</td>
 			<td>
-				<a title="Supprimer le constat" href="{{url_for('routes.delete',idc=constats.properties.id_constat)}}" id="delete{{constats.properties.id_constat}}">
+				<a title="Supprimer le constat" href="{{url_for('routes.delete',idc=constat.properties.id_constat)}}" id="delete{{constat.properties.id_constat}}">
 					<i class="fas fa-trash float-right" style="margin:3px;"></i>
 				</a> 
 			</td>
 			<td>
-				<a title="Modifier le constat" href="{{url_for('routes.update',idc=constats.properties.id_constat)}}" id="update{{constats.properties.id_constat}}">
+				<a title="Modifier le constat" href="{{url_for('routes.form',idc=constat.properties.id_constat)}}" id="update{{constat.properties.id_constat}}">
 					<i class="far fa-edit float-right" style="margin:3px;"></i>
 				</a> 
 			</td>
 			<td>
-				<a title="Afficher le constat" href="{{url_for('routes.data',idc=constats.properties.id_constat)}}">
+				<a title="Afficher le constat" href="{{url_for('routes.constat',idc=constat.properties.id_constat)}}">
 					<i class="fas fa-info-circle float-right" style="margin:3px;"></i>
 				</a>
 			</td>
 
 			<td colspan="3">
-				<div class="collapse" id="textConstat{{constats.properties.id_constat}}" >
-					Numéro : {{constats.properties.id_constat}} <br>
-					Date de l'attaque : {{constats.properties.date_attaque}} <br>
-					Date du constat : {{constats.properties.date_constat}}<br>
-					Nombre de victimes (morts) : {{ constats.properties.nb_victimes_mort }}<br>
-					Nombre de victimes (blessés) : {{ constats.properties.nb_victimes_blesse }}<br>
-					Nom du 1er agent recenseur : {{ constats.properties.nom_agent1 }}<br>
-					Nom du 2ème agent recenseur : {{ constats.properties.nom_agent2 }}<br>
-					Propriétaire : {{ constats.properties.proprietaire }}<br>
-					Type d'animaux : {{ constats.properties.type_animaux }}<br>
-					Secteur : {{constats.properties.secteur}}<br>
-					Commune : {{constats.properties.commune}}<br>
-					Département : {{constats.properties.departement}}<br>
-					Localisation : {{constats.properties.localisation}}<br>
-					Créateur du constat : {{constats.user.prenom}} {{constats.user.nom}}<br>
-					Statut : {{ constats.properties.statut }}<br>
-					Nombre de jours agent : {{constats.properties.nb_jour_agent}}<br>
+				<div class="collapse" id="textConstat{{constat.properties.id_constat}}" >
+					Numéro : {{constat.properties.id_constat}} <br>
+					Date de l'attaque : {{constat.properties.date_attaque}} <br>
+					Date du constat : {{constat.properties.date_constat}}<br>
+					Nombre de victimes (morts) : {{ constat.properties.nb_victimes_mort }}<br>
+					Nombre de victimes (blessés) : {{ constat.properties.nb_victimes_blesse }}<br>
+					Nom du 1er agent recenseur : {{ constat.properties.nom_agent1 }}<br>
+					Nom du 2ème agent recenseur : {{ constat.properties.nom_agent2 }}<br>
+					Propriétaire : {{ constat.properties.proprietaire }}<br>
+					Type d'animaux : {{ constat.properties.type_animaux_rel.nom }}<br>
+					Secteur : {{constat.properties.secteur.area_name}}<br>
+					Commune : {{constat.properties.commune.area_name}}<br>
+					Département : {{constat.properties.departement}}<br>
+					Localisation : {{constat.properties.localisation}}<br>
+					Créateur du constat : {{constat.properties.digitizer.nom_complet}}<br>
+					Statut : {{ constat.properties.statut_rel.nom }}<br>
+					Nombre de jours agent : {{constat.properties.nb_jour_agent}}<br>
 				</div>
 			</td>
 		</tr>
@@ -121,7 +119,7 @@
             map.setView([44.8, 6.2]);   
         }     
         var jsonData = [
-			{% for constats in Constats %}
+			{% for constats in constats %}
 				{
 				'id_constat':'{{constats.properties.id_constat}}',
 				'date_attaque': '{{ constats.properties.date_attaque }}',
@@ -138,14 +136,11 @@
 				'departement':'{{constats.properties.departement}}',
 				'localisation':'{{constats.properties.localisation}}',
 				'nb_jour_agent': '{{ constats.properties.nb_jour_agent }}',
-				'prenom': '{{ constats.user.prenom }}',
-				'nom': '{{ constats.user.nom }}',
-				'right':'{{constats.user.right}}',
+				'digitizer': '{{ constats.properties.digitizer.nom_complet }}',
 				'geometry': '{{ constats.geometry | tojson}}'
 				},
 			{% endfor %}
         ]
-		document.getElementById("countCsts").textContent += " ("+ jsonData.length+")";
 		var markersCluster = new L.MarkerClusterGroup({
 		    iconCreateFunction: function(cluster) {
 				return L.divIcon({ 
@@ -157,10 +152,6 @@
 		});
 		map.addLayer(markersCluster);
         var addMarkers = function(point) {
-			if(point.right == "False"){
-				document.getElementById("update"+point.id_constat).style.display= "none";
-				document.getElementById("delete"+point.id_constat).style.display= "none";
-			}
             var markerC=L.marker([JSON.parse(point.geometry).coordinates[1],JSON.parse(point.geometry).coordinates[0]]) 
 				.bindPopup("Constat numéro : "+point.id_constat+"<br>"+ 
 					"Date de l'attaque : "+point.date_attaque+"<br>"+ 
@@ -175,7 +166,7 @@
 					"Commune : "+point.commune+"<br>"+
 					"Département : "+point.departement+"<br>"+
 					"Localisation : "+point.localisation+"<br>"+
-					"Créateur du constat : "+point.prenom+" "+point.nom+"<br>"+
+					"Créateur du constat : "+point.digitizer.nom_complet+"<br>"+
 					"Statut : "+point.statut+"<br>" +
 					"Nombre de jours agent : "+point.nb_jour_agent+"<br>"			
 					) ;

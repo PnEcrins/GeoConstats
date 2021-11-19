@@ -30,6 +30,8 @@
         {{render_field(form.type_animaux)}}
         {{render_field(form.nb_victimes_mort)}}
         {{render_field(form.nb_victimes_blesse)}}
+        {{render_field(form.nb_disparus)}}
+        {{render_field(form.nb_indemnises)}}
         {{render_field(form.statut)}}
         {{render_field(form.nb_jour_agent)}}
         <br>
@@ -40,11 +42,23 @@
 </div>
 </div>
 <script>
+    var existingPoint = {{form.geom_4326.data |tojson}};
+
     var map = L.map('map').setView([44.8, 6.2], 10);
     L.tileLayer('https://a.tile.opentopomap.org/{z}/{x}/{y}.png', {
 	    attribution: 'Map data: &copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors, SRTM | Map style: &copy; <a href="https://opentopomap.org">OpenTopoMap</a> (CC-BY-SA)'
         }).addTo(map); 
 	var marker;
+    if(existingPoint) {
+        marker = L.marker([
+        existingPoint.coordinates[1],
+        existingPoint.coordinates[0],
+        ])
+        marker.addTo(map);
+        document.getElementById("subform").disabled=false;
+        document.getElementById("geomlat").value = existingPoint.coordinates[1];
+        document.getElementById("geomlng").value = existingPoint.coordinates[0];
+    }
 	
 	var addConstat=function(e){
 		if(marker!=undefined){
@@ -52,7 +66,6 @@
 		}
         marker = L.marker(e.latlng)
         marker.addTo(map);
-        marker.bindPopup("Vous placez un constat ici").openPopup();		
 		document.getElementById("geomlat").value = e.latlng.lat;
         document.getElementById("geomlng").value = e.latlng.lng;
 		document.getElementById("subform").disabled=false;
