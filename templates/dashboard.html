@@ -1,154 +1,130 @@
 {% extends "base.html" %}
 {% block content %}
-<button data-toggle="collapse" name="filtre" data-target="#filter" class="btn btn-success ml-3">Afficher les filtres</button><br>
-<form method="GET" novalidate class="collapse" id="filter">
-    <div class="form-group">
-        Année du constat <br>
-        {{ form.date(size=1) }}
-    </div>    
-    <div class="form-group">
-        Type d'animaux <br>
-        {{ form.animaux(size=1) }}
-    </div>		
-    <div class="form-group">
-        Statut du constat <br>
-        {{ form.statut(size=1) }}
-    </div>
-    <div class="form-group">
-        Localisation du constat <br>
-        {{ form.localisation(size=1) }}
-    </div>   
-    <div class="form-group "><button id="subform" type="submit" class="btn btn-primary">Filtrer les données</button></div>
+<div class="container-fluid">
+    <form method="GET" novalidate  id="filter" style="margin: 0px">
+    <div class="row">
+            <div class="form-group col">
+                Année du constat <br>
+                {{ form.date(size=1, class_="form-control") }}
+            </div>    
+            <div class="form-group col">
+                Type d'animaux <br>
+                {{ form.animaux(size=1, class_="form-control") }}
+            </div>		
+            <div class="form-group col">
+                Statut du constat <br>
+                {{ form.statut(size=1, class_="form-control") }}
+            </div>
+            <div class="form-group col">
+                Localisation du constat <br>
+                {{ form.localisation(size=1, class_="form-control") }}
+            </div> 
+        </div>
+        <div class="form-group ">
+            <button id="subform" type="submit" class="btn btn-primary">Filtrer les données</button>
+        </div>    
+    </form>
+
+
+    <div class="row">
+
+        <div class="col-md-4">
+            <h2>Nombre de constats par département</h2>
+            <table class="table table-bordered" id="departement">
+                <thead class="thead-light">
+                    <tr>
+                        <th scope="col">#</th>
+                        <th> Nb victime </th>
+                        <th> Nb indemnisé </th>
+                        <th> Nb constat </th>
+
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for d in nb_constat_by_dep %}
+                    <tr scope="row">
+                        <th>{{d[0]}} </th>
+                        <td>{{d[1]}}</td>
+                        <td>{{d[2]}}</td>
+                        <td>{{d[3]}}</td>
+                    </tr>              
+                    {% endfor %}            
+                </tbody>
+            </table>
+            <a class="btn btn-primary text-white" role="button" onclick="exportTableToCSV('departement')">Exporter le tableau</a>
+        </div><br>
+
+
+
+
+
+        <div class="col-md-9">
+            <h2>Nombre de constats par secteur</h2>
+            <table class="table table-bordered" id="secteur">
+                <thead class="thead-light">
+                    <tr>
+                        <th scope="col">#</th>
+                        <th> Nb victime </th>
+                        <th> Nb indemnisé </th>
+                        <th> Nb constat </th>
+
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for d in nb_constat_by_sect %}
+                    <tr scope="row">
+                        <th>{{d[0] or 0}} </th>
+                        <td>{{d[1] or 0}}</td>
+                        <td>{{d[2] or 0}}</td>
+                        <td>{{d[3] or 0}}</td>
+                    </tr>              
+                    {% endfor %}  
+                    
+                </tbody>
+            </table>
+            <a class="btn btn-primary text-white" role="button" onclick="exportTableToCSV('secteur')">Exporter le tableau</a>
+        </div>
+
+
+
+
+        <div class="col-md-9">
+            <h2>Nombre d'animaux morts par secteur</h2>
+        <table class="table table-bordered" id="animaux">
+            <thead class="thead-light">
+                <tr>
+                    <th>#</th>
+                    <th>Ovins</th>
+                    <th>Bovins</th>
+                    <th>Caprins</th>
+                    <th>Equins</th>
+                    <th>Chiens</th>
+                    <th>Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for secteur, values in constat_by_sect_by_animal_type.items() %}
+                <tr scope="row">
+                    
+                    <th> {{secteur}} </th>
+                    <td> {{values["Ovins"] or 0}} </td>
+                    <td> {{values["Bovins"] or 0 }} </td>
+                    <td> {{values["Caprins"] or 0}} </td>
+                    <td> {{values["Equins"] or 0}} </td>
+                    <td> {{values["Chiens"] or 0}} </td>
+                    <td> {{values["total"] }} </td>
+                </tr>                
+                {% endfor %}   
+            </tbody>
+        </table>
+        <a class="btn btn-primary text-white" role="button" onclick="exportTableToCSV('animaux')">Exporter le tableau</a>
+        </div>
         
-</form>
-<div class="col-md-4">
-    <h2>Nombre de constats par département</h2>
-    <table class="table table-bordered" id="departement">
-        <thead class="thead-light">
-            <tr>
-                <th scope="col">Nombre de constats</th>
-                {% for constats in dataDep['total'] %}
-                <th scope="col">{{constats['departement']}}</th>
-                {% endfor %}
-            </tr>
-        </thead>
-        <tbody>
-            <tr scope="row">
-                <th>
-                    Constats
-                </th>
-                {% for constats in dataDep['constats'] %}
-                <td>{{constats['nombre']}}</td>
-                {% endfor %}            
-            </tr>
-            <tr scope="row">
-                <th>
-                    Déclaratifs
-                </th>
-                {% for constats in dataDep['declaratifs'] %}
-                <td>{{constats['nombre']}}</td>
-                {% endfor %}            
-            </tr>
-            <tr scope="row">
-                <th>
-                    Total
-                </th>
-                {% for constats in dataDep['total'] %}
-                <td>{{constats['nombre']}}</td>
-                {% endfor %}            
-            </tr>                
-        </tbody>
-    </table>
-    <a class="btn btn-primary text-white" role="button" onclick="exportTableToCSV('departement')">Exporter le tableau</a>
-</div><br>
-<div class="col-md-9">
-    <h2>Nombre de constats par secteur</h2>
-<table class="table table-bordered" id="secteur">
-    <thead class="thead-light">
-        <tr>
-            <th>Nombre de constats</th>
-            {% for constats in dataSec['total'] %}
-            <th>{{constats['secteur']}}</th>
-            {% endfor %}
-        </tr>
-    </thead>
-    <tbody>
-        <tr scope="row">
-            <th>
-                Constats
-            </th>
-            {% for constats in dataSec['constats'] %}
-            <td>{{constats['nombre']}}</td>
-            {% endfor %}            
-        </tr>
-        <tr scope="row">
-            <th>
-                Déclaratifs
-            </th>
-            {% for constats in dataSec['declaratifs'] %}
-            <td>{{constats['nombre']}}</td>
-            {% endfor %}            
-        </tr>
-        <tr scope="row">
-            <th>
-                Total
-            </th>
-            {% for constats in dataSec['total'] %}
-            <td>{{constats['nombre']}}</td>
-            {% endfor %}            
-        </tr>                
-    </tbody>
-</table>
-<a class="btn btn-primary text-white" role="button" onclick="exportTableToCSV('secteur')">Exporter le tableau</a>
+        
+    </div>
 </div>
-<div class="col-md-9">
-    <h2>Nombre d'animaux morts par secteur</h2>
-<table class="table table-bordered" id="animaux">
-    <thead class="thead-light">
-        <tr>
-            <th>Nombre de constats</th>
-            {% for constats in dataAni['total'] %}
-            <th>{{constats['secteur']}}</th>
-            {% endfor %}
-        </tr>
-    </thead>
-    <tbody>
-        <tr scope="row">
-            <th>
-                Ovins
-            </th>
-            {% for constats in dataAni['Ovins'] %}
-            <td>{{constats['nombre']}}</td>
-            {% endfor %}            
-        </tr>        
-        <tr scope="row">
-            <th>
-                Bovins
-            </th>
-            {% for constats in dataAni['Bovins'] %}
-            <td>{{constats['nombre']}}</td>
-            {% endfor %}            
-        </tr>
-        <tr scope="row">
-            <th>
-                Caprins
-            </th>
-            {% for constats in dataAni['Caprins'] %}
-            <td>{{constats['nombre']}}</td>
-            {% endfor %}            
-        </tr>
-        <tr scope="row">
-            <th>
-                Total
-            </th>
-            {% for constats in dataAni['total'] %}
-            <td>{{constats['nombre']}}</td>
-            {% endfor %}            
-        </tr>                
-    </tbody>
-</table>
-<a class="btn btn-primary text-white" role="button" onclick="exportTableToCSV('animaux')">Exporter le tableau</a>
-</div>
+
+
 <script>
 function downloadCSV(csv, filename) {
     var csvFile;

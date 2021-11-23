@@ -38,19 +38,10 @@
 						</a>
 						<div class="dropdown-menu" aria-labelledby="navConstat">
 							<a class="dropdown-item" href="{{url_for('routes.map')}}">Afficher les constats</a>
-							<a class="dropdown-item" href="{{ url_for('routes.form') }}">Ajouter un constat</a>
-						</div>
-					</li>
-					<li class="nav-item dropdown">
-						<a class="nav-link dropdown-toggle" href="#" id="navDecla" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-							Déclaratifs
-						</a>
-						<div class="dropdown-menu" aria-labelledby="navDecla">
-							<a class="dropdown-item" href="{{url_for('routes.decla')}}">Afficher les constats déclaratifs</a>
-							<a class="dropdown-item" href="{{ url_for('routes.formDecla') }}">Ajouter un constat déclaratif</a>
+							<a class="dropdown-item" href="{{ url_for('routes.form', date=current_year) }}">Ajouter un constat</a>
 						</div>
 					</li>				
-					<li class="nav-item"><a class="nav-link" href="{{url_for('routes.dashboard')}}">Tableau de bord</a></li>
+					<li class="nav-item"><a class="nav-link" href="{{url_for('routes.dashboard' )}}">Tableau de bord</a></li>
 				</ul>
 				<ul class="navbar-nav">
 					<li class="nav-item dropdown">	

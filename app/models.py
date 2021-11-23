@@ -36,7 +36,7 @@ class Constats(DB.Model):
     nb_jour_agent=DB.Column(DB.Float)
     id_secteur=DB.Column(DB.Integer, ForeignKey(LAreas.id_area))
     id_commune=DB.Column(DB.Integer, ForeignKey(LAreas.id_area))
-    departement=DB.Column(DB.String)
+    id_departement=DB.Column(DB.Integer, ForeignKey(LAreas.id_area))
     dans_coeur=DB.Column(DB.Boolean)
     dans_aa=DB.Column(DB.Boolean)
     id_role=DB.Column(DB.Integer, ForeignKey(User.id_role))
@@ -56,7 +56,10 @@ class Constats(DB.Model):
         LAreas, lazy="select", foreign_keys=[id_secteur]
     )
     commune = DB.relationship(
-        LAreas, lazy="select", foreign_keys=[id_commune]
+        LAreas, lazy="select", foreign_keys=[id_commune], 
+    )
+    departement = DB.relationship(
+        LAreas, lazy="select", foreign_keys=[id_departement]
     )
     geom_4326 = column_property(
         func.st_transform(the_geom_point, 4326)

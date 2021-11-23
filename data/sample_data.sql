@@ -1,13 +1,12 @@
 ---------------------------------------------------- DONNEES EXEMPLE----------------------------------------------
 --Schema constats_loups
 --bib_statut
-INSERT INTO constats_loups.bib_statut(id,nom) VALUES (1,'En attente');
-INSERT INTO constats_loups.bib_statut(id,nom) VALUES (2,'Rejeté');
-INSERT INTO constats_loups.bib_statut(id,nom) VALUES(3,'Indemnisé');
+INSERT INTO constats_loups.bib_statut(id,nom) 
+VALUES (1,'En attente'),(2,'Rejeté'), (3,'Indemnisé') ;
 --bib_type_animaux
-INSERT INTO constats_loups.bib_type_animaux(id,nom) VALUES (1,'Ovins');
-INSERT INTO constats_loups.bib_type_animaux(id,nom) VALUES(2,'Bovins');
-INSERT INTO constats_loups.bib_type_animaux(id,nom) VALUES(3,'Caprins');
+INSERT INTO constats_loups.bib_type_animaux(id,nom) 
+VALUES (1,'Ovins'), (2,'Bovins'), (3,'Caprins'), (4, 'Equins'), (5,'Chiens')
+;
 --t_constats
 INSERT INTO constats_loups.t_constats(date_attaque,date_constat,nom_agent1,nom_agent2,proprietaire,type_animaux,nb_victimes_mort,nb_victimes_blesse,statut,the_geom_point,id_role) VALUES
 ('2020-04-18','2020-04-20','agent 1','agent 2','Berger 1',2,3,4,1,ST_transform(ST_geometryFromText('POINT(6.30630 44.84194)',4326),2154),1),
