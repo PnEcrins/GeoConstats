@@ -39,7 +39,8 @@ class ConstatForm(FlaskForm):
     type_animaux = QuerySelectField(
         "Type d'animaux",
         query_factory=get_animals_type,
-        get_label="nom"
+        get_label="nom",
+        get_pk=lambda t : t.id
     )
     nb_victimes_mort = IntegerField('Nb de victime(s) morte(s)', [Optional()])
     nb_victimes_blesse = IntegerField('Nb de victime(s) blessée(s)', [Optional()])
@@ -52,6 +53,7 @@ class ConstatForm(FlaskForm):
         get_label="nom"
     )
     nb_jour_agent=FloatField('Nb jour agent', [Optional()])
+    comment = StringField("Commentaire",[Optional()])
     submit = SubmitField('Ajouter le constat', render_kw={"class":"btn btn-success"})
 
 class DeclaForm(FlaskForm):

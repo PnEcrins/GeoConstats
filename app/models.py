@@ -41,6 +41,8 @@ class Constats(DB.Model):
     dans_aa=DB.Column(DB.Boolean)
     id_role=DB.Column(DB.Integer, ForeignKey(User.id_role))
     the_geom_point= DB.Column(Geometry("GEOMETRY", 2154))
+    comment = DB.Column(DB.String)
+    
     statut_rel = DB.relationship(
         "bib_statut", lazy="joined"
     )

@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, session, redirect, url_for, request, make_response, jsonify
+from flask import Blueprint, render_template, session, redirect, url_for, request, make_response, jsonify, current_app
 from flask.helpers import flash
 from werkzeug.datastructures import MultiDict
 from geojson import Feature, FeatureCollection
@@ -26,6 +26,7 @@ def login():
     dataApp=DB.session.query(Application.id_application).filter(Application.code_application=='GC').one()
     if dataApp:
         bonApp=dataApp[0]
+        current_app.config["ID_APP"] = bonApp
     return render_template('login.html',id_app=bonApp)
 
 @routes.route("/map")
@@ -41,11 +42,9 @@ def map(id_role):
     Lance la "page d'acceuil" avec une carte + une liste avec toutes les données
     """
     filter_query = request.args.to_dict()
-    print("FILTERS", filter_query)
     query = Constats.query
     #FORMULAIRE DE FILTRAGE
     form = FilterForm()
-    print(form.date.choices)
     form.date.choices.insert(0, (0,""))
     if 'date' in filter_query:
         if filter_query['date'] != "0":
@@ -86,7 +85,8 @@ def form(idc=None, id_role=None):
     """
     # if edition
     if idc:
-        constat_dict = ConstatSchema().dump(Constats.query.get(idc))
+        constat = Constats.query.get(idc)
+        constat_dict = ConstatSchema().dump(constat)
         geom = constat_dict["geometry"]
         constat_dict = constat_dict["properties"]
         constat_dict["geom_4326"] = geom
@@ -95,13 +95,14 @@ def form(idc=None, id_role=None):
             if val:
                 not_none_dict[key] = val
         form = ConstatForm(MultiDict(not_none_dict))
+        form.type_animaux.data = constat.type_animaux_rel
+        form.statut.data = constat.statut_rel
     else:
         form_data = session.get("form_data", None)
-        print(form_data)
         form = ConstatForm(MultiDict(form_data))
         if form_data:
             form.validate()
-    return render_template('add.html', title="Add_to_database", form=form )
+    return render_template('add.html', title="Add_to_database", form=form)
 
 @routes.route('/add', methods=['POST'])
 @check_auth(
@@ -124,7 +125,8 @@ def add(id_role):
         return redirect(
             url_for("routes.form")
         )
-    data = request.form 
+    data = request.form
+
     p2154=DB.session.query(
         func.ST_AsGeoJson(
             func.ST_Transform(
@@ -150,10 +152,11 @@ def add(id_role):
         statut=form.statut.data.id,
         nb_jour_agent=form.nb_jour_agent.data,
         the_geom_point=from_shape(Point(json2154['coordinates'][0],json2154['coordinates'][1]),srid=2154),
-        id_role=id_role
+        id_role=id_role,
+        comment=form.comment.data
     )
     if form.id_constat.data:
-        constat = Constats.query.get(form.id_constat.data)
+        constat_before_update = Constats.query.get(form.id_constat.data)
         # TODO : check droit d'update
         app = DB.session.query(Application).filter(Application.code_application=='GC').one()
 
@@ -161,7 +164,8 @@ def add(id_role):
             AppUser.id_droit_max
         ).filter(AppUser.id_role==id_role).filter(AppUser.id_application == app.id_application).one()[0]
 
-        if nivDroit > 2 or constat.id_role == id_role:
+        if nivDroit > 2 or constat_before_update.id_role == id_role:
+            constat.id_constat = form.id_constat.data
             DB.session.merge(constat)
         else:
             return render_template('noRight.html')

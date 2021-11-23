@@ -66,3 +66,7 @@ span.attr {
 span.value {
   color: #6c757d !important;
 }
+
+.selected-row {
+  background-color: rgba(128, 255, 0, 0.445);
+}

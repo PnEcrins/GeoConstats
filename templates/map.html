@@ -55,13 +55,9 @@
 			<tbody>
 				
 		{% for constat in constats %}
-		<tr class="clickable" data-toggle="collapse" name="dataBouton" data-target="#textConstat{{constat.properties.id_constat}}">
-			<td>
-				<span  >
-					{{constat.properties.date_attaque}}
-				</span>
+		<tr onclick="selectMapConstat({{constat.properties.id_constat}})" id="constat_{{constat.properties.id_constat}}" class="clickable" data-toggle="collapse" name="dataBouton" data-target="#textConstat{{constat.properties.id_constat}}">
 
-			</td>
+			<td> {{ constat.properties.date_attaque }}</td>
 			<td> {{ constat.properties.type_animaux_rel.nom }}</td>
 			<td>
 				<a title="Supprimer le constat" href="{{url_for('routes.delete',idc=constat.properties.id_constat)}}" id="delete{{constat.properties.id_constat}}">
@@ -97,6 +93,7 @@
 					Créateur du constat : {{constat.properties.digitizer.nom_complet}}<br>
 					Statut : {{ constat.properties.statut_rel.nom }}<br>
 					Nombre de jours agent : {{constat.properties.nb_jour_agent}}<br>
+					Commentaire : {{constat.properties.comment}}
 				</div>
 			</td>
 		</tr>
@@ -106,100 +103,9 @@
 	</table>
 	</div>
 	<div id="map"></div>
-</div>
-    <script>
-        // CONFIGURATION DE LA CARTE //
-        var map = L.map('map').setView([44.8, 6.2], 10);
-        L.tileLayer('https://a.tile.opentopomap.org/{z}/{x}/{y}.png', {
-	    attribution: 'Map data: &copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors, SRTM | Map style: &copy; <a href="https://opentopomap.org">OpenTopoMap</a> (CC-BY-SA)'
-        }).addTo(map); 
-        // ACTIONS SUR LA CARTE
-        function changeZoom() {
-            map.setZoom(10);
-            map.setView([44.8, 6.2]);   
-        }     
-        var jsonData = [
-			{% for constats in constats %}
-				{
-				'id_constat':'{{constats.properties.id_constat}}',
-				'date_attaque': '{{ constats.properties.date_attaque }}',
-				'date_constat': '{{ constats.properties.date_constat }}',
-				'nb_victimes_mort': '{{ constats.properties.nb_victimes_mort }}',
-				'nb_victimes_blesse': '{{ constats.properties.nb_victimes_blesse }}',
-				'nom_agent1': '{{ constats.properties.nom_agent1 }}',
-				'nom_agent2': '{{ constats.properties.nom_agent2 }}',
-				'proprietaire': '{{ constats.properties.proprietaire }}',
-				'type_animaux': '{{ constats.properties.type_animaux }}',
-				'statut': '{{ constats.properties.statut }}',
-				'secteur':'{{constats.properties.secteur}}',
-				'commune':'{{constats.properties.commune}}',
-				'departement':'{{constats.properties.departement}}',
-				'localisation':'{{constats.properties.localisation}}',
-				'nb_jour_agent': '{{ constats.properties.nb_jour_agent }}',
-				'digitizer': '{{ constats.properties.digitizer.nom_complet }}',
-				'geometry': '{{ constats.geometry | tojson}}'
-				},
-			{% endfor %}
-        ]
-		var markersCluster = new L.MarkerClusterGroup({
-		    iconCreateFunction: function(cluster) {
-				return L.divIcon({ 
-					html: cluster.getChildCount(), 
-					className: 'mycluster', 
-					iconSize: null 
-				});
-			}
-		});
-		map.addLayer(markersCluster);
-        var addMarkers = function(point) {
-            var markerC=L.marker([JSON.parse(point.geometry).coordinates[1],JSON.parse(point.geometry).coordinates[0]]) 
-				.bindPopup("Constat numéro : "+point.id_constat+"<br>"+ 
-					"Date de l'attaque : "+point.date_attaque+"<br>"+ 
-				    "Date du constat : "+point.date_constat+"<br>"+ 
-					"Nombre de victimes (mort) : "+point.nb_victimes_mort+"<br>"+ 
-					"Nombre de victimes (blessé) : "+point.nb_victimes_blesse+"<br>"+ 
-					"Nom du 1er agent recenseur : "+point.nom_agent1+"<br>"+ 
-					"Nom du 2eme agent recenseur : "+point.nom_agent2+"<br>"+ 
-					"Propriétaire : "+point.proprietaire+"<br>"+ 
-					"Type d'animaux : "+point.type_animaux+"<br>"+ 
-					"Secteur : "+point.secteur+"<br>"+
-					"Commune : "+point.commune+"<br>"+
-					"Département : "+point.departement+"<br>"+
-					"Localisation : "+point.localisation+"<br>"+
-					"Créateur du constat : "+point.digitizer.nom_complet+"<br>"+
-					"Statut : "+point.statut+"<br>" +
-					"Nombre de jours agent : "+point.nb_jour_agent+"<br>"			
-					) ;
-					
-				markersCluster.addLayer(markerC); 
-        };
-        jsonData.forEach(addMarkers);
-		//CONSERVER LES DONNEES SAISIES DANS LE FORMULAIRE DE FILTRAGE
-		const queryString = window.location.search;
-		const urlParams = new URLSearchParams(queryString);
-		const date = urlParams.get('date');
-		if(date != null){
-			document.getElementById("date").value=date;
-		}
-		const animaux = urlParams.get('animaux');
-		if(animaux != null){
-			document.getElementById("animaux").value=animaux;
-		}
-		const statut = urlParams.get('statut');
-		if(statut != null){
-			document.getElementById("statut").value=statut;
-		}		
-		const localisation = urlParams.get('localisation');
-		if(localisation != null){
-			document.getElementById("localisation").value=localisation;
-		}
-		const secteur = urlParams.get('secteur');
-		if(secteur != null){
-			document.getElementById("secteur").value=secteur;
-		}
-		const commune = urlParams.get('commune');
-		if(commune != null){
-			document.getElementById("commune").value=commune;
-		}				
+	<script>
+		var geojson = {{constats |tojson}};
 	</script>
+	<script src="{{url_for('static', filename='maplist.js')}}"></script>
+</div>
 {% endblock %}

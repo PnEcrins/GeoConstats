@@ -27,6 +27,7 @@ class ConstatSchema(MA.SQLAlchemyAutoSchema):
         model = Constats
         exclude = ("the_geom_point",)
         include_fk = True
+    comment = fields.String()
     the_geom_point = fields.Method("geom_to_shape")
     geom_4326 = fields.Method("geom_to_shape")
     statut_rel = MA.Nested(BibStatutSchema, dump_only=True)
