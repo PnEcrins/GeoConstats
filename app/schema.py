@@ -45,3 +45,14 @@ class ConstatSchema(MA.SQLAlchemyAutoSchema):
             geometry=data.pop("geom_4326"),
             properties=data
         )
+
+
+class ConstatSchemaDownload(ConstatSchema):
+    @post_dump(pass_many=True)
+    def geojsonify(self, data, many, **kwargs):
+        data["type_animaux"] = data.pop("type_animaux_rel").get("nom", None)
+        data["statut"] = data.pop("statut_rel").get("nom", None)
+        data["secteur"] = data.pop("secteur").get("area_name", None)
+        data["commune"] = data.pop("commune").get("area_name", None)
+        data["digitaliseur"] = data.pop("digitizer").get("nom_complet", None)
+        return data

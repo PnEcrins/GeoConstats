@@ -7,10 +7,15 @@
 			<i class="fa fa-filter" aria-hidden="true"></i>			
 			Filtrer
 		</button>
+		<a href="{{url_for('routes.download')}}" class="btn btn-primary">
+			<i class="fa fa-download" aria-hidden="true"></i>
+			Télécharger les données
+		</a>
 		 <a class="btn btn-success" href="{{ url_for('routes.form') }}"> 
 			<i class="fa fa-plus" aria-hidden="true"></i>
 			Ajouter un constat
 		</a>
+
 		<br>
 		<form method="GET" novalidate class="collapse" id="filter">
 			<div class="form-group">
@@ -37,8 +42,12 @@
 				Commune du constat <br>
 				{{ form.commune(size=1, class_="form-control") }}
 			</div>								
-			<div class="form-group"><button id="subform" type="submit" formaction="{{url_for('routes.map')}}" class="btn btn-primary">Filtrer les données</button></div>
-			<div class="form-group"><button type="submit" formaction="{{url_for('routes.download')}}" class="btn btn-secondary">Télécharger les données</button></div>
+			<div class="form-group">
+				<button id="subform" type="submit" formaction="{{url_for('routes.map')}}" class="btn btn-primary">
+					<i class="fa fa-search" aria-hidden="true"></i>
+					Rechercher
+				</button>
+			</div>
 			
 		</form>
 		<br>

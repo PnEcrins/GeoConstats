@@ -1,3 +1,4 @@
+from datetime import datetime
 from app.env import DB, MA
 from flask import Flask, Blueprint
 
@@ -32,6 +33,12 @@ def init_app():
         app = Flask(__name__)
     app.config.from_object('config')
     app.wsgi_app = ReverseProxied(app.wsgi_app, script_name=app.config['URL_APPLICATION'])
+
+    @app.context_processor
+    def inject_year():
+        return {
+            "current_year": datetime.now().year
+        }
     with app.app_context():
         
         DB.init_app(app)

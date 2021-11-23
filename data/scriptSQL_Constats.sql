@@ -33,7 +33,7 @@ BEGIN
  IF(TG_OP='INSERT' OR (TG_OP='UPDATE' AND geom_change)) THEN
     UPDATE constats_loups.t_constats SET id_secteur=ref_geo.l_areas.id_area FROM ref_geo.l_areas WHERE ref_geo.l_areas.id_type=30 and ST_Within(constats_loups.t_constats.the_geom_point,ref_geo.l_areas.geom);
     UPDATE constats_loups.t_constats SET id_commune=ref_geo.l_areas.id_area FROM ref_geo.l_areas WHERE ref_geo.l_areas.id_type=25 and ST_Within(constats_loups.t_constats.the_geom_point,ref_geo.l_areas.geom);
-    UPDATE constats_loups.t_constats SET id_departement=ref_geo.l_areas.id_area from ref_geo.l_areas where id_commune=ref_geo.l_areas.id_area;
+    UPDATE constats_loups.t_constats SET id_departement=ref_geo.l_areas.id_area from ref_geo.l_areas where ref_geo.l_areas.id_type=26 and ST_Within(constats_loups.t_constats.the_geom_point,ref_geo.l_areas.geom);
     UPDATE constats_loups.t_constats SET dans_coeur=ST_Within(NEW.the_geom_point,ref_geo.l_areas.geom) from ref_geo.l_areas WHERE ref_geo.l_areas.id_type=1;
     UPDATE constats_loups.t_constats SET dans_aa=ST_Within(NEW.the_geom_point,ref_geo.l_areas.geom) from ref_geo.l_areas WHERE ref_geo.l_areas.id_type=20;
  END IF;
