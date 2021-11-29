@@ -53,6 +53,7 @@ class ConstatForm(FlaskForm):
         get_label="nom"
     )
     nb_jour_agent=FloatField('Nb jour agent', [Optional()])
+    declaratif = BooleanField("Déclaratif")
     comment = StringField("Commentaire",[Optional()])
     submit = SubmitField('Ajouter le constat', render_kw={"class":"btn btn-success"})
 

@@ -70,6 +70,7 @@ CREATE TABLE constats_loups.t_constats
   dans_coeur boolean,
   dans_aa boolean,
   comment text,
+  declaratif boolean,
   CONSTRAINT t_constats_pkey PRIMARY KEY (id_constat),
   CONSTRAINT animaux_fkey FOREIGN KEY (type_animaux)
       REFERENCES constats_loups.bib_type_animaux (id) MATCH SIMPLE

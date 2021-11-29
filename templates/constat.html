@@ -7,6 +7,14 @@
 		<center><h1>Constat {{constat.properties.id_constat}}</h1></center>
 		<div style="padding-left:10px;" id="textConstat">
 				<span class="attr">Numéro : </span> <span class="value"> {{constat.properties.id_constat}}</span>  <br>
+				<span class="attr">Déclaratif : </span> 
+					<span class="value"> 
+						{% if constat.properties.declaratif == True %}
+						 Oui 
+						{% elif constat.properties.declaratif == False %} 
+						 Non
+						{% endif %} 
+					</span>  <br>
 				<span class="attr">Date de l'attaque : </span>  <span class="value">{{constat.properties.date_attaque}}</span> <br>
 				<span class="attr"> Date du constat : </span><span class="value">{{constat.properties.date_constat}}</span><br>
 				<span class="attr">Nombre de victimes (morts) :</span> 

@@ -70,3 +70,45 @@ span.value {
 .selected-row {
   background-color: rgba(128, 255, 0, 0.445);
 }
+
+.line {
+  height: 10px;
+  width: 15px;
+  border-radius: 10%;
+  display: inline-block;
+  margin-right: 3px;
+}
+
+.circle {
+  height: 15px;
+  width: 15px;
+  border-radius: 50%;
+  display: inline-block;
+  border-color: black;
+  border: solid 1px;
+}
+
+.fullfill {
+  background-color: grey;
+}
+
+.green {
+  background-color: darkgreen;
+}
+
+.red {
+  background-color: red;
+}
+
+.black {
+  background-color: black;
+}
+
+.legend-info {
+  padding: 6px 8px;
+  font: 14px/16px Arial, Helvetica, sans-serif;
+  background: white;
+  background: rgba(255, 255, 255, 0.8);
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+  border-radius: 5px;
+}

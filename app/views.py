@@ -4,13 +4,14 @@ from sqlalchemy import and_
 from flask import Blueprint, render_template, session, redirect, url_for, request, make_response, jsonify, current_app
 from werkzeug.datastructures import MultiDict
 from .env import DB
-from app.models import Constats, bib_type_animaux, LAreas
+from app.models import BibAreaType, Constats, bib_type_animaux, LAreas
 from app.forms import ConstatForm, FilterForm
 from sqlalchemy import func, extract
 import json
 from shapely.geometry import Point
 from geoalchemy2.shape import from_shape
 from datetime import datetime
+from geojson import FeatureCollection
 import io
 import csv
 from pypnusershub.db.models import Application,AppUser
@@ -153,6 +154,7 @@ def add(id_role):
         nb_jour_agent=form.nb_jour_agent.data,
         the_geom_point=from_shape(Point(json2154['coordinates'][0],json2154['coordinates'][1]),srid=2154),
         id_role=id_role,
+        declaratif=form.declaratif.data,
         comment=form.comment.data
     )
     if form.id_constat.data:
@@ -263,7 +265,8 @@ def constat(idc, id_role):
     constat = Constats.query.get_or_404(idc)
     constat_schema = ConstatSchema()
     geojson_constat = constat_schema.dump(constat)
-    return render_template('data.html', title='Map', constat=geojson_constat)
+    print(geojson_constat["properties"])
+    return render_template('constat.html', title='Map', constat=geojson_constat)
  
     
 @routes.route('/noRight')
@@ -292,13 +295,13 @@ def dashboard(id_role):
     ).group_by(LAreas.area_name)
 
     nb_constat_by_sect = DB.session.query(
-        LAreas.area_name, func.sum(Constats.nb_victimes_mort), func.sum(Constats.nb_indemnises), func.count(Constats.id_constat)
+        LAreas.area_name, func.sum(Constats.nb_victimes_mort), func.sum(Constats.nb_indemnises), func.count(Constats.id_constat), func.sum(Constats.nb_jour_agent)
     ).select_from(
         LAreas
     ).filter(LAreas.id_type == 30).group_by(LAreas.area_name)
 
     query_constat_by_sect_by_animal_type = DB.session.query(
-        LAreas.area_name, func.count(Constats.id_constat), bib_type_animaux.nom
+        LAreas.area_name, func.sum(Constats.nb_indemnises), bib_type_animaux.nom
     ).select_from(
         LAreas
     ).filter(
@@ -348,7 +351,7 @@ def dashboard(id_role):
     constat_by_sect_by_animal_type = {}
     for item in data:
         constat_by_sect_by_animal_type.setdefault(item[0], {"total": 0})
-        constat_by_sect_by_animal_type[item[0]]["total"] += item[1]
+        constat_by_sect_by_animal_type[item[0]]["total"] += item[1] or 0
         constat_by_sect_by_animal_type[item[0]][item[2]] = item[1]
 
     return render_template(
@@ -358,3 +361,28 @@ def dashboard(id_role):
         constat_by_sect_by_animal_type=constat_by_sect_by_animal_type,
         form=form
     )
+
+
+@routes.route('/areas/<area_type_code>')
+@check_auth(2)
+def get_areas(area_type_code):
+    data = DB.session.query(
+        LAreas.area_name,
+        func.st_asgeojson(
+                func.st_transform(
+                    func.st_simplify(LAreas.geom, 10),
+                    4326
+                ),
+        )
+    ).join(
+        BibAreaType, BibAreaType.id_type == LAreas.id_type
+    ).filter(BibAreaType.type_code == area_type_code).all()
+
+    features = []
+    for d in data:
+        geojson = json.loads(d[1])
+        geojson["properties"] = d[0]
+        features.append(geojson)
+    
+    return jsonify(FeatureCollection(features))
+

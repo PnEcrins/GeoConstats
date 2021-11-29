@@ -29,7 +29,7 @@
     <div class="row">
 
         <div class="col-md-4">
-            <h2>Nombre de constats par département</h2>
+            <h2>Bilan par département</h2>
             <table class="table table-bordered" id="departement">
                 <thead class="thead-light">
                     <tr>
@@ -59,7 +59,7 @@
 
 
         <div class="col-md-9">
-            <h2>Nombre de constats par secteur</h2>
+            <h2>Bilan par secteur</h2>
             <table class="table table-bordered" id="secteur">
                 <thead class="thead-light">
                     <tr>
@@ -67,6 +67,7 @@
                         <th> Nb victime </th>
                         <th> Nb indemnisé </th>
                         <th> Nb constat </th>
+                        <th> Nb jour agent </th>
 
                     </tr>
                 </thead>
@@ -77,6 +78,7 @@
                         <td>{{d[1] or 0}}</td>
                         <td>{{d[2] or 0}}</td>
                         <td>{{d[3] or 0}}</td>
+                        <td>{{d[4] or 0}}</td>
                     </tr>              
                     {% endfor %}  
                     
@@ -89,7 +91,7 @@
 
 
         <div class="col-md-9">
-            <h2>Nombre d'animaux morts par secteur</h2>
+            <h2>Nombre d'indemnisé(s) par secteur</h2>
         <table class="table table-bordered" id="animaux">
             <thead class="thead-light">
                 <tr>

@@ -32,15 +32,8 @@
 			<a class="navbar-brand" id="image"><img src="{{url_for('static',filename='logoEcrins.png')}}"></a>
 			<div id="navbarNavDropdown" class="navbar-collapse collapse">
 				<ul class="navbar-nav mr-auto">
-					<li class="nav-item dropdown">
-						<a class="nav-link dropdown-toggle" href="#" id="navConstat" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-							Constats
-						</a>
-						<div class="dropdown-menu" aria-labelledby="navConstat">
-							<a class="dropdown-item" href="{{url_for('routes.map')}}">Afficher les constats</a>
-							<a class="dropdown-item" href="{{ url_for('routes.form')}}">Ajouter un constat</a>
-						</div>
-					</li>				
+					<li class="nav-item"><a class="nav-link" href="{{url_for('routes.map')}}">Constats</a></li>
+			
 					<li class="nav-item"><a class="nav-link" href="{{url_for('routes.dashboard', date=current_year )}}">Tableau de bord</a></li>
 				</ul>
 				<ul class="navbar-nav">

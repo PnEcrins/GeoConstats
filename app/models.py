@@ -7,6 +7,12 @@ from pypnusershub.db.models import User
 from sqlalchemy.orm import column_property
 
 
+class BibAreaType(DB.Model):
+    __tablename__ = "bib_areas_types"
+    __table_args__ = {"schema": "ref_geo"}
+    id_type = DB.Column(DB.Integer, primary_key=True)
+    type_code = DB.Column(DB.String)
+    
 class LAreas(DB.Model):
     __tablename__ = "l_areas"
     __table_args__ = {"schema": "ref_geo"}
@@ -27,12 +33,12 @@ class Constats(DB.Model):
     nom_agent1 = DB.Column(DB.String)
     nom_agent2 = DB.Column(DB.String)
     proprietaire = DB.Column(DB.String)
-    type_animaux = DB.Column(DB.Integer, ForeignKey("constats_loups.bib_statut.id"))
+    type_animaux = DB.Column(DB.Integer, ForeignKey("constats_loups.bib_type_animaux.id"))
     nb_victimes_mort = DB.Column(DB.Integer)
     nb_victimes_blesse = DB.Column(DB.Integer)
     nb_disparus = DB.Column(DB.Integer)
     nb_indemnises = DB.Column(DB.Integer)
-    statut = DB.Column(DB.Integer, ForeignKey("constats_loups.bib_type_animaux.id"))
+    statut = DB.Column(DB.Integer, ForeignKey("constats_loups.bib_statut.id"))
     nb_jour_agent=DB.Column(DB.Float)
     id_secteur=DB.Column(DB.Integer, ForeignKey(LAreas.id_area))
     id_commune=DB.Column(DB.Integer, ForeignKey(LAreas.id_area))
@@ -41,6 +47,7 @@ class Constats(DB.Model):
     dans_aa=DB.Column(DB.Boolean)
     id_role=DB.Column(DB.Integer, ForeignKey(User.id_role))
     the_geom_point= DB.Column(Geometry("GEOMETRY", 2154))
+    declaratif = DB.Column(DB.Boolean)
     comment = DB.Column(DB.String)
     
     statut_rel = DB.relationship(
