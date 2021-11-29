@@ -291,7 +291,6 @@ def dashboard(id_role):
     ).filter(
         LAreas.id_type == 26
     ).filter(
-        LAreas.area_code.in_(current_app.config["CODE_DEPARTMENT"])
     ).group_by(LAreas.area_name)
 
     nb_constat_by_sect = DB.session.query(
@@ -340,6 +339,7 @@ def dashboard(id_role):
             Constats.id_secteur == LAreas.id_area, *filters
         )
     ).group_by(LAreas.area_name).all()
+
     data = query_constat_by_sect_by_animal_type.outerjoin(
         Constats, and_(
             Constats.id_secteur == LAreas.id_area, *filters
@@ -347,6 +347,7 @@ def dashboard(id_role):
     ).outerjoin(
         bib_type_animaux, bib_type_animaux.id == Constats.type_animaux
     ).group_by(LAreas.area_name, bib_type_animaux.nom)
+    
     data = data.all()
     constat_by_sect_by_animal_type = {}
     for item in data:
