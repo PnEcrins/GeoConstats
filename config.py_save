@@ -1,9 +1,0 @@
-SECRET_KEY ='you-will-never-guess'
-COOKIE_EXPIRATION=72000
-COOKIE_AUTORENEW=True
-
-SQLALCHEMY_DATABASE_URI = 'postgresql://geonatadmin:monpassachanger@localhost:5432/geoconstats'
-SQLALCHEMY_TRACK_MODIFICATIONS = False
-URL_APPLICATION = ''
-TRAP_ALL_EXCEPTIONS = False
-CODE_DEPARTMENT = ["05", "38"]
