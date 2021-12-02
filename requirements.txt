@@ -21,7 +21,7 @@ packaging==21.3
 psycopg2==2.9.2
 pycparser==2.21
 pyparsing==3.0.6
-pypnusershub==1.5.7
+git+https://github.com/PnX-SI/UsersHub-authentification-module@1.5.7
 requests==2.26.0
 Shapely==1.8.0
 six==1.16.0
