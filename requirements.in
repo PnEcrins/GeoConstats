@@ -1,0 +1,13 @@
+flask < 2
+psycopg2
+Flask-WTF 
+Flask-SQLAlchemy
+flask-marshmallow
+shapely
+WTForms < 3
+gunicorn
+marshmallow
+geojson
+marshmallow-sqlalchemy
+git+https://github.com/PnX-SI/UsersHub-authentification-module@1.5.7
+geoalchemy2
