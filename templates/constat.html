@@ -20,7 +20,7 @@
 				<span class="attr">Nombre de victimes (morts) :</span> 
 					<span class="value">{{ constat.properties.nb_victimes_mort }}</span><br>
 				<span class="attr">Nombre de victimes (blessés) :</span> <span class="value">{{ constat.properties.nb_victimes_blesse }}</span><br>
-				<span class="attr">Nombre de disparu :</span> <span class="value">{{ constat.properties.nb_disparus }}</span><br>
+				<span class="attr">Nombre de disparus :</span> <span class="value">{{ constat.properties.nb_disparus }}</span><br>
 				<span class="attr">Nombre d'indemnisés : </span><span class="value">{{ constat.properties.nb_indemnises }}</span><br>
 				<span class="attr">Nom du 1er agent recenseur : </span><span class="value">{{ constat.properties.nom_agent1 }}</span><br>
 				<span class="attr">Nom du 2ème agent recenseur : </span><span class="value">{{ constat.properties.nom_agent2 }}</span><br>
@@ -37,7 +37,10 @@
 		</div>
     </div>
 </div>
-
+<script>
+	var urlAreas = "{{url_for("routes.get_areas", _external=True)}}";
+</script>
+<script src="{{url_for('static', filename='map.js')}}"></script>
 <script>
 	var constatFilter={
 		'id_constat':'{{constat.properties.id_constat}}',
@@ -56,21 +59,18 @@
 		'localisation': '{{ constat.properties.localisation }}',
 		'geometry': '{{ constat.geometry | tojson}}'
 	};    
-	var map = L.map('map').setView([JSON.parse(constatFilter.geometry).coordinates[1],JSON.parse(constatFilter.geometry).coordinates[0]], 15);
 	L.control.scale().addTo(map);
-    var osm=L.tileLayer('https://a.tile.opentopomap.org/{z}/{x}/{y}.png', {
-	    attribution: 'Map data: &copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors, SRTM | Map style: &copy; <a href="https://opentopomap.org">OpenTopoMap</a> (CC-BY-SA)'
-    }).addTo(map);	
-
 	var marker=L.marker([JSON.parse(constatFilter.geometry).coordinates[1],JSON.parse(constatFilter.geometry).coordinates[0]]) .addTo(map);
-	
-	var printer = L.easyPrint({
-      	tileLayer: osm,
-      	sizeModes: ['A4Landscape'],
-      	filename: 'constat {{constat.properties.date_constat}}',
-      	exportOnly: true,
-		hideControlContainer:false
+	console.log("MAPPPP", map)
+	 var printer = L.easyPrint({
+		tileLayer: mainTileLayer,
+		sizeModes: ['A4Landscape'],
+		filename: 'constat {{constat.properties.date_constat}}',
+		exportOnly: true,
+	  hideControlContainer:false
 	}).addTo(map);
 	
 </script>
 {% endblock %}
+
+

@@ -3,6 +3,7 @@ from sqlalchemy import and_
 
 from flask import Blueprint, render_template, session, redirect, url_for, request, make_response, jsonify, current_app
 from werkzeug.datastructures import MultiDict
+from werkzeug.exceptions import BadRequest
 from .env import DB
 from app.models import BibAreaType, Constats, bib_type_animaux, LAreas
 from app.forms import ConstatForm, FilterForm
@@ -64,7 +65,13 @@ def map(id_role):
     if 'secteur' in filter_query and filter_query['secteur'] != "__None":
             query = query.filter(Constats.id_secteur == filter_query['secteur'])  
     if 'commune' in filter_query and filter_query['commune'] != "__None":
-        query = query.filter(Constats.id_commune == filter_query['commune'])                             
+        query = query.filter(Constats.id_commune == filter_query['commune'])
+    if "type_constat" in filter_query and filter_query["type_constat"] != "None":
+        try:
+            is_declaratif = bool(int(filter_query["type_constat"]))
+        except Exception as e:
+            raise BadRequest(str(e))
+        query = query.filter(Constats.declaratif == is_declaratif)
     
     dataGeom =  query.order_by(Constats.date_attaque.desc()).all()  
     constat_schema = ConstatSchema()
@@ -327,6 +334,12 @@ def dashboard(id_role):
             filters.append(Constats.dans_aa==True)
         elif filter_query['localisation'] == "3":
             filters.append(Constats.dans_aa==False and Constats.dans_coeur==False)
+    if "type_constat" in filter_query and filter_query["type_constat"] != "None":
+        try:
+            is_declaratif = bool(int(filter_query["type_constat"]))
+        except Exception as e:
+            raise BadRequest(str(e))
+        filters.append(Constats.declaratif == is_declaratif)
    
                                                                                 
     nb_constat_by_dep =  nb_constat_by_dep.outerjoin(
@@ -364,9 +377,11 @@ def dashboard(id_role):
     )
 
 
-@routes.route('/areas/<area_type_code>')
+@routes.route('/areas')
 @check_auth(2)
-def get_areas(area_type_code):
+def get_areas():
+    params = request.args.to_dict()
+    area_type_code = params.get("area_type_code", "")
     data = DB.session.query(
         LAreas.area_name,
         func.st_asgeojson(
@@ -374,7 +389,7 @@ def get_areas(area_type_code):
                     func.st_simplify(LAreas.geom, 10),
                     4326
                 ),
-        )
+        )   
     ).join(
         BibAreaType, BibAreaType.id_type == LAreas.id_type
     ).filter(BibAreaType.type_code == area_type_code).all()

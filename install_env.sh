@@ -1,0 +1,1 @@
+sudo apt-get install postgresql postgis libpq-dev libgeos-dev python3-venv python3-pip

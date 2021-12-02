@@ -71,10 +71,7 @@ function onEachFeature(feature, layer) {
 }
 
 // CONFIGURATION DE LA CARTE //
-var map = L.map('map').setView([44.8, 6.2], 10);
-L.tileLayer('https://a.tile.opentopomap.org/{z}/{x}/{y}.png', {
-attribution: 'Map data: &copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors, SRTM | Map style: &copy; <a href="https://opentopomap.org">OpenTopoMap</a> (CC-BY-SA)'
-}).addTo(map); 
+
 
 var legendControl = L.control();
 legendControl.onAdd = function (map) {
@@ -88,8 +85,8 @@ legendControl.update = function () {
      <span class="line green"> </span>Accepté  <br> 
      <span class="line red"> </span>Rejeté  <br> 
      <span class="line black"> </span>En attente  <br> <br> 
+     <span class="circle fullfill"> </span> Constat  <br> 
      <span class="circle"> </span> Constat déclaratif  <br> 
-     <span class="circle fullfill"> </span> Constat non déclaratif  <br> 
      `
 };
 
@@ -97,70 +94,6 @@ legendControl.addTo(map);
 
 
 var layerFeatureGroup = L.featureGroup([]).addTo(map);
-var backgroundFeatureGroup = L.featureGroup([], {"pane": "tilePane"}).addTo(map);
-// ACTIONS SUR LA CARTE
-function changeZoom() {
-    map.setZoom(10);
-    map.setView([44.8, 6.2]);   
-};
-fetch("areas/AA").then(function(resp) {
-    return resp.json()
-    }).then(function(geojson) {
-        backgroundFeatureGroup.addLayer(
-            L.geoJSON(
-                geojson,
-                {
-                    "style": function(feature) {
-                        return {
-                            color: "#341354",
-                            fillOpacity: 0,
-                            dashArray: "10 10"
-                        }
-                    }
-                }
-            )
-        );
-        backgroundFeatureGroup.bringToBack();
-})
-
-fetch("areas/ZC").then(function(resp) {
-    return resp.json()
-    }).then(function(geojson) {
-        backgroundFeatureGroup.addLayer(
-            L.geoJSON(
-                geojson,
-                {
-                    "style": function(feature) {
-                        return {
-                            color: "#341354",
-                            fillOpacity: 0
-                        }
-                    }
-                }
-            )
-        );
-        backgroundFeatureGroup.bringToBack();
-});
-
-fetch("areas/ALPAGES").then(function(resp) {
-    return resp.json()
-    }).then(function(geojson) {
-        backgroundFeatureGroup.addLayer(
-            L.geoJSON(
-                geojson,
-                {
-                    "style": function(feature) {
-                        return {
-                            color: "#ff8200",
-                            fillOpacity: 0
-                        }
-                    }
-                }
-            )
-        );
-        backgroundFeatureGroup.bringToBack();
-});
-
 
 geojsonLayer = L.geoJSON(
     geojson, 
@@ -174,4 +107,3 @@ geojsonLayer = L.geoJSON(
 
 layerFeatureGroup.addLayer(geojsonLayer);
 layerFeatureGroup.bringToFront();
-geojsonLayer.bringToFront();

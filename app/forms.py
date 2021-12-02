@@ -81,13 +81,21 @@ def get_years():
         ).order_by(extract('year',Constats.date_constat).desc())
 
 class FilterForm(FlaskForm):
-    date=SelectField(
+    date = SelectField(
         'Année du constat', 
         choices=[
             (int(d[0]), int(d[0])) for d in DB.session.query(
                     func.distinct(extract('year',Constats.date_constat)).label("date")
                 ).order_by(extract('year',Constats.date_constat).desc())
             ]
+    )
+    type_constat = SelectField(
+        'Type de constat', 
+        choices=[
+            (None, "Tous"),
+            (1, "Constat déclaratif"),
+            (0, "Constat non déclaratif")
+        ]
     )
     animaux = QuerySelectField(
         "Type d'animaux",
