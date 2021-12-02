@@ -1,28 +1,9 @@
 from datetime import datetime
 from app.env import DB, MA
-from flask import Flask, Blueprint
+from flask import Flask
+from werkzeug.middleware.proxy_fix import ProxyFix
+from urllib.parse import urlsplit
 
-class ReverseProxied(object):
-    def __init__(self, app, script_name=None, scheme=None, server=None):
-        self.app = app
-        self.script_name = script_name
-        self.scheme = scheme
-        self.server = server
-
-    def __call__(self, environ, start_response):
-        script_name = environ.get("HTTP_X_SCRIPT_NAME", "") or self.script_name
-        if script_name:
-            environ["SCRIPT_NAME"] = script_name
-            path_info = environ["PATH_INFO"]
-            if path_info.startswith(script_name):
-                environ["PATH_INFO"] = path_info[len(script_name) :]
-        scheme = environ.get("HTTP_X_SCHEME", "") or self.scheme
-        if scheme:
-            environ["wsgi.url_scheme"] = scheme
-        server = environ.get("HTTP_X_FORWARDED_SERVER", "") or self.server
-        if server:
-            environ["HTTP_HOST"] = server
-        return self.app(environ, start_response)
 
 app_globals = {}
 
@@ -32,7 +13,11 @@ def init_app():
     else:
         app = Flask(__name__)
     app.config.from_object('config')
-    app.wsgi_app = ReverseProxied(app.wsgi_app, script_name=app.config['URL_APPLICATION'])
+    api_uri = urlsplit(app.config['URL_APPLICATION'])
+    app.config['APPLICATION_ROOT'] = api_uri.path
+    app.config['PREFERRED_URL_SCHEME'] = api_uri.scheme
+    # app.wsgi_app = ReverseProxied(app.wsgi_app, script_name=app.config['URL_APPLICATION'])
+    app.wsgi_app = ProxyFix(app.wsgi_app, x_host=1)
 
     @app.context_processor
     def inject_year():
