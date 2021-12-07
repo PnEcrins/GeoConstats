@@ -77,7 +77,7 @@ fetch(urlAreas+"?area_type_code=ALPAGES_UP").then(function(resp) {
                         return {
                             color: "#ff2200",
                             fillOpacity: 0,
-                            weight:3
+                            weight:1
                         }
                     }
                 }
