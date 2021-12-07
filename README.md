@@ -29,6 +29,7 @@ Les logs se situent dans le fichier `/var/log/geoconstat.log`
 - Editer le fichier `settings.ini` avec les informations de la base de données avec la ligne de commande `nano settings.ini`. Une fois les informations saisies, enregistrer le fichier en appuyant sur ctrl + o puis entrer puis crtl + x.
 - Dans le terminal, exécuter la ligne de commande `./install_db.sh`.
   Une fois la base installé, l'application doit tourner à l'adresse 127.0.0.1/<PORT_SETTING.INI>
+- Une fois le script passé, lancez `sudo systemctl start geoconstat`
 
 ## 3. Configuration Apache
 
@@ -47,7 +48,7 @@ Les logs se situent dans le fichier `/var/log/geoconstat.log`
 ```
   sudo a2enmod proxy
   sudo a2enmod proxy_http
-  sudo a2ensite geoconstats
+  sudo a2ensite geoconstat
 ```
 
 ## 6. Lancement en mode dev

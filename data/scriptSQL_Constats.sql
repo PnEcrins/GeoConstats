@@ -31,11 +31,31 @@ BEGIN
      SELECT INTO geom_change NOT ST_EQUALS(OLD.the_geom_point, NEW.the_geom_point);
  END IF;
  IF(TG_OP='INSERT' OR (TG_OP='UPDATE' AND geom_change)) THEN
-    UPDATE constats_loups.t_constats SET id_secteur=ref_geo.l_areas.id_area FROM ref_geo.l_areas WHERE ref_geo.l_areas.id_type=30 and ST_Within(constats_loups.t_constats.the_geom_point,ref_geo.l_areas.geom);
-    UPDATE constats_loups.t_constats SET id_commune=ref_geo.l_areas.id_area FROM ref_geo.l_areas WHERE ref_geo.l_areas.id_type=25 and ST_Within(constats_loups.t_constats.the_geom_point,ref_geo.l_areas.geom);
-    UPDATE constats_loups.t_constats SET id_departement=ref_geo.l_areas.id_area from ref_geo.l_areas where ref_geo.l_areas.id_type=26 and ST_Within(constats_loups.t_constats.the_geom_point,ref_geo.l_areas.geom);
-    UPDATE constats_loups.t_constats SET dans_coeur=ST_Within(NEW.the_geom_point,ref_geo.l_areas.geom) from ref_geo.l_areas WHERE ref_geo.l_areas.id_type=1;
-    UPDATE constats_loups.t_constats SET dans_aa=ST_Within(NEW.the_geom_point,ref_geo.l_areas.geom) from ref_geo.l_areas WHERE ref_geo.l_areas.id_type=20;
+    UPDATE constats_loups.t_constats 
+      SET id_secteur=ref_geo.l_areas.id_area 
+      FROM ref_geo.l_areas a 
+      JOIN ref_geo.bib_areas_types b ON b.id_type = a.id_type
+      WHERE id_constat = NEW.id_constat AND b.type_code = 'SEC' and ST_Within(constats_loups.t_constats.the_geom_point,ref_geo.l_areas.geom);
+    UPDATE constats_loups.t_constats 
+      SET id_commune=ref_geo.l_areas.id_area 
+      FROM ref_geo.l_areas 
+      JOIN ref_geo.bib_areas_types b ON b.id_type = a.id_type
+      WHERE id_constat = NEW.id_constat AND b.type_code = 'COM' and ST_Within(constats_loups.t_constats.the_geom_point,ref_geo.l_areas.geom);
+    UPDATE constats_loups.t_constats 
+      SET id_departement=ref_geo.l_areas.id_area 
+      from ref_geo.l_areas 
+      JOIN ref_geo.bib_areas_types b ON b.id_type = a.id_type
+      where id_constat = NEW.id_constat AND b.type_code = 'DEP' and ST_Within(constats_loups.t_constats.the_geom_point,ref_geo.l_areas.geom);
+    UPDATE constats_loups.t_constats 
+      SET dans_coeur=ST_Within(NEW.the_geom_point,ref_geo.l_areas.geom) 
+      from ref_geo.l_areas 
+      JOIN ref_geo.bib_areas_types b ON b.id_type = a.id_type
+      WHERE id_constat = NEW.id_constat AND b.type_code = 'ZC';
+    UPDATE constats_loups.t_constats 
+    SET dans_aa=ST_Within(NEW.the_geom_point,ref_geo.l_areas.geom) 
+    from ref_geo.l_areas 
+    JOIN ref_geo.bib_areas_types b ON b.id_type = a.id_type
+    WHERE id_constat = NEW.id_constat AND b.type_code = 'AA';
  END IF;
  RETURN NEW;
 END;
@@ -98,48 +118,3 @@ WITH (
 CREATE TRIGGER update_geom AFTER
 insert or update of the_geom_point
 on constats_loups.t_constats for each row execute procedure constats_loups.update_com_sec();
-
--- table t_constats_declaratifs
-
-CREATE TABLE constats_loups.t_constats_declaratifs
-(
-  id_constat_d serial NOT NULL,
-  date_attaque_d date NOT NULL,
-  date_constat_d date NOT NULL,
-  lieu_dit character varying,
-  proprietaire_d character varying,
-  type_animaux_d integer,
-  nb_victimes_mort_d integer,
-  nb_victimes_blesse_d integer,
-  statut_d integer,
-  geom geometry(Point,2154),
-  id_secteur_d integer,
-  id_commune_d integer,
-  departement_d character varying(2),
-  dans_coeur_d boolean,
-  dans_aa_d boolean,
-  id_role integer,
-  CONSTRAINT decla_pkey PRIMARY KEY (id_constat_d),
-  CONSTRAINT commune_d_fkey FOREIGN KEY (id_commune_d)
-      REFERENCES ref_geo.l_areas (id_area) MATCH SIMPLE
-      ON UPDATE NO ACTION ON DELETE NO ACTION,
-  CONSTRAINT role_d_fkey FOREIGN KEY (id_role)
-      REFERENCES utilisateurs.t_roles (id_role) MATCH SIMPLE
-      ON UPDATE NO ACTION ON DELETE NO ACTION,
-  CONSTRAINT t_constats_declaratifs_id_secteur_d_fkey FOREIGN KEY (id_secteur_d)
-      REFERENCES ref_geo.l_areas (id_area) MATCH SIMPLE
-      ON UPDATE NO ACTION ON DELETE NO ACTION,
-  CONSTRAINT t_constats_declaratifs_statut_d_fkey FOREIGN KEY (statut_d)
-      REFERENCES constats_loups.bib_statut (id) MATCH SIMPLE
-      ON UPDATE NO ACTION ON DELETE NO ACTION,
-  CONSTRAINT t_constats_declaratifs_type_animaux_d_fkey FOREIGN KEY (type_animaux_d)
-      REFERENCES constats_loups.bib_type_animaux (id) MATCH SIMPLE
-      ON UPDATE NO ACTION ON DELETE NO ACTION
-)
-WITH (
-  OIDS=FALSE
-);
-
-CREATE TRIGGER update_geom_d AFTER
-insert or update of geom
- on constats_loups.t_constats_declaratifs for each row execute procedure constats_loups.update_com_sec_d();
