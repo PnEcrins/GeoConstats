@@ -6,12 +6,7 @@ mainTileLayer.addTo(map);
 
 var backgroundFeatureGroup = L.featureGroup([], {"pane": "tilePane"}).addTo(map);
 
-// function onEachFeatureLayer(feature, layer) {
-//     layer.on('contextmenu', e => {
-//           layer.bindPopup(`${feature.properties}`);
-//           layer.openPopup();
-//       }); 
-// }
+
 
 fetch(urlAreas+"?area_type_code=AA").then(function(resp) {
     return resp.json()
@@ -61,7 +56,8 @@ fetch(urlAreas+"?area_type_code=ALPAGES_ZP").then(function(resp) {
                     "style": function(feature) {
                         return {
                             color: "#ff8200",
-                            fillOpacity: 0
+                            fillOpacity: 0,
+                            weight:2
                         }
                     }
                 }
@@ -80,7 +76,8 @@ fetch(urlAreas+"?area_type_code=ALPAGES_UP").then(function(resp) {
                     "style": function(feature) {
                         return {
                             color: "#ff2200",
-                            fillOpacity: 0
+                            fillOpacity: 0,
+                            weight:3
                         }
                     }
                 }
