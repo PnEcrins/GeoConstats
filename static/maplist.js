@@ -49,12 +49,13 @@ function onEachFeature(feature, layer) {
             fillOpacity: 1,
         })
     }
- 
-    layer.bindPopup(
-        "<b> Statut : </b>"+ feature.properties.statut_rel.nom+" <br/>\
-        <a href='constat/"+feature.properties.id_constat+"'> Voir la fiche </a>\
-        "
-    )
+    if(feature.properties.statut_rel) {
+        layer.bindPopup(
+            "<b> Statut : </b>"+ feature.properties.statut_rel.nom+" <br/>\
+            <a href='constat/"+feature.properties.id_constat+"'> Voir la fiche </a>\
+            "
+        )
+    }
     layer.on({
         click: function(e) {
             if(selectedTr) {
