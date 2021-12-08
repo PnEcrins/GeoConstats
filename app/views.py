@@ -297,8 +297,13 @@ def dashboard(id_role):
         LAreas
     ).filter(
         LAreas.id_type == 26
-    ).filter(
-    ).group_by(LAreas.area_name)
+    )
+    if current_app.get("CODE_DEPARTMENT", None):
+        nb_constat_by_dep = nb_constat_by_dep.filter(
+            LAreas.area_code.in_(current_app["CODE_DEPARTMENT"])
+        )
+    nb_constat_by_dep = nb_constat_by_dep.group_by(LAreas.area_name)
+
 
     nb_constat_by_sect = DB.session.query(
         LAreas.area_name, func.sum(Constats.nb_victimes_mort), func.sum(Constats.nb_indemnises), func.count(Constats.id_constat), func.sum(Constats.nb_jour_agent)
