@@ -93,8 +93,8 @@ class FilterForm(FlaskForm):
         'Type de constat', 
         choices=[
             (None, "Tous"),
+            (0, "Constat")
             (1, "Constat déclaratif"),
-            (0, "Constat non déclaratif")
         ]
     )
     animaux = QuerySelectField(
