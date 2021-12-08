@@ -250,7 +250,7 @@ def download(id_role):
     # #TELECHARGEMENT FICHIER
     if len(constats) > 0:   
         si = io.StringIO()
-        cw = csv.DictWriter(si, fieldnames=constats[0].keys())
+        cw = csv.DictWriter(si, delimiter=";", fieldnames=constats[0].keys())
         cw.writeheader()
         cw.writerows(constats)
         output = make_response(si.getvalue())
