@@ -298,9 +298,9 @@ def dashboard(id_role):
     ).filter(
         LAreas.id_type == 26
     )
-    if current_app.get("CODE_DEPARTMENT", None):
+    if current_app.config.get("CODE_DEPARTMENT", None):
         nb_constat_by_dep = nb_constat_by_dep.filter(
-            LAreas.area_code.in_(current_app["CODE_DEPARTMENT"])
+            LAreas.area_code.in_(current_app.config["CODE_DEPARTMENT"])
         )
     nb_constat_by_dep = nb_constat_by_dep.group_by(LAreas.area_name)
 
