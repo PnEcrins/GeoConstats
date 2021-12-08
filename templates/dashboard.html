@@ -26,7 +26,10 @@
         </div>
         <div class="form-group ">
             <button id="subform" type="submit" class="btn btn-primary">Rechercher</button>
-        </div>    
+            <a class="btn btn-danger pad" title="Raffraichir les filtres" href="{{ url_for('routes.dashboard', date=current_year) }}"> 
+                <i class="fa fa-refresh" aria-hidden="true"></i>
+            </a>
+        </div> 
     </form>
 
 
