@@ -35,6 +35,7 @@ class ConstatSchema(MA.SQLAlchemyAutoSchema):
     digitizer = MA.Nested(UserSchema, dump_only=True)
     commune = MA.Nested(LAreasSchema, dump_only=True)
     secteur = MA.Nested(LAreasSchema, dump_only=True)
+    departement = MA.Nested(LAreasSchema, dump_only=True)
 
     def geom_to_shape(self, obj):
         return to_shape(obj.geom_4326)
