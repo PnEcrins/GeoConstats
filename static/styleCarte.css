@@ -30,6 +30,11 @@ button {
 #liste button[name="dataBouton"] {
   width: 95%;
 }
+
+.pad {
+  padding: 10 12;
+}
+
 .mycluster {
   height: 40px;
   width: 40px;
