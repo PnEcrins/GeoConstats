@@ -3,14 +3,16 @@
 <div id="bloc">
 	<div id="liste" class="leftMap">
 		<h1>Constats</h1>
-		<button data-toggle="collapse" name="filtre" data-target="#filter" class="btn btn-primary">
+	<form method="GET" novalidate>
+		<!-- HACK : if its a button it fire the form submission -->
+		<span data-toggle="collapse" name="filtre" data-target="#form-filter" class="btn btn-primary">
 			<i class="fa fa-filter" aria-hidden="true"></i>			
 			Filtrer
-		</button>
-		<a href="{{url_for('routes.download')}}" class="btn btn-primary">
+		</span>
+		<button type="submit" formaction="{{url_for('routes.download')}}" class="btn btn-primary">
 			<i class="fa fa-download" aria-hidden="true"></i>
 			Télécharger les données
-		</a>
+		</button>
 		 <a class="btn btn-success" href="{{ url_for('routes.form') }}"> 
 			<i class="fa fa-plus" aria-hidden="true"></i>
 			Ajouter un constat
@@ -20,41 +22,43 @@
 		</a>
 
 		<br>
-		<form method="GET" novalidate class="collapse" id="filter">
-			<div class="form-group">
-				Année du constat <br>
-				{{ form.date(size=1, class_="form-control") }}
-			</div>			
-			<div class="form-group">
-				Type d'animaux <br>
-				{{ form.animaux(size=1, class_="form-control") }}
-			</div>		
-			<div class="form-group">
-				Statut du constat <br>
-				{{ form.statut(size=1, class_="form-control") }}
+			<div id="form-filter" class="collapse">
+				<div class="form-group">
+					Année du constat <br>
+					{{ form.date(size=1, class_="form-control") }}
+				</div>			
+				<div class="form-group">
+					Type d'animaux <br>
+					{{ form.animaux(size=1, class_="form-control") }}
+				</div>		
+				<div class="form-group">
+					Statut du constat <br>
+					{{ form.statut(size=1, class_="form-control") }}
+				</div>
+				<div class="form-group">
+					Localisation du constat <br>
+					{{ form.localisation(size=1, class_="form-control") }}
+				</div>		
+				<div class="form-group">
+					Secteur du constat <br>
+					{{ form.secteur(size=1, class_="form-control") }}
+				</div>	
+				<div class="form-group">
+					Commune du constat <br>
+					{{ form.commune(size=1, class_="form-control") }}
+				</div>	
+				<div class="form-group">
+					Type de constat <br>
+					{{ form.type_constat(size=1, class_="form-control") }}
+				</div>							
+				<div class="form-group">
+					<button id="subform" type="submit" formaction="{{url_for('routes.map')}}" class="btn btn-primary">
+						<i class="fa fa-search" aria-hidden="true"></i>
+						Rechercher
+					</button>
+				</div>
 			</div>
-			<div class="form-group">
-				Localisation du constat <br>
-				{{ form.localisation(size=1, class_="form-control") }}
-			</div>		
-			<div class="form-group">
-				Secteur du constat <br>
-				{{ form.secteur(size=1, class_="form-control") }}
-			</div>	
-			<div class="form-group">
-				Commune du constat <br>
-				{{ form.commune(size=1, class_="form-control") }}
-			</div>	
-			<div class="form-group">
-				Type de constat <br>
-				{{ form.type_constat(size=1, class_="form-control") }}
-			</div>							
-			<div class="form-group">
-				<button id="subform" type="submit" formaction="{{url_for('routes.map')}}" class="btn btn-primary">
-					<i class="fa fa-search" aria-hidden="true"></i>
-					Rechercher
-				</button>
-			</div>
+		
 			
 		</form>
 		<br>

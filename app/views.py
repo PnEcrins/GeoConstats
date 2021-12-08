@@ -46,7 +46,7 @@ def map(id_role):
     filter_query = request.args.to_dict()
     query = Constats.query
     #FORMULAIRE DE FILTRAGE
-    form = FilterForm()
+    form = FilterForm(MultiDict(filter_query))
     form.date.choices.insert(0, (0,""))
     if 'date' in filter_query:
         if filter_query['date'] != "0":
@@ -223,16 +223,13 @@ def download(id_role):
     filter_query = request.args.to_dict()
     query = Constats.query
     schema = ConstatSchemaDownload()
-    #FORMULAIRE
     if 'date' in filter_query:
         if filter_query['date'] != "0":
             query = query.filter(extract('year',Constats.date_constat) == int(filter_query['date']))
-    if 'animaux' in filter_query:
-        if filter_query['animaux'] != "0":
-            query = query.filter(Constats.type_animaux == filter_query['animaux'])
-    if 'statut' in filter_query:
-        if filter_query['statut'] != "0":
-            query = query.filter(Constats.statut == filter_query['statut']) 
+    if 'animaux' in filter_query and filter_query["animaux"] != "__None":
+        query = query.filter(Constats.type_animaux == filter_query['animaux'])
+    if 'statut' in filter_query and filter_query['statut'] != "__None":
+        query = query.filter(Constats.statut == filter_query['statut'])   
     if 'localisation' in filter_query:
         if filter_query['localisation'] == "1":
             query =  query.filter(Constats.dans_coeur==True)   
@@ -240,12 +237,16 @@ def download(id_role):
             query =  query.filter(Constats.dans_aa == True)
         elif filter_query['localisation'] == "3":  
             query =  query.filter(Constats.dans_aa == False and Constats.dans_coeur == False)
-    if 'secteur' in filter_query:
-        if filter_query['secteur'] != "0":
+    if 'secteur' in filter_query and filter_query['secteur'] != "__None":
             query = query.filter(Constats.id_secteur == filter_query['secteur'])  
-    if 'commune' in filter_query:
-        if filter_query['commune'] != "0":
-            query = query.filter(Constats.id_commune == filter_query['commune'])
+    if 'commune' in filter_query and filter_query['commune'] != "__None":
+        query = query.filter(Constats.id_commune == filter_query['commune'])
+    if "type_constat" in filter_query and filter_query["type_constat"] != "None":
+        try:
+            is_declaratif = bool(int(filter_query["type_constat"]))
+        except Exception as e:
+            raise BadRequest(str(e))
+        query = query.filter(Constats.declaratif == is_declaratif)
     constats = [schema.dump(d) for d in query.order_by(Constats.date_attaque.desc()).all()]
     # #TELECHARGEMENT FICHIER
     if len(constats) > 0:   
