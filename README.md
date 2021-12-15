@@ -43,6 +43,20 @@ Les logs se situent dans le fichier `/var/log/geoconstat.log`
 </Location>
 ```
 
+```
+<Location / >
+   ProxyPass http://127.0.0.1:5000/
+   ProxyPassReverse http://127.0.0.1:5000/
+   RequestHeader set X-Forwarded-Proto "https"
+</Location>
+```
+
+```
+sudo a2enmod headers
+```
+
+En https
+
 - Lancer les commandes suivantes :
 
 ```
