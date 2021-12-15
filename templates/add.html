@@ -40,7 +40,11 @@
         </div>
         {{render_field(form.comment)}}
         <br>
-        <div><button id="subform" type="submit" class="btn btn-success" disabled>Ajouter le constat</button></div>
+        {% if form.id_constat.data %}
+            <button id="subform" type="submit" class="btn btn-success" disabled>Modifier le constat</button>
+        {% else %} 
+            <button id="subform" type="submit" class="btn btn-success" disabled>Ajouter le constat</button>
+        {% endif %}
         <input type="hidden"  type="text" name="geomlat" id="geomlat">
         <input type="hidden"  type="text" name="geomlng" id="geomlng">
     </form>
