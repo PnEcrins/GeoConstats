@@ -203,7 +203,7 @@ def delete(idc,id_role):
     dataGeom = DB.session.query(Constats).filter(Constats.id_constat==idc).one()
     dataApp=DB.session.query(Application.id_application).filter(Application.code_application=='GC').one()
     nivDroit=DB.session.query(AppUser.id_droit_max).filter(AppUser.id_role==id_role).filter(AppUser.id_application==dataApp[0]).one()
-    if nivDroit[0]>2 or id_role==dataGeom[0][0].id_role:
+    if nivDroit[0]>2 or id_role==dataGeom.id_role:
         dataGeom = DB.session.query(Constats).filter(Constats.id_constat==idc).delete()
         DB.session.commit()
         return redirect(url_for('routes.map'))
