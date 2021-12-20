@@ -1,7 +1,7 @@
 var map = L.map('map').setView([44.8, 6.2], 10);
-var mainTileLayer = L.tileLayer('https://a.tile.opentopomap.org/{z}/{x}/{y}.png', {
-attribution: 'Map data: &copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors, SRTM | Map style: &copy; <a href="https://opentopomap.org">OpenTopoMap</a> (CC-BY-SA)'
-})
+var mainTileLayer = L.tileLayer(
+    "https://wxs.ign.fr/cartes/geoportail/wmts?&REQUEST=GetTile&SERVICE=WMTS&VERSION=1.0.0&STYLE=normal&TILEMATRIXSET=PM&FORMAT=image/png&LAYER=GEOGRAPHICALGRIDSYSTEMS.PLANIGNV2&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}"
+)
 mainTileLayer.addTo(map); 
 
 var backgroundFeatureGroup = L.featureGroup([], {"pane": "tilePane"}).addTo(map);
