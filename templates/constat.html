@@ -9,11 +9,7 @@
 				<span class="attr">Numéro : </span> <span class="value"> {{constat.properties.id_constat}}</span>  <br>
 				<span class="attr">Déclaratif : </span> 
 					<span class="value"> 
-						{% if constat.properties.declaratif == True %}
-						 Oui 
-						{% elif constat.properties.declaratif == False %} 
-						 Non
-						{% endif %} 
+						{{ constat.properties.declaratif | fr_boolean }}
 					</span>  <br>
 				<span class="attr">Date de l'attaque : </span>  <span class="value">{{constat.properties.date_attaque}}</span> <br>
 				<span class="attr"> Date du constat : </span><span class="value">{{constat.properties.date_constat}}</span><br>
@@ -29,14 +25,17 @@
 				<span class="attr">Secteur : </span><span class="value">{{constat.properties.secteur.area_name}}</span><br>
 				<span class="attr">Commune : </span><span class="value">{{constat.properties.commune.area_name}}</span><br>
 				<span class="attr">Département : </span><span class="value">{{constat.properties.departement.area_name}}</span><br>
-				<span class="attr">Coeur de parc : </span><span class="value">{{constat.properties.dans_coeur}}</span><br>
-				<span class="attr">Aire d'adhesion: </span><span class="value">{{constat.properties.dans_aa}}</span><br>
+				<span class="attr">Coeur de parc : </span><span class="value">{{constat.properties.dans_coeur | fr_boolean}}</span><br>
+				<span class="attr">Aire d'adhesion: </span><span class="value">{{constat.properties.dans_aa | fr_boolean}}</span><br>
 				<span class="attr">Créateur du constat : </span><span class="value">{{constat.properties.digitizer.nom_complet }}</span> <br>
 				<span class="attr">Statut : </span><span class="value">{{ constat.properties.statut_rel.nom }}</span><br>
 				<span class="attr">Nombre de jours agent : </span><span class="value">{{constat.properties.nb_jour_agent}}</span><br>		
 		</div>
     </div>
 </div>
+
+
+
 <script>
 	var urlAreas = "{{url_for("routes.get_areas", _external=True)}}";
 </script>

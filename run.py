@@ -36,6 +36,10 @@ def init_app():
 
         from app.views import routes
         app.register_blueprint(routes, url_prefix='/')
+
+        @app.template_filter("fr_boolean")
+        def fr_boolean(val):
+            return "Oui" if val else "Non"
     
     return app
 

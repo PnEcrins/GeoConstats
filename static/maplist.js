@@ -83,7 +83,7 @@ legendControl.onAdd = function (map) {
 
 legendControl.update = function () {
     this._div.innerHTML = `
-     <span class="line green"> </span>Accepté  <br> 
+     <span class="line green"> </span>Indemnisé  <br> 
      <span class="line red"> </span>Rejeté  <br> 
      <span class="line black"> </span>En attente  <br> <br> 
      <span class="circle fullfill"> </span> Constat  <br> 
