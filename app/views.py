@@ -222,11 +222,7 @@ def delete(idc,id_role):
 def download(id_role):
     #REQUETES
     filter_query = request.args.to_dict()
-    query = Constats.query.options(
-        joinedload("secteur"),
-        joinedload("commune"),
-        joinedload("departement"),
-    )
+    query = Constats.query
     schema = ConstatSchemaDownload(exclude=["id_secteur", "id_commune", "id_departement"])
     if 'date' in filter_query:
         if filter_query['date'] != "0":
