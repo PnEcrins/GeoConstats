@@ -61,4 +61,6 @@ class ConstatSchemaDownload(ConstatSchema):
         data["commune"] = commune.get("area_name", "") if commune else ""
         digitizer = data.pop("digitizer")
         data["digitaliseur"] = digitizer.get("nom_complet", "") if digitizer else ""
+        departement = data.pop("departement")
+        data["departement"] = departement.get("area_name", "") if departement else ""
         return data

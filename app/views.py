@@ -8,6 +8,7 @@ from .env import DB
 from app.models import BibAreaType, Constats, bib_type_animaux, LAreas
 from app.forms import ConstatForm, FilterForm
 from sqlalchemy import func, extract
+from sqlalchemy.orm import joinedload
 import json
 from shapely.geometry import Point
 from geoalchemy2.shape import from_shape
@@ -221,8 +222,12 @@ def delete(idc,id_role):
 def download(id_role):
     #REQUETES
     filter_query = request.args.to_dict()
-    query = Constats.query
-    schema = ConstatSchemaDownload()
+    query = Constats.query.options(
+        joinedload("secteur"),
+        joinedload("commune"),
+        joinedload("departement"),
+    )
+    schema = ConstatSchemaDownload(exclude=["id_secteur", "id_commune", "id_departement"])
     if 'date' in filter_query:
         if filter_query['date'] != "0":
             query = query.filter(extract('year',Constats.date_constat) == int(filter_query['date']))
@@ -247,6 +252,7 @@ def download(id_role):
         except Exception as e:
             raise BadRequest(str(e))
         query = query.filter(Constats.declaratif == is_declaratif)
+
     constats = [schema.dump(d) for d in query.order_by(Constats.date_attaque.desc()).all()]
     # #TELECHARGEMENT FICHIER
     if len(constats) > 0:   
