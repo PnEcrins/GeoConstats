@@ -17,7 +17,7 @@ def init_app():
     app.config['APPLICATION_ROOT'] = api_uri.path
     app.config['PREFERRED_URL_SCHEME'] = api_uri.scheme
     # app.wsgi_app = ReverseProxied(app.wsgi_app, script_name=app.config['URL_APPLICATION'])
-    app.wsgi_app = ProxyFix(app.wsgi_app, x_host=1)
+    app.wsgi_app = ProxyFix(app.wsgi_app, x_host=1, x_proto=1)
 
     @app.context_processor
     def inject_year():
