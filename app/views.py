@@ -1,3 +1,4 @@
+from copy import copy
 import json
 from sqlalchemy import and_
 from flask import (
@@ -36,6 +37,8 @@ routes = Blueprint("routes", __name__)
 @routes.route("/")
 @routes.route("/login")
 def login():
+    if "form_data" in session:
+        session.pop("form_data")
     dataApp = (
         DB.session.query(Application.id_application)
         .filter(Application.code_application == "GC")
@@ -59,6 +62,8 @@ def map(id_role):
     """
     Lance la "page d'acceuil" avec une carte + une liste avec toutes les données
     """
+    if "form_data" in session:
+        session.pop("form_data")
     filter_query = request.args.to_dict()
     query = Constats.query
     # FORMULAIRE DE FILTRAGE
@@ -112,11 +117,14 @@ def form(idc=None, id_role=None):
     """
     Lance la page de formulaire d'ajout de données
     """
-    # form in session (wrong wrong or wrong edition)
     form_data = session.get("form_data", None)
     if form_data:
         if type(form_data["geom_4326"]) is str:
-            form_data["geom_4326"] = json.loads(form_data["geom_4326"])
+            try:
+                form_data["geom_4326"] = json.loads(form_data["geom_4326"])
+            except json.JSONDecodeError:
+                print("ERROR while parsing geom_4326")
+                pass
         form = ConstatForm(MultiDict(form_data))
         if form_data:
             form.validate()
@@ -158,7 +166,6 @@ def add(id_role):
     valid = form.validate()
     if not valid:
         session["form_data"] = request.form
-        # if edition
         if request.form["id_constat"]:
             return redirect(url_for("routes.form", idc=request.form["id_constat"]))
         return redirect(url_for("routes.form"))
@@ -354,7 +361,8 @@ def noRight(idc):
 )
 def dashboard(id_role):
     # REQUETES
-
+    if "form_data" in session:
+        session.pop("form_data")
     nb_constat_by_dep = (
         DB.session.query(
             LAreas.area_name,
