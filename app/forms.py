@@ -7,6 +7,7 @@ from wtforms import (
     SelectField,
     HiddenField,
     FloatField,
+    DecimalField
 )
 from sqlalchemy import func, extract
 from wtforms.fields.html5 import DateField
@@ -40,6 +41,14 @@ class RequiredIf(InputRequired):
         if not bool(other_field.data):
             super(RequiredIf, self).__call__(form, field)
 
+class MyFloatField(FloatField):
+    def process_formdata(self, valuelist):
+        if valuelist:
+            try:
+                self.data = float(valuelist[0].replace(',', '.'))
+            except ValueError:
+                self.data = None
+                raise ValueError(self.gettext('Not a valid float value'))
 
 class ConstatForm(FlaskForm):
     id_constat = HiddenField("id_constat")
@@ -81,7 +90,7 @@ class ConstatForm(FlaskForm):
     nb_indemnises = IntegerField("Nb d'indemnisé(s)", [Optional()])
 
     statut = QuerySelectField("Situation", query_factory=get_statuts, get_label="nom")
-    nb_jour_agent = FloatField("Nb jour agent", [Optional()])
+    nb_jour_agent = MyFloatField("Nb jour agent", [Optional()])
     declaratif = BooleanField("Déclaratif")
     comment = StringField("Commentaire", [Optional()])
     submit = SubmitField("Ajouter le constat", render_kw={"class": "btn btn-success"})
