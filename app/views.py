@@ -15,6 +15,7 @@ from flask import (
 )
 from werkzeug.datastructures import MultiDict
 from werkzeug.exceptions import BadRequest
+import geojson as geojson_lib
 from .env import DB
 from app.models import BibAreaType, Constats, bib_type_animaux, LAreas
 from app.forms import ConstatForm, FilterForm
@@ -23,7 +24,6 @@ from sqlalchemy.orm import joinedload
 from shapely.geometry import Point
 from geoalchemy2.shape import from_shape
 from datetime import datetime
-from geojson import FeatureCollection
 import io
 import csv
 from pypnusershub.db.models import Application, AppUser
@@ -123,10 +123,12 @@ def form(idc=None, id_role=None):
             try:
                 form_data["geom_4326"] = json.loads(form_data["geom_4326"])
             except json.JSONDecodeError:
-                print("ERROR while parsing geom_4326")
+                geojson_4326 = geojson_lib.Point((float(form_data["geomlng"]), float(form_data["geomlat"])))
+                form_data["geom_4326"] = geojson_4326
                 pass
         form = ConstatForm(MultiDict(form_data))
         if form_data:
+            print("passe la ?")
             form.validate()
     # if edition
     elif idc:
@@ -491,4 +493,4 @@ def get_areas():
         geojson["properties"] = d[0]
         features.append(geojson)
 
-    return jsonify(FeatureCollection(features))
+    return jsonify(geojson_lib.FeatureCollection(features))
