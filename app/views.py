@@ -123,12 +123,13 @@ def form(idc=None, id_role=None):
             try:
                 form_data["geom_4326"] = json.loads(form_data["geom_4326"])
             except json.JSONDecodeError:
-                geojson_4326 = geojson_lib.Point((float(form_data["geomlng"]), float(form_data["geomlat"])))
+                geojson_4326 = geojson_lib.Point(
+                    (float(form_data["geomlng"]), float(form_data["geomlat"]))
+                )
                 form_data["geom_4326"] = geojson_4326
                 pass
         form = ConstatForm(MultiDict(form_data))
         if form_data:
-            print("passe la ?")
             form.validate()
     # if edition
     elif idc:
@@ -315,10 +316,14 @@ def download(id_role):
     constats = [
         schema.dump(d) for d in query.order_by(Constats.date_attaque.desc()).all()
     ]
-    # #TELECHARGEMENT FICHIER
     if len(constats) > 0:
         si = io.StringIO()
-        cw = csv.DictWriter(si, delimiter=";", fieldnames=constats[0].keys())
+        cw = csv.DictWriter(
+            si,
+            delimiter=";",
+            fieldnames=ConstatSchemaDownload.export_columns,
+            extrasaction="ignore",
+        )
         cw.writeheader()
         cw.writerows(constats)
         output = make_response(si.getvalue())
