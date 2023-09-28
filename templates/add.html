@@ -26,6 +26,16 @@
             Renseigner la localisation à partir de coordonnées X/Y
         </small>
       </button>
+		{% with messages = get_flashed_messages() %}
+		{% if messages %}
+			<ul class=flashes>
+			{% for message in messages %}
+			<li>{{ message }}</li>
+			{% endfor %}
+			</ul>
+		{% endif %}
+		{% endwith %}
+		{% block body %}{% endblock %}
 	<form action="{{url_for('routes.add')}}" method="post" novalidate>
         {{ form.hidden_tag() }}
         {{render_field(form.date_attaque)}}
